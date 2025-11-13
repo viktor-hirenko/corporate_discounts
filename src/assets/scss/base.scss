@@ -1,0 +1,47 @@
+// -----------------------------------------------------------------------------
+// Base styles
+// Universal styles: reset, html/body, typography, colors, scrollbar, app layout
+// -----------------------------------------------------------------------------
+
+@use './utils/mixins' as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: inherit;
+}
+
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-background-primary, var(--color-secondary-600));
+  color: var(--color-neutral-700);
+
+  @include font-family(primary);
+  @include font-weight(regular);
+  @include font-size(base);
+  @include line-height(body-xs);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizelegibility;
+}
+
+#app {
+  display: flex;
+  min-height: 100svh;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* System scrollbar (universal) */
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}

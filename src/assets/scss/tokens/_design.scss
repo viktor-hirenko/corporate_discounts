@@ -1,0 +1,20 @@
+// -----------------------------------------------------------------------------
+// Design tokens
+// Core design metrics defining the base layout grid, viewport references,
+// and typographic rhythm across all components.
+// -----------------------------------------------------------------------------
+
+$design-width-small-mobile: 320px !default;
+$design-height-small-mobile: 568px !default;
+$design-width-mobile: 390px !default;
+$design-height-mobile: 844px !default;
+$design-width-tablet: 768px !default;
+$design-height-tablet: 1024px !default;
+$design-width-desktop: 1728px !default;
+$design-height-desktop: 1117px !default;
+
+// Base reference used in mixins — mobile by default
+$design-width: $design-width-mobile !default;
+$design-height: $design-height-mobile !default;
+$base-font: 16px !default; // Root font size
+$base-line-height: 1.5 !default; // Default line height ratio

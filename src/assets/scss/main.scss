@@ -1,0 +1,7 @@
+@use './base';
+
+// @use './responsive'; // Uncomment for rem-based responsive system
+
+/* Project-specific styles (page-level, top-level components) */
+
+/* No body/#app/scrollbar duplication - they're already in base.scss */

@@ -15,7 +15,7 @@
 }
 
 .view-placeholder h1 {
-  margin-bottom: 8px;
   font-size: 20px;
+  margin-bottom: 8px;
 }
 </style>

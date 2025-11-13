@@ -1,0 +1,100 @@
+// -----------------------------------------------------------------------------
+// Typography tokens — UPSTARS
+// Defines font families, weights, line heights, letter-spacing, scale values,
+// and reusable presets extracted from the Figma design system.
+// -----------------------------------------------------------------------------
+
+@use 'sass:map';
+
+$type: (
+  family: (
+    primary: (
+      'Nunito Sans',
+      sans-serif,
+    ),
+    secondary: (
+      'Nunito Sans',
+      sans-serif,
+    ),
+  ),
+
+  weight: (
+    regular: 400,
+    semibold: 600,
+    bold: 700,
+  ),
+
+  line-height: (
+    header: 36px,
+    body-md: 33px,
+    body-md-caps: 36px,
+    body-xs: 22px,
+    body-xs-caps: 24px,
+    button: 24px,
+  ),
+
+  letter-spacing: (
+    normal: 0,
+    wide: 0.05em,
+  ),
+
+  scale: (
+    base: 16px,
+    xs: 16px,
+    sm: 18px,
+    md: 24px,
+    lg: 32px,
+  ),
+
+  presets: (
+    header: (
+      size: lg,
+      lh: header,
+      track: normal,
+      weight: bold,
+      family: primary,
+    ),
+    'body-md-regular': (
+      size: md,
+      lh: body-md,
+      track: normal,
+      weight: regular,
+      family: primary,
+    ),
+    'body-md-semibold': (
+      size: md,
+      lh: body-md,
+      track: normal,
+      weight: semibold,
+      family: primary,
+    ),
+    'body-md-caps': (
+      size: md,
+      lh: body-md-caps,
+      track: wide,
+      weight: semibold,
+      family: primary,
+    ),
+    'body-xs': (
+      size: xs,
+      lh: body-xs,
+      track: normal,
+      weight: semibold,
+      family: primary,
+    ),
+    'body-xs-caps': (
+      size: xs,
+      lh: body-xs-caps,
+      track: wide,
+      weight: semibold,
+      family: primary,
+    ),
+    button: (
+      size: sm,
+      lh: button,
+      track: normal,
+      weight: semibold,
+      family: primary,
+    ),
+  ),
+) !default;
