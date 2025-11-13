@@ -1,6 +1,4 @@
-<script setup lang="ts">
-// TODO: реализовать каталог скидок
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <main class="view-placeholder">
@@ -9,7 +7,7 @@
   </main>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .view-placeholder {
   padding: 24px;
 }
