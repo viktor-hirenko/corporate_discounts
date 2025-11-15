@@ -151,8 +151,8 @@ function handleClick(event: MouseEvent) {
     line-height: 0;
 
     :deep(svg) {
-      width: to-rem(24);
-      height: to-rem(24);
+      // width: to-rem(24);
+      // height: to-rem(24);
     }
   }
 
