@@ -4,11 +4,12 @@ import { RouterLink, type RouteLocationRaw } from 'vue-router'
 
 type ButtonAppearance = 'primary' | 'secondary'
 type NativeButtonType = 'button' | 'submit' | 'reset'
+type ButtonSize = 'large' | 'medium' | 'small'
 
 interface Props {
   label?: string
   appearance?: ButtonAppearance
-  size?: 'small'
+  size?: ButtonSize
   type?: NativeButtonType
   disabled?: boolean
   to?: string | RouteLocationRaw
@@ -18,6 +19,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   appearance: 'primary',
+  size: 'medium',
   type: 'button',
   disabled: false,
   target: '_self',
@@ -68,6 +70,8 @@ function handleClick(event: MouseEvent) {
     :class="[
       `ui-button--${appearance}`,
       {
+        'ui-button--large': size === 'large',
+        'ui-button--medium': size === 'medium',
         'ui-button--small': size === 'small',
         'ui-button--icon': isIconOnly,
         'ui-button--icon-left': hasLeftIcon && hasLabel,
@@ -103,6 +107,7 @@ function handleClick(event: MouseEvent) {
 <style scoped lang="scss">
 .ui-button {
   display: inline-flex;
+  height: to-rem(48);
   padding: to-rem(12) to-rem(24);
   justify-content: center;
   align-items: center;
@@ -178,6 +183,14 @@ function handleClick(event: MouseEvent) {
       width: to-rem(40);
       height: to-rem(40);
     }
+  }
+
+  &--medium {
+    height: to-rem(48);
+  }
+
+  &--large {
+    height: to-rem(64);
   }
 
   &--primary {
