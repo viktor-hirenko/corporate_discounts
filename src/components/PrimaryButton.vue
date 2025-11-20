@@ -3,7 +3,7 @@ import UiButton from './UiButton.vue'
 
 interface Props {
   label?: string
-  size?: 'small'
+  size?: 'large' | 'medium' | 'small'
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
   to?: string

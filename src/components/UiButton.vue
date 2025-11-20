@@ -137,13 +137,13 @@ function handleClick(event: MouseEvent) {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    font-size: to-rem(18);
+    font-size: to-rem(16);
     line-height: to-rem(24);
     letter-spacing: track(normal);
     text-decoration: none;
 
     @include font-family(primary);
-    @include font-weight(semibold);
+    @include font-weight(bold);
   }
 
   &__icon {
@@ -170,7 +170,7 @@ function handleClick(event: MouseEvent) {
   }
 
   &--small {
-    min-height: to-rem(40);
+    height: to-rem(48);
     padding: to-rem(8) to-rem(24);
 
     .ui-button__label {
@@ -186,7 +186,7 @@ function handleClick(event: MouseEvent) {
   }
 
   &--medium {
-    height: to-rem(48);
+    height: to-rem(60);
   }
 
   &--large {

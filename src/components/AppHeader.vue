@@ -6,7 +6,7 @@ import LanguageSelector from './LanguageSelector.vue'
 import MobileMenu from './MobileMenu.vue'
 import HomeIcon from './icons/HomeIcon.vue'
 import BarsIcon from './icons/BarsIcon.vue'
-import logoUpstars from '@/assets/images/upstars-logo.svg?url'
+import logoUpstars from '@/assets/images/upstars-logo-dark.svg?url'
 
 const isMobileMenuOpen = ref(false)
 
