@@ -2,7 +2,7 @@
 import { computed, useSlots } from 'vue'
 import { RouterLink, type RouteLocationRaw } from 'vue-router'
 
-type ButtonAppearance = 'primary' | 'secondary'
+type ButtonAppearance = 'primary' | 'secondary' | 'text'
 type NativeButtonType = 'button' | 'submit' | 'reset'
 type ButtonSize = 'large' | 'medium' | 'small'
 
@@ -239,6 +239,40 @@ function handleClick(event: MouseEvent) {
       border-color: var(--color-secondary-400);
       background-color: var(--color-primary-100);
       color: var(--color-secondary-300);
+    }
+  }
+
+  &--text {
+    height: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-secondary-600);
+
+    .ui-button__label {
+      text-decoration: underline;
+      line-height: to-rem(22);
+
+      @include font-weight(extrabold);
+    }
+
+    &:disabled,
+    &.ui-button--disabled {
+      opacity: 0.5;
+      color: var(--color-secondary-300);
+    }
+
+    &:hover:not(:disabled):not(&--disabled) {
+      color: var(--color-secondary-400);
+    }
+
+    &:active:not(:disabled):not(&--disabled) {
+      color: var(--color-secondary-500);
+    }
+
+    &:focus-visible {
+      outline: to-rem(2) solid var(--color-secondary-400);
+      outline-offset: to-rem(2);
     }
   }
 }

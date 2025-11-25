@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------
 
 @use './utils/mixins' as *;
+@use './utils/functions' as *;
 
 *,
 *::before,
@@ -15,7 +16,6 @@
 
 html,
 body {
-  overflow: hidden;
   height: 100%;
 }
 
@@ -36,12 +36,27 @@ body {
 #app {
   display: flex;
   min-height: 100svh;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
 }
 
 /* System scrollbar (universal) */
 ::-webkit-scrollbar {
   width: 0;
   background: transparent;
+}
+
+.container {
+  width: 100%;
+  max-width: to-rem(1312);
+  margin: 0 auto;
+  padding: 0 to-rem(64);
+
+  @include mq(null, xl) {
+    padding: 0 to-rem(32);
+  }
+
+  @include mq(null, lg) {
+    padding: 0 to-rem(16);
+  }
 }
