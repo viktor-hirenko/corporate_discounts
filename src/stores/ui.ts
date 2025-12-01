@@ -74,10 +74,7 @@ export const useUiStore = defineStore('ui', {
   actions: {
     initTheme(): void {
       const theme =
-        readThemeFromQuery() ??
-        readThemeFromStorage() ??
-        readThemeFromSystem() ??
-        DEFAULT_THEME
+        readThemeFromQuery() ?? readThemeFromStorage() ?? readThemeFromSystem() ?? DEFAULT_THEME
 
       this.setTheme(theme)
     },

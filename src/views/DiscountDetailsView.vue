@@ -3,19 +3,21 @@
 </script>
 
 <template>
-  <main class="view-placeholder">
+  <div class="discount-details">
     <h1>Discount Details</h1>
     <p>Промокод, контакты и условия появятся позже.</p>
-  </main>
+  </div>
 </template>
 
-<style scoped>
-.view-placeholder {
-  padding: 24px;
+<style scoped lang="scss">
+@use '@/assets/scss/utils/functions' as *;
+
+.discount-details {
+  padding: to-rem(24);
 }
 
-.view-placeholder h1 {
-  font-size: 20px;
-  margin-bottom: 8px;
+.discount-details h1 {
+  font-size: to-rem(20);
+  margin-bottom: to-rem(8);
 }
 </style>

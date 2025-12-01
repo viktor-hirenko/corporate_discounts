@@ -214,31 +214,29 @@ function handleClick(event: MouseEvent) {
   }
 
   &--secondary {
-    border: to-rem(1) solid var(--color-secondary-400);
-    background-color: var(--color-primary-100);
-    color: var(--color-secondary-400);
+    background: var(--color-primary-400);
+    color: var(--color-secondary-500, #210e5f);
+    border: none;
 
     &:disabled,
     &.ui-button--disabled {
-      border-color: var(--color-secondary-200);
-      background-color: var(--color-primary-100);
-      color: var(--color-secondary-200);
+      background: var(--color-primary-400);
+      color: var(--color-primary-100);
+      opacity: 0.8;
     }
 
     &:hover:not(:disabled):not(&--disabled) {
-      border-color: var(--color-secondary-400);
-      background-color: var(--color-primary-100);
-      color: var(--color-secondary-300);
-
-      :deep(svg path) {
-        stroke: var(--color-secondary-400);
-      }
+      background: var(--color-primary-400);
+      opacity: 0.8;
     }
 
     &:active:not(:disabled):not(&--disabled) {
-      border-color: var(--color-secondary-400);
-      background-color: var(--color-primary-100);
-      color: var(--color-secondary-300);
+      background: var(--color-primary-300);
+      opacity: 0.8;
+    }
+
+    .ui-button__label {
+      @include font-weight(extrabold);
     }
   }
 

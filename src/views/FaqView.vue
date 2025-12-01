@@ -3,19 +3,21 @@
 </script>
 
 <template>
-  <main class="view-placeholder">
+  <div class="faq">
     <h1>FAQ</h1>
     <p>Список вопросов и ответов появится позже.</p>
-  </main>
+  </div>
 </template>
 
-<style scoped>
-.view-placeholder {
-  padding: 24px;
+<style scoped lang="scss">
+@use '@/assets/scss/utils/functions' as *;
+
+.faq {
+  padding: to-rem(24);
 }
 
-.view-placeholder h1 {
-  font-size: 20px;
-  margin-bottom: 8px;
+.faq h1 {
+  font-size: to-rem(20);
+  margin-bottom: to-rem(8);
 }
 </style>

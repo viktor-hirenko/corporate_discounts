@@ -40,12 +40,14 @@ function handleClick() {
 
 <style scoped lang="scss">
 .partner-card {
+  width: 100%;
+  max-width: to-rem(416);
   display: flex;
   flex-direction: column;
   gap: to-rem(16);
   padding: to-rem(24);
-  background-color: var(--color-primary-100);
-  border: to-rem(1) solid var(--color-neutral-500);
+  background-color: var(--color-secondary-200);
+  border: to-rem(3) solid var(--color-secondary-500);
   cursor: pointer;
 
   &__image-wrapper {
@@ -111,10 +113,12 @@ function handleClick() {
 
   &__category {
     color: var(--color-secondary-600);
+    text-transform: uppercase;
   }
 
   &__location {
     color: var(--color-secondary-400);
+    text-transform: uppercase;
 
     @include mq(null, lg) {
       font-size: to-rem(16);

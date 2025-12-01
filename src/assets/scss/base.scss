@@ -38,6 +38,11 @@ body {
   min-height: 100svh;
   flex-direction: column;
   width: 100%;
+  padding: to-rem(32);
+
+  @include mq(null, lg) {
+    padding: to-rem(24) to-rem(16);
+  }
 }
 
 /* System scrollbar (universal) */
@@ -50,13 +55,4 @@ body {
   width: 100%;
   max-width: to-rem(1312);
   margin: 0 auto;
-  padding: 0 to-rem(64);
-
-  @include mq(null, xl) {
-    padding: 0 to-rem(32);
-  }
-
-  @include mq(null, lg) {
-    padding: 0 to-rem(16);
-  }
 }
