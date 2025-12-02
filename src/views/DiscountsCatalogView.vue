@@ -16,7 +16,7 @@ const isMobile = useMediaQuery('(max-width: 767px)')
 
 // Pagination state
 const currentPage = ref(1)
-const itemsPerPage = 12
+const itemsPerPage = 9
 
 const totalPages = computed(() => {
   console.log(Math.ceil(filteredPartners.value.length / itemsPerPage))

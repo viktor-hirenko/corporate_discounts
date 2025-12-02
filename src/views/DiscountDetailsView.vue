@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppFooter from '@/components/AppFooter.vue'
 // TODO: реализовать страницу партнёра
 </script>
 
@@ -6,6 +7,7 @@
   <div class="discount-details">
     <h1>Discount Details</h1>
     <p>Промокод, контакты и условия появятся позже.</p>
+    <AppFooter />
   </div>
 </template>
 

@@ -1,25 +1,17 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 import { RouterView } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
-import AppFooter from '@/components/AppFooter.vue'
-
-const route = useRoute()
-const showFooter = computed(() => route.name === 'discount-details')
 </script>
 
 <template>
   <AppHeader class="container" />
-  <main class="container" :class="{ 'main--with-footer': showFooter }">
+  <main class="container">
     <RouterView />
   </main>
-  <AppFooter />
 </template>
 
 <style scoped lang="scss">
 :global(:root) {
-  --footer-height: 320px;
   --header-height: 59px;
 }
 
@@ -27,10 +19,6 @@ main {
   min-height: calc(100vh - to-rem(var(--header-height)));
   width: 100%;
   margin-top: var(--header-height);
-
-  &--with-footer {
-    min-height: calc(100vh - to-rem(var(--header-height)) - to-rem(var(--footer-height)));
-  }
 }
 
 .header {

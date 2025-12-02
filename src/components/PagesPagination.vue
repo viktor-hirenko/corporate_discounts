@@ -14,11 +14,22 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
+// Максимальное количество страниц без эллипсиса
+const MAX_PAGES_WITHOUT_ELLIPSIS = 7
+// Максимальная страница, при которой считаем, что мы в начале списка
+const MAX_PAGE_AT_START = 3
+// Количество страниц от конца, при котором считаем, что мы в конце списка
+const PAGES_FROM_END = 2
+// Количество страниц, показываемых после первой страницы в начале
+const PAGES_AFTER_FIRST_AT_START = 4
+// Количество страниц, показываемых перед последней в конце
+const PAGES_BEFORE_LAST_AT_END = 3
+
 const visiblePages = computed(() => {
   const pages: (number | string)[] = []
   const { currentPage, totalPages } = props
 
-  if (totalPages <= 7) {
+  if (totalPages <= MAX_PAGES_WITHOUT_ELLIPSIS) {
     // Показываем все страницы если их мало
     for (let i = 1; i <= totalPages; i++) {
       pages.push(i)
@@ -27,26 +38,48 @@ const visiblePages = computed(() => {
     // Всегда показываем первую страницу
     pages.push(1)
 
-    if (currentPage <= 3) {
-      // Если мы в начале, показываем 2, 3, 4
-      for (let i = 2; i <= 4; i++) {
+    if (currentPage <= MAX_PAGE_AT_START) {
+      // Если в начале, показываем страницы после первой
+      for (let i = 2; i <= PAGES_AFTER_FIRST_AT_START; i++) {
         pages.push(i)
       }
       pages.push('...')
       pages.push(totalPages)
-    } else if (currentPage >= totalPages - 2) {
+    } else if (currentPage >= totalPages - PAGES_FROM_END) {
       // Если мы в конце, показываем последние страницы
       pages.push('...')
-      for (let i = totalPages - 3; i <= totalPages; i++) {
+      for (let i = totalPages - PAGES_BEFORE_LAST_AT_END; i <= totalPages; i++) {
         pages.push(i)
       }
     } else {
-      // Если мы в середине
-      pages.push('...')
+      // Если в середине
+      const firstVisibleAfterStart = currentPage - 1
+      const lastVisibleBeforeEnd = currentPage + 1
+
+      // Количество страниц между первой (1) и первой видимой после неё
+      // Например: если currentPage = 4, то firstVisibleAfterStart = 3, между 1 и 3 страницы: 2 (одна страница)
+      const pagesBetweenStartAndFirstVisible = firstVisibleAfterStart - 1 - 1
+      if (pagesBetweenStartAndFirstVisible === 1) {
+        // Показываем единственную страницу между ними
+        pages.push(firstVisibleAfterStart - 1)
+      } else if (pagesBetweenStartAndFirstVisible > 1) {
+        pages.push('...')
+      }
+
+      // Показываем текущую страницу и соседние
       for (let i = currentPage - 1; i <= currentPage + 1; i++) {
         pages.push(i)
       }
-      pages.push('...')
+
+      // Количество страниц между последней видимой перед концом и последней страницей
+      const pagesBetweenLastVisibleAndEnd = totalPages - lastVisibleBeforeEnd - 1
+      if (pagesBetweenLastVisibleAndEnd === 1) {
+        // Показываем единственную страницу между ними
+        pages.push(lastVisibleBeforeEnd + 1)
+      } else if (pagesBetweenLastVisibleAndEnd > 1) {
+        pages.push('...')
+      }
+
       pages.push(totalPages)
     }
   }
