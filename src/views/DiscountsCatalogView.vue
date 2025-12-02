@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import Filter from '@/components/Filter.vue'
 import FilterChips from '@/components/FilterChips.vue'
 import PartnerCard from '@/components/PartnerCard.vue'
+import PagesPagination from '@/components/PagesPagination.vue'
 import { useDiscountsStore } from '@/stores/discounts'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 
@@ -12,6 +13,32 @@ const filteredPartners = computed(() => store.filteredPartners)
 const totalPartners = computed(() => store.totalFiltered)
 
 const isMobile = useMediaQuery('(max-width: 767px)')
+
+// Pagination state
+const currentPage = ref(1)
+const itemsPerPage = 12
+
+const totalPages = computed(() => {
+  console.log(Math.ceil(filteredPartners.value.length / itemsPerPage))
+  return Math.ceil(filteredPartners.value.length / itemsPerPage)
+})
+
+const paginatedPartners = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredPartners.value.slice(start, end)
+})
+
+// Сбрасываем страницу на первую при изменении фильтров
+watch(filteredPartners, () => {
+  currentPage.value = 1
+})
+
+function handlePageChange(page: number) {
+  currentPage.value = page
+  // Анимация скролла к началу списка
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 onMounted(() => {
   store.loadPartners()
@@ -46,12 +73,23 @@ onMounted(() => {
       <FilterChips v-if="!isMobile" />
 
       <div v-if="filteredPartners.length > 0" class="discounts-catalog__grid">
-        <PartnerCard v-for="partner in filteredPartners" :key="partner.id" :partner="partner" />
+        <PartnerCard v-for="partner in paginatedPartners" :key="partner.id" :partner="partner" />
       </div>
 
       <div v-else class="discounts-catalog__empty">
         <p>Партнерів не знайдено. Спробуйте змінити фільтри.</p>
       </div>
+
+      <section
+        v-if="filteredPartners.length > 0 && totalPages > 1"
+        class="discounts-catalog__pagination container"
+      >
+        <PagesPagination
+          :current-page="currentPage"
+          :total-pages="totalPages"
+          @page-change="handlePageChange"
+        />
+      </section>
     </div>
   </div>
 </template>
@@ -177,6 +215,11 @@ onMounted(() => {
       @include font-family(primary);
       @include font-weight(semibold);
     }
+  }
+
+  &__pagination {
+    display: flex;
+    width: 100%;
   }
 }
 </style>
