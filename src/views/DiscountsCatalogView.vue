@@ -29,6 +29,17 @@ const paginatedPartners = computed(() => {
   return filteredPartners.value.slice(start, end)
 })
 
+// Вычисляет диапазон отображаемых карточек партнеров на текущей странице
+// Например, для страницы 1: "Показано 1-9 з 60", для страницы 2: "Показано 10-18 з 60"
+const displayedRange = computed(() => {
+  if (filteredPartners.value.length === 0) {
+    return { start: 0, end: 0 }
+  }
+  const start = (currentPage.value - 1) * itemsPerPage + 1
+  const end = Math.min(currentPage.value * itemsPerPage, filteredPartners.value.length)
+  return { start, end }
+})
+
 // Сбрасываем страницу на первую при изменении фильтров
 watch(filteredPartners, () => {
   currentPage.value = 1
@@ -66,7 +77,7 @@ onMounted(() => {
       </section>
 
       <p v-if="totalPartners > 0" class="discounts-catalog__results-count">
-        Показано {{ filteredPartners.length }} з {{ totalPartners }} партнерів
+        Показано {{ displayedRange.start }}-{{ displayedRange.end }} з {{ totalPartners }} партнерів
       </p>
 
       <!-- Позиция FilterChips для десктопной версии -->
