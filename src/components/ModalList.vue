@@ -34,7 +34,7 @@ function handleItemClick(item: ListItem, sectionIndex: number, itemIndex: number
 <template>
   <div class="modal-list">
     <template v-for="(section, sectionIndex) in sections" :key="sectionIndex">
-      <div v-if="showDividers && section.title" class="modal-list__divider" />
+      <!-- <div v-if="showDividers && section.title" class="modal-list__divider" /> -->
 
       <!-- Section Header -->
       <div v-if="section.title" class="modal-list__section-header">
@@ -42,7 +42,7 @@ function handleItemClick(item: ListItem, sectionIndex: number, itemIndex: number
       </div>
 
       <!-- Divider after section header (always if header exists) -->
-      <div v-if="showDividers && section.title" class="modal-list__divider" />
+      <!-- <div v-if="showDividers && section.title" class="modal-list__divider" /> -->
 
       <!-- Section Items -->
       <div class="modal-list__section-items">
@@ -66,18 +66,17 @@ function handleItemClick(item: ListItem, sectionIndex: number, itemIndex: number
   flex-direction: column;
 
   &__section-header {
-    padding: to-rem(12) to-rem(16);
+    padding: to-rem(24) to-rem(16) to-rem(8);
   }
 
   &__section-title {
-    font-size: to-rem(16);
-    line-height: to-rem(24);
-    color: var(--color-neutral-400);
-    text-transform: uppercase;
+    font-size: to-rem(24);
+    line-height: 1.1;
+    color: var(--color-secondary-600);
     margin: 0;
 
     @include font-family(primary);
-    @include font-weight(semibold);
+    @include font-weight(extrabold);
   }
 
   &__section-items {

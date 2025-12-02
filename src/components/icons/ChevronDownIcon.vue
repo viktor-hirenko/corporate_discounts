@@ -4,15 +4,9 @@
     :width="size"
     :height="size"
     fill="none"
-    viewBox="0 0 17 9"
+    viewBox="0 0 17 11"
   >
-    <path
-      stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="1.5"
-      d="m15.75.75-7.5 7.5L.75.75"
-    />
+    <path fill="currentColor" d="M0 2.121 2.121 0l6 6 6-6 2.121 2.121-8.12 8.121z" />
   </svg>
 </template>
 

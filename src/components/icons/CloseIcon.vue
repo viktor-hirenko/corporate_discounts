@@ -4,14 +4,11 @@
     :width="size"
     :height="size"
     fill="none"
-    viewBox="0 0 10 10"
+    viewBox="0 0 17 17"
   >
     <path
-      stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="1.5"
-      d="m.75 8.75 8-8m-8 0 8 8"
+      fill="currentColor"
+      d="m16.121 2.121-5.94 5.94L16.122 14 14 16.121l-5.94-5.94-5.939 5.94L0 14l5.94-5.94L0 2.122 2.121 0l5.94 5.94L14 0z"
     />
   </svg>
 </template>
@@ -22,6 +19,6 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  size: 10,
+  size: 17,
 })
 </script>

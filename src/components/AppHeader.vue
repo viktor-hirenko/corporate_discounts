@@ -61,8 +61,12 @@ function handleMenuButtonClick() {
   width: 100%;
   padding: to-rem(12) to-rem(24);
   background-color: var(--color-secondary-100, #fcfcff);
-  // box-shadow: 0 0 to-rem(8) rgba(0, 0, 0, 0.2);
   z-index: 9999;
+
+  // Когда открыт dropdown фильтра, уменьшаем z-index чтобы хедер не был поверх модалки
+  body.filter-modal-open & {
+    z-index: 999;
+  }
 
   // Псевдоэлемент для размытия пространства над хедером
   &::before {

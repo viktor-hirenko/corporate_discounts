@@ -31,7 +31,7 @@ function handleClick(event: MouseEvent) {
       <span class="modal-list-item__label">{{ label }}</span>
       <span v-if="description" class="modal-list-item__description">{{ description }}</span>
     </div>
-    <span v-if="isActive && showIndicator" class="modal-list-item__indicator" />
+    <!-- <span v-if="isActive && showIndicator" class="modal-list-item__indicator" /> -->
   </button>
 </template>
 
@@ -44,7 +44,7 @@ function handleClick(event: MouseEvent) {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: to-rem(12) to-rem(16);
+  padding: to-rem(8) to-rem(16);
   border: none;
   background-color: var(--color-primary-100);
   cursor: pointer;
@@ -52,11 +52,11 @@ function handleClick(event: MouseEvent) {
   transition: background-color 0.2s ease;
 
   &:hover:not(&--active) {
-    background-color: var(--color-neutral-600);
+    background-color: var(--color-primary-200, #ceffec);
   }
 
   &--active {
-    background-color: var(--color-secondary-150);
+    background: var(--primary-400, #5bfc70);
   }
 
   &__content {
@@ -65,16 +65,15 @@ function handleClick(event: MouseEvent) {
     gap: 0;
     flex: 1;
     min-width: 0;
+    color: var(--color-secondary-600);
   }
 
   &__label {
-    font-size: to-rem(14);
-    line-height: to-rem(16);
-    color: var(--color-secondary-600);
-    // margin-bottom: to-rem(4);
+    font-size: to-rem(18);
+    line-height: 1.2;
 
     @include font-family(primary);
-    @include font-weight(semibold);
+    @include font-weight(extrabold);
 
     .modal-list-item--active & {
       color: var(--color-secondary-600);
@@ -82,9 +81,8 @@ function handleClick(event: MouseEvent) {
   }
 
   &__description {
-    font-size: to-rem(12);
-    line-height: to-rem(16);
-    color: var(--color-neutral-400);
+    font-size: to-rem(14);
+    line-height: 1.5;
 
     @include font-family(primary);
     @include font-weight(semibold);

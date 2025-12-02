@@ -138,9 +138,10 @@ function handleClick(event: MouseEvent) {
     justify-content: center;
     align-items: center;
     font-size: to-rem(16);
-    line-height: to-rem(24);
+    line-height: 1.5;
     letter-spacing: track(normal);
     text-decoration: none;
+    text-transform: uppercase;
 
     @include font-family(primary);
     @include font-weight(bold);

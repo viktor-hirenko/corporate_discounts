@@ -38,11 +38,14 @@ main {
   top: to-rem(32);
   left: 0;
   right: 0;
-  z-index: 9999;
   width: calc(100% - to-rem(64));
 
   @include mq(null, lg) {
     top: to-rem(24);
+    width: calc(100% - to-rem(48));
+  }
+
+  @include mq(null, md) {
     width: calc(100% - to-rem(32));
   }
 }

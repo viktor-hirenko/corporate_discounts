@@ -19,127 +19,130 @@ function handleClick() {
 
 <template>
   <article class="partner-card" @click="handleClick">
-    <div class="partner-card__image-wrapper">
-      <img :src="partner.images.thumbnail" :alt="partner.name" class="partner-card__image" />
-    </div>
-
-    <div class="partner-card__info">
-      <h3 class="partner-card__title">{{ partner.name }}</h3>
-    </div>
-
-    <div class="partner-card__meta">
-      <span class="partner-card__category">{{ partner.category }}</span>
-      <span class="partner-card__location">{{ partner.location }}</span>
-    </div>
-
     <div class="partner-card__badge">
       {{ partner.discount.label }}
+    </div>
+    <div class="partner-card__content">
+      <div class="partner-card__image-wrapper">
+        <img :src="partner.images.thumbnail" :alt="partner.name" class="partner-card__image" />
+      </div>
+
+      <div class="partner-card__info">
+        <div class="partner-card__meta">
+          <span class="partner-card__category">{{ partner.category }}</span>
+          <span class="partner-card__location">#{{ partner.location }}</span>
+        </div>
+        <h3 class="partner-card__title">{{ partner.name }}</h3>
+      </div>
     </div>
   </article>
 </template>
 
 <style scoped lang="scss">
+@use '@/assets/scss/utils/mixins' as *;
+
 .partner-card {
+  position: relative;
   width: 100%;
-  max-width: to-rem(416);
-  display: flex;
-  flex-direction: column;
-  gap: to-rem(16);
-  padding: to-rem(24);
-  background-color: var(--color-secondary-200);
-  border: to-rem(3) solid var(--color-secondary-500);
+  padding: to-rem(16);
+  background: var(--color-secondary-150, #f0efff);
   cursor: pointer;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 to-rem(4) to-rem(12) rgba(0, 0, 0, 0.15);
+  }
+
+  &__content {
+    position: relative;
+    display: flex;
+    padding: to-rem(16);
+    flex-direction: column;
+    gap: to-rem(16);
+    border: to-rem(1) solid var(--secondary-600-main, #01001f);
+    border-radius: to-rem(16);
+  }
 
   &__image-wrapper {
     position: relative;
     width: 100%;
-    height: to-rem(223);
+    aspect-ratio: 1;
     overflow: hidden;
-    background-color: var(--color-primary-100);
+    background-color: var(--color-primary-100, #fcfcff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: to-rem(8);
   }
 
   &__image {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: to-rem(223);
-    height: to-rem(223);
-    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     object-position: center;
   }
 
-  &__info {
-    display: flex;
-    gap: to-rem(10);
+  &__badge {
+    position: absolute;
+    top: 0;
+    right: to-rem(32);
+    display: inline-flex;
     align-items: center;
-    padding: to-rem(8) 0;
-    border-bottom: to-rem(1) solid var(--color-neutral-500);
-  }
-
-  &__title {
-    flex: 1;
-    font-size: to-rem(24);
-    line-height: to-rem(36);
+    justify-content: center;
+    padding: to-rem(24) to-rem(16);
+    background-color: var(--color-accent-pink, #ef50cc);
+    font-size: to-rem(18);
+    line-height: 1.2;
     color: var(--color-secondary-600);
-    margin: 0;
-    min-width: 0;
+    white-space: nowrap;
+    z-index: 2;
 
     @include font-family(primary);
-    @include font-weight(semibold);
+    @include font-weight(extrabold);
+  }
 
-    @include mq(null, lg) {
-      font-size: to-rem(18);
-      line-height: to-rem(27);
-    }
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: to-rem(7);
+    padding: 0;
   }
 
   &__meta {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    gap: to-rem(16);
+    align-items: center;
     font-size: to-rem(16);
-    line-height: to-rem(24);
-    text-transform: uppercase;
-    white-space: nowrap;
+    line-height: 1.5;
+    color: var(--color-neutral-400, #81818e);
 
     @include font-family(primary);
-    @include font-weight(semibold);
-
-    @include mq(null, lg) {
-      font-size: to-rem(12);
-    }
+    @include font-weight(regular);
   }
 
   &__category {
-    color: var(--color-secondary-600);
-    text-transform: uppercase;
+    color: var(--color-neutral-400, #81818e);
   }
 
   &__location {
-    color: var(--color-secondary-400);
-    text-transform: uppercase;
+    color: var(--color-secondary-600);
 
-    @include mq(null, lg) {
-      font-size: to-rem(16);
-    }
+    @include font-weight(extrabold);
   }
 
-  &__badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    align-self: flex-start;
-    padding: to-rem(8) to-rem(12);
-    background-color: var(--color-secondary-200);
-    border: to-rem(2) solid var(--color-secondary-400);
-    font-size: to-rem(16);
-    line-height: to-rem(22);
-    color: var(--color-secondary-400);
-    white-space: nowrap;
+  &__title {
+    font-size: to-rem(24);
+    height: to-rem(36);
+    line-height: 1.1;
+    color: var(--color-secondary-600, #01001f);
+    margin: 0;
 
     @include font-family(primary);
-    @include font-weight(semibold);
+    @include font-weight(extrabold);
+
+    @include mq(null, lg) {
+      font-size: to-rem(20);
+    }
   }
 }
 </style>

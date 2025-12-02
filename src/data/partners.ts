@@ -8,7 +8,7 @@ export const partnersMock: Partner[] = [
     category: 'Воркшоп',
     location: 'UA/Київ',
     discount: {
-      label: '10% знижки',
+      label: '-10%',
       promoCode: 'UPSTARS.ROSLYNKA',
       description: 'Діє на всі флораріуми та майстер-класи студії',
     },

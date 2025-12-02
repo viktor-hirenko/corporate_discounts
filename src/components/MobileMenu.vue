@@ -21,7 +21,7 @@ function handleClose() {
 <template>
   <UiModal
     :is-open="isOpen"
-    position="bottom-sheet"
+    position="mobile"
     :show-backdrop="true"
     :show-header="false"
     @close="handleClose"

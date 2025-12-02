@@ -10,12 +10,16 @@ const store = useDiscountsStore()
 const isFilterModalOpen = ref(false)
 const filterWrapperRef = ref<HTMLElement | null>(null)
 
+const BODY_CLASS = 'filter-modal-open'
+
 function handleOpenFilters() {
   isFilterModalOpen.value = true
+  document.body.classList.add(BODY_CLASS)
 }
 
 function handleCloseFilters() {
   isFilterModalOpen.value = false
+  document.body.classList.remove(BODY_CLASS)
 }
 
 function handleClickOutside(event: MouseEvent) {
@@ -66,5 +70,13 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .filter {
   position: relative;
+
+  @include mq(null, md) {
+    width: 100%;
+  }
+
+  :deep(.filter-button) {
+    width: 100%;
+  }
 }
 </style>

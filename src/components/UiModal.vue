@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onUnmounted, watch, nextTick } from 'vue'
 import { Teleport } from 'vue'
 import CloseIcon from './icons/CloseIcon.vue'
 import CustomScrollbar from './CustomScrollbar.vue'
 
-type ModalPosition = 'bottom-sheet' | 'dropdown' | 'center'
+type ModalPosition = 'mobile' | 'dropdown' | 'center'
 
 interface Props {
   isOpen: boolean
@@ -13,6 +13,7 @@ interface Props {
   showCloseButton?: boolean
   showHeader?: boolean
   customScrollbar?: boolean
+  headerAbsolute?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -21,6 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
   showCloseButton: true,
   showHeader: true,
   customScrollbar: false,
+  headerAbsolute: false,
 })
 
 const emit = defineEmits<{
@@ -40,6 +42,58 @@ function handleBackdropClick(event: MouseEvent) {
 const useTeleport = computed(() => props.position !== 'dropdown')
 const bodyRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
+const hasScroll = ref(false)
+
+function checkScroll() {
+  if (bodyRef.value && props.customScrollbar) {
+    hasScroll.value = bodyRef.value.scrollHeight > bodyRef.value.clientHeight
+  } else {
+    hasScroll.value = false
+  }
+}
+
+let resizeObserver: ResizeObserver | null = null
+
+watch(
+  () => [props.isOpen, props.customScrollbar],
+  async ([isOpen, customScrollbar]) => {
+    if (isOpen && customScrollbar) {
+      // Ждем обновления DOM
+      await nextTick()
+      checkScroll()
+
+      if (bodyRef.value) {
+        // Отслеживаем изменения размера контента
+        resizeObserver = new ResizeObserver(() => {
+          checkScroll()
+        })
+        resizeObserver.observe(bodyRef.value)
+
+        // Отслеживаем скролл
+        bodyRef.value.addEventListener('scroll', checkScroll)
+      }
+    } else {
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+        resizeObserver = null
+      }
+      if (bodyRef.value) {
+        bodyRef.value.removeEventListener('scroll', checkScroll)
+      }
+      hasScroll.value = false
+    }
+  },
+  { immediate: true },
+)
+
+onUnmounted(() => {
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+  }
+  if (bodyRef.value) {
+    bodyRef.value.removeEventListener('scroll', checkScroll)
+  }
+})
 </script>
 
 <template>
@@ -56,7 +110,11 @@ const contentRef = ref<HTMLElement | null>(null)
           class="ui-modal__content"
           :class="{ 'ui-modal__content--custom-scroll': customScrollbar }"
         >
-          <div v-if="showHeader && (showCloseButton || $slots.header)" class="ui-modal__header">
+          <div
+            v-if="showHeader && (showCloseButton || $slots.header)"
+            class="ui-modal__header"
+            :class="{ 'ui-modal__header--absolute': headerAbsolute }"
+          >
             <slot name="header">
               <div class="ui-modal__header-default">
                 <button
@@ -81,7 +139,11 @@ const contentRef = ref<HTMLElement | null>(null)
             :parent-ref="contentRef"
           />
 
-          <div v-if="$slots.footer" class="ui-modal__footer">
+          <div
+            v-if="$slots.footer"
+            class="ui-modal__footer"
+            :class="{ 'ui-modal__footer--has-scroll': hasScroll }"
+          >
             <slot name="footer" />
           </div>
         </div>
@@ -95,7 +157,7 @@ const contentRef = ref<HTMLElement | null>(null)
   z-index: 1000;
   display: flex;
 
-  // Для bottom-sheet и center - fixed позиционирование
+  // Для mobile и center - fixed позиционирование
   &:not(&--dropdown) {
     position: fixed;
     top: 0;
@@ -109,13 +171,13 @@ const contentRef = ref<HTMLElement | null>(null)
     background-color: rgba(0, 0, 0, 0.5);
   }
 
-  &--bottom-sheet {
+  &--mobile {
     align-items: flex-end;
   }
 
   &--dropdown {
     position: absolute;
-    top: calc(100% + to-rem(8));
+    top: 100%;
     right: 0;
     left: auto;
     bottom: auto;
@@ -130,7 +192,6 @@ const contentRef = ref<HTMLElement | null>(null)
     max-width: 100%;
     max-height: 100vh;
     background-color: var(--color-primary-100);
-    border-radius: to-rem(8);
     box-shadow: 0 0 to-rem(25) rgba(0, 0, 0, 0.25);
     overflow: hidden;
 
@@ -143,20 +204,15 @@ const contentRef = ref<HTMLElement | null>(null)
       &::-webkit-scrollbar {
         display: none;
       }
-
-      @include mq(null, lg) {
-        height: 80dvh;
-      }
     }
   }
 
-  &--bottom-sheet &__content {
+  &--mobile &__content {
     width: 100%;
-    border-radius: to-rem(8) to-rem(8) 0 0;
   }
 
   &--dropdown &__content {
-    width: to-rem(370);
+    width: to-rem(375);
     max-height: calc(100vh - to-rem(100));
   }
 
@@ -167,6 +223,19 @@ const contentRef = ref<HTMLElement | null>(null)
     padding: to-rem(12) to-rem(16);
     background-color: var(--color-primary-100);
     border-radius: to-rem(8) to-rem(8) 0 0;
+
+    &--absolute {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      display: flex;
+      align-items: end;
+      height: to-rem(58);
+      padding: to-rem(24) to-rem(16) to-rem(8);
+      background-color: transparent;
+    }
   }
 
   &__header-default {
@@ -208,20 +277,38 @@ const contentRef = ref<HTMLElement | null>(null)
 
   &__footer {
     flex-shrink: 0;
-    padding: 0 to-rem(16) to-rem(16);
+    padding: to-rem(24) to-rem(16);
+    position: relative;
+
+    @include mq(null, md) {
+      padding: to-rem(16);
+    }
+
+    // Тень сверху футера для визуального разделения контента и футера
+    // Показывается только если есть скролл
+    &--has-scroll::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      box-shadow: 0 0 20px 0 rgba(33, 14, 95, 0.2);
+      pointer-events: none;
+    }
   }
 }
 
-// Transitions для bottom-sheet
-.modal-bottom-sheet-enter-active,
-.modal-bottom-sheet-leave-active {
+// Transitions для mobile
+.modal-mobile-enter-active,
+.modal-mobile-leave-active {
   .ui-modal__content {
     transition: transform 0.2s ease;
   }
 }
 
-.modal-bottom-sheet-enter-from,
-.modal-bottom-sheet-leave-to {
+.modal-mobile-enter-from,
+.modal-mobile-leave-to {
   .ui-modal__content {
     transform: translateY(100%);
   }

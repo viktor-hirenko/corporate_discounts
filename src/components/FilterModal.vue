@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import UiModal from './UiModal.vue'
 import ModalList from './ModalList.vue'
 import PrimaryButton from './PrimaryButton.vue'
-import HomeIcon from './icons/HomeIcon.vue'
+import CloseIcon from './icons/CloseIcon.vue'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import type { PartnerCategory, PartnerLocation } from '@/types/partner'
 import { useDiscountsStore } from '@/stores/discounts'
@@ -39,7 +39,7 @@ const store = useDiscountsStore()
 const isMobile = useMediaQuery('(max-width: 767px)')
 
 // Динамически меняем position и backdrop в зависимости от размера экрана
-const modalPosition = computed(() => (isMobile.value ? 'bottom-sheet' : 'dropdown'))
+const modalPosition = computed(() => (isMobile.value ? 'mobile' : 'dropdown'))
 const showBackdrop = computed(() => isMobile.value)
 
 const locationOptions = [
@@ -168,29 +168,52 @@ function handleClose() {
     :is-open="props.isOpen"
     :position="modalPosition"
     :show-backdrop="showBackdrop"
-    :show-header="false"
+    :show-header="true"
+    :show-close-button="false"
+    :header-absolute="true"
     :custom-scrollbar="true"
     @close="handleClose"
   >
+    <template #header>
+      <button class="filter-modal-close" type="button" aria-label="Закрити" @click="handleClose">
+        <CloseIcon />
+      </button>
+    </template>
+
     <ModalList :sections="filterSections" @item-click="handleItemClick" />
 
     <template #footer>
-      <PrimaryButton
-        class="filter-modal__reset"
-        label="Скинути всі фільтри"
-        @click="handleResetFilters"
-      />
+      <PrimaryButton class="filter-modal-apply" label="Застосувати" @click="handleResetFilters" />
     </template>
   </UiModal>
 </template>
 
 <style scoped lang="scss">
-@use '@/assets/scss/utils/mixins' as *;
-@use '@/assets/scss/utils/functions' as *;
+.filter-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: to-rem(24);
+  height: to-rem(24);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-secondary-600, #01001f);
+  transition: opacity 0.2s ease;
+  margin-left: auto;
 
-.filter-modal {
-  &__reset {
-    width: 100%;
+  :deep(svg) {
+    width: to-rem(16);
+    height: to-rem(16);
   }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.filter-modal-apply {
+  width: 100%;
 }
 </style>

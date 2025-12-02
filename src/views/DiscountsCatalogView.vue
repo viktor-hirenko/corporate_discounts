@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
 import Filter from '@/components/Filter.vue'
+import FilterChips from '@/components/FilterChips.vue'
 import PartnerCard from '@/components/PartnerCard.vue'
 import { useDiscountsStore } from '@/stores/discounts'
+import { useMediaQuery } from '@/composables/useMediaQuery'
 
 const store = useDiscountsStore()
 
 const filteredPartners = computed(() => store.filteredPartners)
 const totalPartners = computed(() => store.totalFiltered)
+
+const isMobile = useMediaQuery('(max-width: 767px)')
 
 onMounted(() => {
   store.loadPartners()
@@ -29,11 +33,17 @@ onMounted(() => {
         <div class="discounts-catalog__filter">
           <Filter />
         </div>
+
+        <!--Позиция FilterChips для мобильной версии -->
+        <FilterChips v-if="isMobile" />
       </section>
 
       <p v-if="totalPartners > 0" class="discounts-catalog__results-count">
         Показано {{ filteredPartners.length }} з {{ totalPartners }} партнерів
       </p>
+
+      <!-- Позиция FilterChips для десктопной версии -->
+      <FilterChips v-if="!isMobile" />
 
       <div v-if="filteredPartners.length > 0" class="discounts-catalog__grid">
         <PartnerCard v-for="partner in filteredPartners" :key="partner.id" :partner="partner" />
@@ -52,55 +62,60 @@ onMounted(() => {
 
   &__content {
     display: flex;
-    flex-direction: column;
     padding-top: to-rem(32);
+    flex-direction: column;
+    gap: to-rem(32);
 
     @include mq(null, lg) {
       padding-top: to-rem(24);
+    }
+
+    @include mq(null, md) {
+      gap: to-rem(24);
     }
   }
 
   &__hero {
     display: flex;
     flex-direction: row;
-    margin-bottom: to-rem(32);
+    // margin-bottom: to-rem(32);
     justify-content: space-between;
-    align-items: center;
-    gap: to-rem(16);
-    padding-bottom: to-rem(16);
+    align-items: start;
+    gap: to-rem(32);
+    padding-bottom: to-rem(45);
     color: var(--color-secondary-150);
     border-bottom: to-rem(3) solid var(--color-neutral-400);
 
-    @include mq(null, lg) {
+    @include mq(null, md) {
+      padding-bottom: to-rem(24);
       flex-direction: column;
       align-items: flex-start;
+      gap: to-rem(24);
     }
   }
 
   &__title-section {
     display: flex;
-    height: to-rem(152);
-    max-width: to-rem(744);
+    max-width: to-rem(1044);
     flex-direction: column;
     gap: to-rem(16);
-    flex: 1;
     min-width: 0;
   }
 
   &__title {
     color: var(--color-secondary-150);
     font-size: to-rem(32);
-    line-height: to-rem(36);
+    line-height: 1.1;
     margin: 0;
 
     @include font-family(primary);
-    @include font-weight(bold);
+    @include font-weight(black);
   }
 
   &__description {
     color: var(--color-secondary-150);
     font-size: to-rem(24);
-    line-height: to-rem(33);
+    line-height: 1.5;
     margin: 0;
 
     @include font-family(primary);
@@ -108,32 +123,41 @@ onMounted(() => {
   }
 
   &__filter {
-    @include mq(null, lg) {
-      align-self: center;
-      width: auto;
+    align-self: center;
+
+    @include mq(null, md) {
+      width: 100%;
     }
   }
 
   &__results-count {
-    font-size: to-rem(16);
-    line-height: to-rem(22);
+    font-size: to-rem(18);
+    line-height: 1.5;
     color: var(--color-primary-100);
     margin: 0;
 
     @include font-family(primary);
     @include font-weight(semibold);
+
+    @include mq(null, md) {
+      text-align: center;
+    }
   }
 
   &__grid {
     display: grid;
-    margin: to-rem(20) 0;
+    // margin: to-rem(20) 0;
     grid-template-columns: repeat(3, minmax(0, to-rem(416)));
     gap: to-rem(32);
     justify-content: center;
 
-    @include mq(null, lg) {
+    @include mq(null, xl) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: to-rem(24);
+    }
+
+    @include mq(null, md) {
       grid-template-columns: 1fr;
-      gap: to-rem(16);
     }
   }
 

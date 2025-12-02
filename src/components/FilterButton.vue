@@ -18,7 +18,7 @@ function handleClick(event: MouseEvent) {
 </script>
 
 <template>
-  <SecondaryButton label="Фільтри" @click="handleClick" class="filter-button">
+  <SecondaryButton label="Фільтр" @click="handleClick" class="filter-button">
     <template #icon-right>
       <span class="filter-button__icon" :class="{ 'filter-button__icon--rotated': isOpen }">
         <ChevronDownIcon />
@@ -29,6 +29,15 @@ function handleClick(event: MouseEvent) {
 
 <style scoped lang="scss">
 .filter-button {
+  padding: to-rem(16);
+
+  :deep(.ui-button__label) {
+    font-size: to-rem(18);
+    line-height: 1.2;
+
+    @include font-weight(extrabold);
+  }
+
   &__icon {
     display: inline-flex;
     transition: transform 0.2s ease;
