@@ -1,0 +1,240 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import ArrowBackIcon from './icons/ArrowBackIcon.vue'
+
+interface Props {
+  currentPage: number
+  totalPages: number
+}
+
+interface Emits {
+  (e: 'page-change', page: number): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const visiblePages = computed(() => {
+  const pages: (number | string)[] = []
+  const { currentPage, totalPages } = props
+
+  if (totalPages <= 7) {
+    // Показываем все страницы если их мало
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i)
+    }
+  } else {
+    // Всегда показываем первую страницу
+    pages.push(1)
+
+    if (currentPage <= 3) {
+      // Если мы в начале, показываем 2, 3, 4
+      for (let i = 2; i <= 4; i++) {
+        pages.push(i)
+      }
+      pages.push('...')
+      pages.push(totalPages)
+    } else if (currentPage >= totalPages - 2) {
+      // Если мы в конце, показываем последние страницы
+      pages.push('...')
+      for (let i = totalPages - 3; i <= totalPages; i++) {
+        pages.push(i)
+      }
+    } else {
+      // Если мы в середине
+      pages.push('...')
+      for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+        pages.push(i)
+      }
+      pages.push('...')
+      pages.push(totalPages)
+    }
+  }
+
+  return pages
+})
+
+function handlePageClick(page: number | string) {
+  if (page === '...' || typeof page !== 'number') {
+    return
+  }
+  emit('page-change', page)
+}
+
+function handlePrevious() {
+  if (props.currentPage > 1) {
+    emit('page-change', props.currentPage - 1)
+  }
+}
+
+function handleNext() {
+  if (props.currentPage < props.totalPages) {
+    emit('page-change', props.currentPage + 1)
+  }
+}
+</script>
+
+<template>
+  <nav class="pagination" aria-label="Навігація по сторінках">
+    <!-- Previous button -->
+    <button
+      class="pagination__button pagination__button--prev"
+      :class="{ 'pagination__button--disabled': currentPage === 1 }"
+      :disabled="currentPage === 1"
+      type="button"
+      aria-label="Попередня сторінка"
+      @click="handlePrevious"
+    >
+      <span class="pagination__button-text">#попередня</span>
+      <ArrowBackIcon class="pagination__button-icon" :size="16" />
+    </button>
+
+    <!-- Page numbers -->
+    <div class="pagination__pages">
+      <button
+        v-for="page in visiblePages"
+        :key="page"
+        class="pagination__page"
+        :class="{ 'pagination__page--active': page === currentPage }"
+        :disabled="page === '...'"
+        type="button"
+        :aria-label="page === '...' ? 'Пропуск сторінок' : `Перейти на сторінку ${page}`"
+        :aria-current="page === currentPage ? 'page' : undefined"
+        @click="handlePageClick(page)"
+      >
+        {{ page }}
+      </button>
+    </div>
+
+    <!-- Next button -->
+    <button
+      class="pagination__button pagination__button--next"
+      :class="{ 'pagination__button--disabled': currentPage === totalPages }"
+      :disabled="currentPage === totalPages"
+      type="button"
+      aria-label="Наступна сторінка"
+      @click="handleNext"
+    >
+      <span class="pagination__button-text">#наступна</span>
+      <ArrowBackIcon class="pagination__button-icon" :size="16" />
+    </button>
+  </nav>
+</template>
+
+<style scoped lang="scss">
+@use '@/assets/scss/utils/mixins' as *;
+@use '@/assets/scss/utils/functions' as *;
+
+.pagination {
+  display: flex;
+  width: 100%;
+  padding: to-rem(16) to-rem(24);
+  align-items: center;
+  justify-content: space-between;
+  background: var(--Secondary-150, #f0efff);
+
+  @include mq(null, md) {
+    padding: to-rem(16);
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+    gap: to-rem(8);
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--color-secondary-600, #01001f);
+    transition: opacity 0.2s ease;
+
+    @include font-family(primary);
+    @include font-weight(extrabold);
+    font-size: to-rem(16);
+    line-height: 1.5;
+
+    &-text {
+      @include mq(null, lg) {
+        display: none;
+      }
+    }
+
+    &-icon {
+      display: none;
+
+      @include mq(null, lg) {
+        display: block;
+      }
+    }
+
+    &:hover:not(&--disabled) {
+      opacity: 0.8;
+    }
+
+    &--prev,
+    &--next {
+      @include mq(null, md) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: to-rem(24);
+        height: to-rem(24);
+      }
+    }
+
+    &--next {
+      @include mq(null, md) {
+        transform: rotate(180deg);
+      }
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__pages {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+
+    @include mq(null, md) {
+      gap: to-rem(8);
+    }
+  }
+
+  &__page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: to-rem(32);
+    height: to-rem(32);
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--color-secondary-600, #01001f);
+    transition: opacity 0.2s ease;
+
+    @include font-family(primary);
+    @include font-weight(extrabold);
+    font-size: to-rem(16);
+    line-height: 1.5;
+
+    &:hover:not(&--active):not(:disabled) {
+      opacity: 0.8;
+    }
+
+    &--active {
+      color: var(--color-secondary-400, #5535be);
+      cursor: default;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+}
+</style>

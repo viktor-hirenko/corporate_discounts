@@ -44,3 +44,8 @@
 @function to-cqw($px, $w: $design-width) {
   @return #{math.div(_num($px), _num($w)) * 100}cqw;
 }
+
+// px → cqh (container height)
+@function to-cqh($px, $h: $design-height) {
+  @return #{math.div(_num($px), _num($h)) * 100}cqh;
+}

@@ -59,7 +59,7 @@ function handleClick() {
     padding: to-rem(16);
     flex-direction: column;
     gap: to-rem(16);
-    border: to-rem(1) solid var(--secondary-600-main, #01001f);
+    border: to-rem(1) solid var(--color-secondary-600);
     border-radius: to-rem(16);
   }
 

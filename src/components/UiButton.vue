@@ -172,7 +172,7 @@ function handleClick(event: MouseEvent) {
 
   &--small {
     height: to-rem(48);
-    padding: to-rem(8) to-rem(24);
+    padding: to-rem(12) to-rem(24);
 
     .ui-button__label {
       font-size: to-rem(16);

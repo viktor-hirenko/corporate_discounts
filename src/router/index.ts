@@ -20,22 +20,16 @@ const router = createRouter({
     },
     {
       path: '/discounts',
-      name: 'discounts',
       component: () => import('../layouts/DefaultLayout.vue'),
       children: [
         {
           path: '',
+          name: 'discounts',
           component: () => import('../views/DiscountsCatalogView.vue'),
         },
-      ],
-    },
-    {
-      path: '/discounts/:slug',
-      name: 'discount-details',
-      component: () => import('../layouts/DefaultLayout.vue'),
-      children: [
         {
-          path: '',
+          path: ':slug',
+          name: 'discount-details',
           component: () => import('../views/DiscountDetailsView.vue'),
           props: (route) => ({ slug: route.params.slug }),
         },
