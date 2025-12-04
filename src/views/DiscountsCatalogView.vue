@@ -183,9 +183,6 @@ onMounted(() => {
 
   &__empty {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
 
     p {
       color: var(--color-secondary-150);

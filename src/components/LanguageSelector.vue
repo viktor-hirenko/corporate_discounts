@@ -29,7 +29,7 @@ function handleLanguageChange(lang: 'ua' | 'en') {
         type="button"
         @click="handleLanguageChange(lang.code)"
       >
-          {{ lang.shortLabel }}
+        {{ lang.shortLabel }}
       </button>
     </template>
   </div>
@@ -59,19 +59,19 @@ function handleLanguageChange(lang: 'ua' | 'en') {
     @include line-height(relaxed);
     @include font-weight(extrabold);
 
-    &--active {
-      color: var(--color-secondary-400, #5535be);
+    &:hover:not(&--active) {
+      color: var(--color-secondary-300, #928fec);
     }
 
-    &:hover {
-      opacity: 0.8;
+    &--active {
+      color: var(--color-secondary-400, #5535be);
     }
   }
 
   &--mobile &__button {
-    color: var(--secondary-600-main, #01001f);
+    color: var(--color-secondary-600, #01001f);
     font-size: to-rem(32);
-    transition: opacity 0.2s ease;
+    transition: color 0.2s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
@@ -79,10 +79,8 @@ function handleLanguageChange(lang: 'ua' | 'en') {
     @include line-height(tight);
     @include font-weight(black);
 
-    &:hover,
-    &:active,
-    &:focus {
-      opacity: 0.8;
+    &:hover:not(&--active) {
+      color: var(--color-secondary-300, #928fec);
     }
 
     &--active {

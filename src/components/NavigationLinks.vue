@@ -71,16 +71,16 @@ function handleClick() {
   }
 
   &__link {
-    color: var(--secondary-600-main, #01001f);
+    color: var(--color-secondary-600, #01001f);
     font-size: to-rem(16);
     text-decoration: none;
-    transition: opacity 0.2s ease;
+    transition: color 0.2s ease;
 
     @include line-height(relaxed);
     @include font-weight(extrabold);
 
-    &:hover {
-      opacity: 0.8;
+    &:hover:not(.router-link-active, &--active) {
+      color: var(--color-secondary-300, #928fec);
     }
 
     &.router-link-active,

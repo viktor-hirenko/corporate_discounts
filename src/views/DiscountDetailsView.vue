@@ -387,7 +387,7 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__copy-button {
-    @include mq(null, sm) {
+    @include mq(null, md) {
       width: 100%;
     }
   }
@@ -584,7 +584,7 @@ $container-max-width: calc(1312px - 2 * 32px);
   &__cta-button {
     align-self: center;
 
-    @include mq(null, sm) {
+    @include mq(null, md) {
       width: 100%;
     }
   }

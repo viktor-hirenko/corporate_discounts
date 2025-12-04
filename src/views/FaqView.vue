@@ -227,7 +227,7 @@ function handleStartChat() {
   &__cta-button {
     flex-shrink: 0;
 
-    @include mq(null, lg) {
+    @include mq(null, md) {
       width: 100%;
     }
   }
