@@ -140,7 +140,7 @@ function handleClick(event: MouseEvent) {
     justify-content: center;
     align-items: center;
     font-size: to-rem(16);
-    line-height: 1.5;
+    @include line-height(relaxed);
     letter-spacing: track(normal);
     text-decoration: none;
     text-transform: uppercase;
@@ -177,7 +177,7 @@ function handleClick(event: MouseEvent) {
 
     .ui-button__label {
       font-size: to-rem(16);
-      line-height: to-rem(22);
+      @include line-height(relaxed);
     }
 
     &.ui-button--icon {
@@ -251,7 +251,7 @@ function handleClick(event: MouseEvent) {
 
     .ui-button__label {
       text-decoration: underline;
-      line-height: to-rem(22);
+      @include line-height(relaxed);
 
       @include font-weight(extrabold);
     }

@@ -76,17 +76,17 @@ import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
 
   &__title {
     font-size: to-rem(24);
-    line-height: to-rem(36);
+    @include line-height(relaxed);
 
     @include mq(null, md) {
       font-size: to-rem(24);
-      line-height: to-rem(36);
+      @include line-height(relaxed);
     }
   }
 
   &__subtitle {
     font-size: to-rem(18);
-    line-height: to-rem(27);
+    @include line-height(relaxed);
   }
 
   .footer-cta__button {

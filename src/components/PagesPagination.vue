@@ -180,7 +180,7 @@ function handleNext() {
 
     @include font-weight(extrabold);
     font-size: to-rem(16);
-    line-height: 1.5;
+    @include line-height(relaxed);
 
     &-text {
       @include mq(null, lg) {
@@ -247,7 +247,7 @@ function handleNext() {
     color: var(--color-secondary-600, #01001f);
     transition: opacity 0.2s ease;
     font-size: to-rem(16);
-    line-height: 1.5;
+    @include line-height(relaxed);
 
     @include font-family(primary);
     @include font-weight(extrabold);

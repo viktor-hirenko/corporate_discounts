@@ -72,7 +72,7 @@ function handleClick() {
 
   &__link {
     font-size: to-rem(16);
-    line-height: 1.5;
+    @include line-height(relaxed);
     color: var(--secondary-600-main, #01001f);
     text-decoration: none;
     transition: opacity 0.2s ease;
@@ -91,7 +91,7 @@ function handleClick() {
 
   &--mobile &__link {
     font-size: to-rem(32);
-    line-height: 1.1;
+    @include line-height(tight);
     border: none;
     background: none;
     cursor: pointer;

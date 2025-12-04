@@ -98,7 +98,7 @@ function handleRemoveFilter(type: 'category' | 'location') {
   color: var(--color-primary-100, #fcfcff);
   cursor: pointer;
   font-size: to-rem(18);
-  line-height: 1.2;
+  @include line-height(normal);
 
   @include font-weight(extrabold);
 }

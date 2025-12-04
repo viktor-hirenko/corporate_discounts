@@ -82,7 +82,7 @@ async function handleCopy() {
 
   &__label {
     font-size: to-rem(16);
-    line-height: to-rem(24);
+    @include line-height(relaxed);
     color: var(--color-secondary-600);
     text-transform: uppercase;
 
@@ -105,7 +105,7 @@ async function handleCopy() {
 
   &__code {
     font-size: to-rem(24);
-    line-height: to-rem(36);
+    @include line-height(relaxed);
     color: var(--color-secondary-600);
     text-transform: uppercase;
     white-space: nowrap;
@@ -116,7 +116,7 @@ async function handleCopy() {
 
     @include mq(null, lg) {
       font-size: to-rem(12);
-      line-height: to-rem(24);
+      @include line-height(relaxed);
     }
   }
 

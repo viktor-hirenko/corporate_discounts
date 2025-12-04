@@ -92,7 +92,7 @@ function handleClick() {
     padding: to-rem(24) to-rem(16);
     background-color: var(--color-accent-pink, #ef50cc);
     font-size: to-rem(18);
-    line-height: 1.2;
+    @include line-height(normal);
     color: var(--color-secondary-600);
     white-space: nowrap;
     z-index: 2;
@@ -112,7 +112,7 @@ function handleClick() {
     gap: to-rem(16);
     align-items: center;
     font-size: to-rem(16);
-    line-height: 1.5;
+    @include line-height(relaxed);
     color: var(--color-neutral-400, #81818e);
 
     @include font-weight(regular);
@@ -131,7 +131,7 @@ function handleClick() {
   &__title {
     font-size: to-rem(24);
     height: to-rem(36);
-    line-height: 1.1;
+    @include line-height(tight);
     color: var(--color-secondary-600, #01001f);
 
     @include font-weight(extrabold);

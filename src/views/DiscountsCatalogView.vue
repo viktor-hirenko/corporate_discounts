@@ -153,7 +153,7 @@ onMounted(() => {
   &__title {
     color: var(--color-secondary-150);
     font-size: to-rem(32);
-    line-height: 1.1;
+    @include line-height(tight);
 
     @include font-weight(black);
   }
@@ -161,7 +161,7 @@ onMounted(() => {
   &__description {
     color: var(--color-secondary-150);
     font-size: to-rem(24);
-    line-height: 1.5;
+    @include line-height(relaxed);
 
     @include font-weight(regular);
 
@@ -182,7 +182,7 @@ onMounted(() => {
 
   &__results-count {
     font-size: to-rem(18);
-    line-height: 1.5;
+    @include line-height(relaxed);
     color: var(--color-primary-100);
 
     @include font-weight(semibold);
@@ -218,7 +218,7 @@ onMounted(() => {
 
     p {
       font-size: to-rem(18);
-      line-height: to-rem(27);
+      @include line-height(relaxed);
       color: var(--color-secondary-600);
 
       @include font-weight(semibold);

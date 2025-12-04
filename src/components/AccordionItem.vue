@@ -71,13 +71,13 @@ function toggle() {
   &__question {
     flex: 1;
     font-size: to-rem(24);
-    line-height: 1.1;
+    @include line-height(tight);
 
     @include font-weight(extrabold);
 
     @include mq(null, lg) {
       font-size: to-rem(18);
-      line-height: 1.2;
+      @include line-height(normal);
     }
   }
 
@@ -99,7 +99,7 @@ function toggle() {
   &__answer {
     padding: to-rem(32) to-rem(72) to-rem(62);
     font-size: to-rem(24);
-    line-height: 1.5;
+    @include line-height(relaxed);
     color: var(--color-secondary-600);
 
     @include font-weight(regular);

@@ -27,12 +27,9 @@ $type: (
   ),
 
   line-height: (
-    header: 36px,
-    body-md: 33px,
-    body-md-caps: 36px,
-    body-xs: 22px,
-    body-xs-caps: 24px,
-    button: 24px,
+    tight: 1.1,
+    normal: 1.2,
+    relaxed: 1.5,
   ),
 
   letter-spacing: (
@@ -51,49 +48,49 @@ $type: (
   presets: (
     header: (
       size: lg,
-      lh: header,
+      lh: tight,
       track: normal,
       weight: bold,
       family: primary,
     ),
     'body-md-regular': (
       size: md,
-      lh: body-md,
+      lh: relaxed,
       track: normal,
       weight: regular,
       family: primary,
     ),
     'body-md-semibold': (
       size: md,
-      lh: body-md,
+      lh: relaxed,
       track: normal,
       weight: semibold,
       family: primary,
     ),
     'body-md-caps': (
       size: md,
-      lh: body-md-caps,
+      lh: normal,
       track: wide,
       weight: semibold,
       family: primary,
     ),
     'body-xs': (
       size: xs,
-      lh: body-xs,
+      lh: relaxed,
       track: normal,
       weight: semibold,
       family: primary,
     ),
     'body-xs-caps': (
       size: xs,
-      lh: body-xs-caps,
+      lh: normal,
       track: wide,
       weight: semibold,
       family: primary,
     ),
     button: (
       size: sm,
-      lh: button,
+      lh: relaxed,
       track: normal,
       weight: semibold,
       family: primary,

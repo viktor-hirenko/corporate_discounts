@@ -71,7 +71,7 @@ function handleItemClick(item: ListItem, sectionIndex: number, itemIndex: number
 
   &__section-title {
     font-size: to-rem(24);
-    line-height: 1.1;
+    @include line-height(tight);
     color: var(--color-secondary-600);
 
     @include font-weight(extrabold);

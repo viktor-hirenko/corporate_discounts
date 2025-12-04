@@ -234,7 +234,7 @@ $container-max-width: calc(1312px - 2 * 32px);
     color: var(--color-neutral-700, #fcfcff);
     transition: opacity 0.2s ease;
     font-size: to-rem(16);
-    line-height: 1.5;
+    @include line-height(relaxed);
 
     @include font-weight(regular);
 
@@ -303,7 +303,7 @@ $container-max-width: calc(1312px - 2 * 32px);
   &__type {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
     color: var(--color-secondary-600, #01001f);
-    line-height: 1.5;
+    @include line-height(relaxed);
 
     @include font-weight(regular);
 
@@ -314,7 +314,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__title {
     font-size: to-rem(32);
-    line-height: 1.1;
+    @include line-height(tight);
     color: var(--color-secondary-600, #01001f);
 
     @include font-weight(black);
@@ -322,7 +322,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__description {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    line-height: 1.5;
+    @include line-height(relaxed);
     color: var(--color-secondary-600, #01001f);
 
     @include font-weight(regular);
@@ -334,7 +334,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__offer {
     font-size: to-rem(24);
-    line-height: 1.1;
+    @include line-height(tight);
     color: var(--color-secondary-400, #5535be);
 
     @include font-weight(extrabold);
@@ -371,7 +371,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__promo-label {
     font-size: to-rem(18);
-    line-height: 1.5;
+    @include line-height(relaxed);
     color: var(--color-neutral-100, #464657);
 
     @include font-weight(semibold);
@@ -379,7 +379,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__promo-code {
     font-size: to-rem(24);
-    line-height: 1.1;
+    @include line-height(tight);
     color: var(--color-secondary-600, #01001f);
     text-transform: uppercase;
 
@@ -421,7 +421,7 @@ $container-max-width: calc(1312px - 2 * 32px);
   &__card-title {
     font-size: to-rem(32);
     font-size: max(to-cqw(32, $container-max-width), to-rem(24));
-    line-height: 1.1;
+    @include line-height(tight);
 
     @include font-weight(black);
 
@@ -443,7 +443,7 @@ $container-max-width: calc(1312px - 2 * 32px);
     align-self: baseline;
     gap: to-rem(8);
     font-size: to-rem(24);
-    line-height: 1.1;
+    @include line-height(tight);
   }
 
   &__info-label {
@@ -452,7 +452,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__info-value {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    line-height: 1.5;
+    @include line-height(relaxed);
 
     @include font-weight(regular);
 
@@ -463,7 +463,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__info-link {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    line-height: 1.5;
+    @include line-height(relaxed);
     color: var(--color-secondary-600, #01001f);
     text-decoration: none;
     transition: opacity 0.2s ease;
@@ -494,7 +494,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__social-link {
     font-size: to-rem(24);
-    line-height: 1.1;
+    @include line-height(tight);
     color: var(--color-secondary-600, #01001f);
     text-decoration: none;
     transition: opacity 0.2s ease;
@@ -519,7 +519,7 @@ $container-max-width: calc(1312px - 2 * 32px);
     position: relative;
     padding-left: to-rem(20);
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    line-height: 1.5;
+    @include line-height(relaxed);
 
     @include font-weight(regular);
 
@@ -560,7 +560,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__cta-title {
     font-size: max(to-cqw(32, $container-max-width), to-rem(24));
-    line-height: 1.1;
+    @include line-height(tight);
 
     @include font-weight(black);
 
@@ -571,7 +571,7 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__cta-description {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    line-height: 1.5;
+    @include line-height(relaxed);
 
     @include font-weight(regular);
 

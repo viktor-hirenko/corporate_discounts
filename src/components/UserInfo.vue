@@ -67,13 +67,13 @@ function handleUpdate(value: string) {
 
   &__name {
     font-size: to-rem(24);
-    line-height: 1.1;
+    @include line-height(tight);
     color: var(--color-secondary-600);
 
     @include font-weight(extrabold);
 
     @include mq(null, lg) {
-      line-height: to-rem(22);
+      @include line-height(relaxed);
     }
   }
 

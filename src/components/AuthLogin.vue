@@ -88,7 +88,7 @@ function handleSwitchAccount(event: Event) {
 
   &__switch-text {
     font-size: to-rem(16);
-    line-height: to-rem(22);
+    @include line-height(relaxed);
     color: var(--color-secondary-600);
     font-style: normal;
 

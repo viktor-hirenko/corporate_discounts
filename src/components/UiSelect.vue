@@ -121,7 +121,7 @@ function handleBlur(event: FocusEvent) {
 
   &__label {
     font-size: to-rem(14);
-    line-height: to-rem(20);
+    @include line-height(relaxed);
     color: var(--color-neutral-300);
 
     @include font-weight(semibold);
@@ -159,7 +159,7 @@ function handleBlur(event: FocusEvent) {
     border: none;
     background: transparent;
     font-size: to-rem(16);
-    line-height: to-rem(24);
+    @include line-height(relaxed);
     color: var(--color-secondary-600);
     cursor: pointer;
     appearance: none;
@@ -196,7 +196,7 @@ function handleBlur(event: FocusEvent) {
 
   &__message {
     font-size: to-rem(13);
-    line-height: to-rem(18);
+    @include line-height(relaxed);
 
     @include font-weight(regular);
 

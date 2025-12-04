@@ -52,7 +52,7 @@ function handleLanguageChange(lang: 'ua' | 'en') {
     background-color: var(--color-secondary-100, #fcfcff);
     border: none;
     font-size: to-rem(16);
-    line-height: 1.5;
+    @include line-height(relaxed);
     color: var(--color-secondary-600, #01001f);
     cursor: pointer;
     transition: color 0.2s ease;
@@ -70,7 +70,7 @@ function handleLanguageChange(lang: 'ua' | 'en') {
 
   &--mobile &__button {
     font-size: to-rem(32);
-    line-height: 1.1;
+    @include line-height(tight);
     color: var(--secondary-600-main, #01001f);
     transition: opacity 0.2s ease;
     -webkit-tap-highlight-color: transparent;

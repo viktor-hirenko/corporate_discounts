@@ -72,7 +72,7 @@ function handleClick(event: MouseEvent) {
 
   &__label {
     font-size: to-rem(18);
-    line-height: 1.2;
+    @include line-height(normal);
 
     @include font-weight(extrabold);
 
@@ -83,7 +83,7 @@ function handleClick(event: MouseEvent) {
 
   &__description {
     font-size: to-rem(14);
-    line-height: 1.5;
+    @include line-height(relaxed);
 
     @include font-weight(semibold);
   }
