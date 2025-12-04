@@ -11,42 +11,20 @@ const store = useDiscountsStore()
 
 const filteredPartners = computed(() => store.filteredPartners)
 const totalPartners = computed(() => store.totalFiltered)
+const paginatedPartners = computed(() => store.paginatedPartners)
+const totalPages = computed(() => store.totalPages)
+const currentPage = computed(() => store.pagination.page)
+const displayedRange = computed(() => store.displayedRange)
 
 const isMobile = useMediaQuery('(max-width: 767px)')
 
-// Pagination state
-const currentPage = ref(1)
-const itemsPerPage = 9
-
-const totalPages = computed(() => {
-  console.log(Math.ceil(filteredPartners.value.length / itemsPerPage))
-  return Math.ceil(filteredPartners.value.length / itemsPerPage)
-})
-
-const paginatedPartners = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return filteredPartners.value.slice(start, end)
-})
-
-// Вычисляет диапазон отображаемых карточек партнеров на текущей странице
-// Например, для страницы 1: "Показано 1-9 з 60", для страницы 2: "Показано 10-18 з 60"
-const displayedRange = computed(() => {
-  if (filteredPartners.value.length === 0) {
-    return { start: 0, end: 0 }
-  }
-  const start = (currentPage.value - 1) * itemsPerPage + 1
-  const end = Math.min(currentPage.value * itemsPerPage, filteredPartners.value.length)
-  return { start, end }
-})
-
 // Сбрасываем страницу на первую при изменении фильтров
 watch(filteredPartners, () => {
-  currentPage.value = 1
+  store.resetPage()
 })
 
 function handlePageChange(page: number) {
-  currentPage.value = page
+  store.goToPage(page)
   // Анимация скролла к началу списка
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }

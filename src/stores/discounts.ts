@@ -33,7 +33,6 @@ export const useDiscountsStore = defineStore('discounts', {
     pagination: {
       page: 1,
       pageSize: DEFAULT_PAGE_SIZE,
-      total: 0,
     } as PaginationState,
   }),
 
@@ -92,14 +91,21 @@ export const useDiscountsStore = defineStore('discounts', {
     totalPages(): number {
       return Math.max(1, Math.ceil(this.totalFiltered / this.pagination.pageSize))
     },
-    hasNextPage(): boolean {
-      return this.pagination.page < this.totalPages
+    displayedRange(): { start: number; end: number } {
+      if (this.filteredPartners.length === 0) {
+        return { start: 0, end: 0 }
+      }
+      const start = (this.pagination.page - 1) * this.pagination.pageSize + 1
+      const end = Math.min(
+        this.pagination.page * this.pagination.pageSize,
+        this.filteredPartners.length,
+      )
+      return { start, end }
     },
-    hasPrevPage(): boolean {
-      return this.pagination.page > 1
-    },
-    getPartnerBySlug: (state) => (slug: string): Partner | undefined =>
-      state.items.find((partner) => partner.slug === slug),
+    getPartnerBySlug:
+      (state) =>
+      (slug: string): Partner | undefined =>
+        state.items.find((partner) => partner.slug === slug),
   },
 
   actions: {
@@ -111,7 +117,6 @@ export const useDiscountsStore = defineStore('discounts', {
         // Тимчасово працюємо з мок-даними. Замінемо, коли зʼявиться API.
         const response = await Promise.resolve(partnersMock)
         this.items = response
-        this.pagination.total = response.length
         this.status = 'success'
       } catch (error) {
         console.error('[discounts-store] failed to load partners', error)
@@ -138,16 +143,6 @@ export const useDiscountsStore = defineStore('discounts', {
     goToPage(page: number): void {
       const safePage = Math.min(Math.max(1, page), this.totalPages)
       this.pagination.page = safePage
-    },
-    nextPage(): void {
-      if (this.hasNextPage) {
-        this.pagination.page += 1
-      }
-    },
-    prevPage(): void {
-      if (this.hasPrevPage) {
-        this.pagination.page -= 1
-      }
     },
     resetPage(): void {
       this.pagination.page = 1
