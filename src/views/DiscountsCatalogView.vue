@@ -125,51 +125,19 @@ onMounted(() => {
   }
 
   &__hero {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: start;
-    gap: to-rem(32);
-    padding-bottom: to-rem(45);
-    color: var(--color-secondary-150);
-    border-bottom: to-rem(3) solid var(--color-neutral-400);
-
-    @include mq(null, md) {
-      padding-bottom: to-rem(24);
-      flex-direction: column;
-      align-items: flex-start;
-      gap: to-rem(24);
-    }
+    @include hero-section(true);
   }
 
   &__title-section {
-    display: flex;
-    max-width: to-rem(1044);
-    flex-direction: column;
-    gap: to-rem(16);
-    min-width: 0;
+    @include hero-title-section;
   }
 
   &__title {
-    color: var(--color-secondary-150);
-    font-size: to-rem(32);
-    @include line-height(tight);
-
-    @include font-weight(black);
+    @include hero-title;
   }
 
   &__description {
-    color: var(--color-secondary-150);
-    font-size: to-rem(24);
-    @include line-height(relaxed);
-
-    @include font-weight(regular);
-
-    @include mq(null, lg) {
-      font-size: to-rem(18);
-
-      @include font-weight(semibold);
-    }
+    @include hero-description;
   }
 
   &__filter {

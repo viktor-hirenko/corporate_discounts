@@ -65,32 +65,32 @@ function handleSwitchAccount(event: Event) {
     width: 100%;
     padding: to-rem(24);
     border: none;
-  }
+}
 
   &__panel {
-    display: contents;
-  }
+  display: contents;
+}
 
   &__actions {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: to-rem(16);
-  }
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: to-rem(16);
+}
 
   &__switch-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: to-rem(4);
-    text-align: center;
+  text-align: center;
   }
 
   &__switch-text {
-    font-size: to-rem(16);
+  font-size: to-rem(16);
     @include line-height(relaxed);
-    color: var(--color-secondary-600);
-    font-style: normal;
+  color: var(--color-secondary-600);
+  font-style: normal;
 
     @include font-weight(extrabold);
   }

@@ -23,17 +23,17 @@ function handleClick() {
       {{ partner.discount.label }}
     </div>
     <div class="partner-card__content">
-      <div class="partner-card__image-wrapper">
-        <img :src="partner.images.thumbnail" :alt="partner.name" class="partner-card__image" />
-      </div>
+    <div class="partner-card__image-wrapper">
+      <img :src="partner.images.thumbnail" :alt="partner.name" class="partner-card__image" />
+    </div>
 
-      <div class="partner-card__info">
-        <div class="partner-card__meta">
-          <span class="partner-card__category">{{ partner.category }}</span>
+    <div class="partner-card__info">
+    <div class="partner-card__meta">
+      <span class="partner-card__category">{{ partner.category }}</span>
           <span class="partner-card__location">#{{ partner.location }}</span>
         </div>
         <h3 class="partner-card__title">{{ partner.name }}</h3>
-      </div>
+    </div>
     </div>
   </article>
 </template>
@@ -55,10 +55,10 @@ function handleClick() {
 
   &__content {
     position: relative;
-    display: flex;
+  display: flex;
     padding: to-rem(16);
-    flex-direction: column;
-    gap: to-rem(16);
+  flex-direction: column;
+  gap: to-rem(16);
     border: to-rem(1) solid var(--color-secondary-600);
     border-radius: to-rem(16);
   }

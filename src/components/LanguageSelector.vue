@@ -29,7 +29,7 @@ function handleLanguageChange(lang: 'ua' | 'en') {
         type="button"
         @click="handleLanguageChange(lang.code)"
       >
-        {{ lang.shortLabel }}
+          {{ lang.shortLabel }}
       </button>
     </template>
   </div>

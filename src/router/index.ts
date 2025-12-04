@@ -27,9 +27,9 @@ const router = createRouter({
           name: 'discounts',
           component: () => import('../views/DiscountsCatalogView.vue'),
         },
-        {
+    {
           path: ':slug',
-          name: 'discount-details',
+      name: 'discount-details',
           component: () => import('../views/DiscountDetailsView.vue'),
           props: (route) => ({ slug: route.params.slug }),
         },
