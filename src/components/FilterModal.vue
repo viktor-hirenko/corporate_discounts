@@ -207,6 +207,7 @@ function handleClose() {
   transition: opacity 0.2s ease;
   cursor: pointer;
   margin-left: auto;
+  pointer-events: all;
 
   :deep(svg) {
     width: to-rem(16);

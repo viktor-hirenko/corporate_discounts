@@ -326,6 +326,7 @@ onUnmounted(() => {
       padding: to-rem(24) to-rem(16) to-rem(8);
       align-items: end;
       background-color: transparent;
+      pointer-events: none;
     }
   }
 
