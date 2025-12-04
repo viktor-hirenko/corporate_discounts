@@ -75,7 +75,6 @@ function handleItemClick(item: ListItem, sectionIndex: number, itemIndex: number
     color: var(--color-secondary-600);
     margin: 0;
 
-    @include font-family(primary);
     @include font-weight(extrabold);
   }
 

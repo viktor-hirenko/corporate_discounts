@@ -57,7 +57,6 @@ function handleLanguageChange(lang: 'ua' | 'en') {
     cursor: pointer;
     transition: color 0.2s ease;
 
-    @include font-family(primary);
     @include font-weight(extrabold);
 
     &--active {

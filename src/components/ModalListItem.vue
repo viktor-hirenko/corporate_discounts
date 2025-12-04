@@ -66,13 +66,14 @@ function handleClick(event: MouseEvent) {
     flex: 1;
     min-width: 0;
     color: var(--color-secondary-600);
+
+    @include font-family(primary);
   }
 
   &__label {
     font-size: to-rem(18);
     line-height: 1.2;
 
-    @include font-family(primary);
     @include font-weight(extrabold);
 
     .modal-list-item--active & {
@@ -84,7 +85,6 @@ function handleClick(event: MouseEvent) {
     font-size: to-rem(14);
     line-height: 1.5;
 
-    @include font-family(primary);
     @include font-weight(semibold);
   }
 

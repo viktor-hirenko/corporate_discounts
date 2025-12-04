@@ -77,7 +77,6 @@ function handleClick() {
     text-decoration: none;
     transition: opacity 0.2s ease;
 
-    @include font-family(primary);
     @include font-weight(extrabold);
 
     &:hover {

@@ -121,6 +121,8 @@ function handleClick(event: MouseEvent) {
   cursor: pointer;
   text-decoration: none;
 
+  @include font-family(primary);
+
   &:focus-visible {
     outline: to-rem(2) solid var(--color-secondary-400);
     outline-offset: to-rem(2);
@@ -143,7 +145,6 @@ function handleClick(event: MouseEvent) {
     text-decoration: none;
     text-transform: uppercase;
 
-    @include font-family(primary);
     @include font-weight(bold);
   }
 

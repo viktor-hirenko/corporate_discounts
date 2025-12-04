@@ -92,7 +92,6 @@ function handleSwitchAccount(event: Event) {
     color: var(--color-secondary-600);
     font-style: normal;
 
-    @include font-family(primary);
     @include font-weight(extrabold);
   }
 

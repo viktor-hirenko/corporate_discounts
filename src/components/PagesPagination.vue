@@ -178,7 +178,6 @@ function handleNext() {
     color: var(--color-secondary-600, #01001f);
     transition: opacity 0.2s ease;
 
-    @include font-family(primary);
     @include font-weight(extrabold);
     font-size: to-rem(16);
     line-height: 1.5;

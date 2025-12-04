@@ -87,7 +87,6 @@ async function handleCopy() {
     text-transform: uppercase;
     margin: 0;
 
-    @include font-family(primary);
     @include font-weight(semibold);
   }
 
@@ -114,7 +113,6 @@ async function handleCopy() {
     overflow: hidden;
     text-overflow: ellipsis;
 
-    @include font-family(primary);
     @include font-weight(semibold);
 
     @include mq(null, lg) {

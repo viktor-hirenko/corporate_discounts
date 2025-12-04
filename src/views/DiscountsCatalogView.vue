@@ -156,7 +156,6 @@ onMounted(() => {
     line-height: 1.1;
     margin: 0;
 
-    @include font-family(primary);
     @include font-weight(black);
   }
 
@@ -166,7 +165,6 @@ onMounted(() => {
     line-height: 1.5;
     margin: 0;
 
-    @include font-family(primary);
     @include font-weight(regular);
 
     @include mq(null, lg) {
@@ -190,7 +188,6 @@ onMounted(() => {
     color: var(--color-primary-100);
     margin: 0;
 
-    @include font-family(primary);
     @include font-weight(semibold);
 
     @include mq(null, md) {
@@ -228,7 +225,6 @@ onMounted(() => {
       color: var(--color-secondary-600);
       margin: 0;
 
-      @include font-family(primary);
       @include font-weight(semibold);
     }
   }

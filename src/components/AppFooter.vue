@@ -71,7 +71,6 @@ import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
     color: var(--color-neutral-50);
     text-align: center;
 
-    @include font-family(primary);
     @include font-weight(semibold);
   }
 

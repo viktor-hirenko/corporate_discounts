@@ -71,7 +71,6 @@ function handleUpdate(value: string) {
     line-height: 1.1;
     color: var(--color-secondary-600);
 
-    @include font-family(primary);
     @include font-weight(extrabold);
 
     @include mq(null, lg) {

@@ -100,7 +100,6 @@ function handleRemoveFilter(type: 'category' | 'location') {
   font-size: to-rem(18);
   line-height: 1.2;
 
-  @include font-family(primary);
   @include font-weight(extrabold);
 }
 

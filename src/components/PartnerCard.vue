@@ -97,7 +97,6 @@ function handleClick() {
     white-space: nowrap;
     z-index: 2;
 
-    @include font-family(primary);
     @include font-weight(extrabold);
   }
 
@@ -116,7 +115,6 @@ function handleClick() {
     line-height: 1.5;
     color: var(--color-neutral-400, #81818e);
 
-    @include font-family(primary);
     @include font-weight(regular);
   }
 
@@ -137,7 +135,6 @@ function handleClick() {
     color: var(--color-secondary-600, #01001f);
     margin: 0;
 
-    @include font-family(primary);
     @include font-weight(extrabold);
 
     @include mq(null, lg) {

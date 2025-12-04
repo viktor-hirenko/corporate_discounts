@@ -115,7 +115,6 @@ function handleBlur(event: FocusEvent) {
     line-height: 1.5;
     color: var(--color-secondary-600, #01001f);
 
-    @include font-family(primary);
     @include font-weight(semibold);
   }
 
@@ -155,7 +154,6 @@ function handleBlur(event: FocusEvent) {
     line-height: 1.5;
     color: var(--color-secondary-600, #01001f);
 
-    @include font-family(primary);
     @include font-weight(semibold);
 
     &::placeholder {
@@ -177,7 +175,6 @@ function handleBlur(event: FocusEvent) {
     font-size: to-rem(13);
     line-height: 1.5;
 
-    @include font-family(primary);
     @include font-weight(regular);
 
     &--error {
