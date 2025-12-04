@@ -36,7 +36,7 @@ const emit = defineEmits<{
 const store = useDiscountsStore()
 
 // Определяем мобильную версию (меньше 768px - breakpoint lg)
-const isMobile = useMediaQuery('(max-width: 767px)')
+const isMobile = useMediaQuery('(max-width: 768px)')
 
 // Динамически меняем position и backdrop в зависимости от размера экрана
 const modalPosition = computed(() => (isMobile.value ? 'mobile' : 'dropdown'))

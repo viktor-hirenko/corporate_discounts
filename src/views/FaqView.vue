@@ -51,7 +51,6 @@ const faqItems: FaqItem[] = [
 
 function handleStartChat() {
   // TODO: Implement chat functionality
-  console.log('Start chat clicked')
 }
 </script>
 

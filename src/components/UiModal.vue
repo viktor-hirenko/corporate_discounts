@@ -43,6 +43,7 @@ const useTeleport = computed(() => props.position !== 'dropdown')
 const bodyRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
 const hasScroll = ref(false)
+const dropdownMaxHeight = ref<number | null>(null)
 
 function checkScroll() {
   if (bodyRef.value && props.customScrollbar) {
@@ -52,11 +53,50 @@ function checkScroll() {
   }
 }
 
+function calculateDropdownHeight() {
+  if (props.position !== 'dropdown' || !contentRef.value) {
+    dropdownMaxHeight.value = null
+    return
+  }
+
+  // Получаем позицию элемента относительно viewport
+  const rect = contentRef.value.getBoundingClientRect()
+  const viewportHeight = window.innerHeight
+  const bottomPadding = 16 // 16px отступ снизу от нижней границы viewport
+  const availableHeight = viewportHeight - rect.top - bottomPadding
+
+  // Минимальная высота для dropdown (200px)
+  const minHeight = 200
+  // Максимальная высота для больших экранов (1000px)
+  const maxHeight = 1000
+
+  // Рассчитываем максимальную высоту, чтобы dropdown не выходил за границы viewport
+  const calculatedHeight = Math.max(minHeight, Math.min(availableHeight, maxHeight))
+  dropdownMaxHeight.value = calculatedHeight
+}
+
+let resizeTimeout: ReturnType<typeof setTimeout> | null = null
+
+function handleResize() {
+  if (props.position === 'dropdown' && props.isOpen) {
+    // Debounce для оптимизации производительности
+    if (resizeTimeout) {
+      clearTimeout(resizeTimeout)
+    }
+    resizeTimeout = setTimeout(() => {
+      calculateDropdownHeight()
+      resizeTimeout = null
+    }, 10)
+  }
+}
+
 let resizeObserver: ResizeObserver | null = null
+let isResizeListenerAttached = false
+let scrollPosition = 0
 
 watch(
-  () => [props.isOpen, props.customScrollbar],
-  async ([isOpen, customScrollbar]) => {
+  () => [props.isOpen, props.customScrollbar, props.position],
+  async ([isOpen, customScrollbar, position]) => {
     if (isOpen && customScrollbar) {
       // Ждем обновления DOM
       await nextTick()
@@ -82,6 +122,42 @@ watch(
       }
       hasScroll.value = false
     }
+
+    // Рассчитываем высоту для dropdown
+    if (isOpen && position === 'dropdown') {
+      await nextTick()
+      calculateDropdownHeight()
+
+      // Блокируем скролл страницы
+      scrollPosition = window.scrollY || document.documentElement.scrollTop
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollPosition}px`
+      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden'
+
+      // Отслеживаем изменение размера окна
+      if (!isResizeListenerAttached) {
+        window.addEventListener('resize', handleResize)
+        window.addEventListener('scroll', handleResize, true)
+        isResizeListenerAttached = true
+      }
+    } else {
+      // Разблокируем скролл страницы
+      if (position === 'dropdown') {
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.width = ''
+        document.body.style.overflow = ''
+        window.scrollTo(0, scrollPosition)
+      }
+
+      if (isResizeListenerAttached) {
+        window.removeEventListener('resize', handleResize)
+        window.removeEventListener('scroll', handleResize, true)
+        isResizeListenerAttached = false
+      }
+      dropdownMaxHeight.value = null
+    }
   },
   { immediate: true },
 )
@@ -92,6 +168,21 @@ onUnmounted(() => {
   }
   if (bodyRef.value) {
     bodyRef.value.removeEventListener('scroll', checkScroll)
+  }
+  if (isResizeListenerAttached) {
+    window.removeEventListener('resize', handleResize)
+    window.removeEventListener('scroll', handleResize, true)
+  }
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout)
+  }
+  // Восстанавливаем скролл при размонтировании компонента
+  if (props.position === 'dropdown' && props.isOpen) {
+    document.body.style.position = ''
+    document.body.style.top = ''
+    document.body.style.width = ''
+    document.body.style.overflow = ''
+    window.scrollTo(0, scrollPosition)
   }
 })
 </script>
@@ -109,6 +200,11 @@ onUnmounted(() => {
           ref="contentRef"
           class="ui-modal__content"
           :class="{ 'ui-modal__content--custom-scroll': customScrollbar }"
+          :style="
+            props.position === 'dropdown' && dropdownMaxHeight !== null
+              ? { maxHeight: `${dropdownMaxHeight}px` }
+              : undefined
+          "
         >
           <div
             v-if="showHeader && (showCloseButton || $slots.header)"
@@ -203,11 +299,12 @@ onUnmounted(() => {
 
   &--mobile &__content {
     width: 100%;
+    height: 100dvh;
   }
 
   &--dropdown &__content {
     width: to-rem(375);
-    max-height: calc(100vh - to-rem(100));
+    // max-height устанавливается динамически через JavaScript
   }
 
   &__header {
