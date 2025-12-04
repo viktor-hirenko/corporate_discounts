@@ -127,7 +127,6 @@ onMounted(() => {
   &__hero {
     display: flex;
     flex-direction: row;
-    // margin-bottom: to-rem(32);
     justify-content: space-between;
     align-items: start;
     gap: to-rem(32);
@@ -169,6 +168,12 @@ onMounted(() => {
 
     @include font-family(primary);
     @include font-weight(regular);
+
+    @include mq(null, lg) {
+      font-size: to-rem(18);
+
+      @include font-weight(semibold);
+    }
   }
 
   &__filter {
