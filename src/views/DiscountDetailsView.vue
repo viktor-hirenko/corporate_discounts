@@ -274,9 +274,10 @@ function getSocialLabel(type: string): string {
 
 <style scoped lang="scss">
 // Container max width for content areas
-$container-max-width: calc(1312px - 2 * 32px);
+$container-max-width: calc(1312px);
 
 .discount-details {
+  container-type: inline-size;
   display: flex;
   width: 100%;
   flex-direction: column;
