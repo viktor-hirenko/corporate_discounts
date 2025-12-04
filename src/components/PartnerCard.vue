@@ -133,7 +133,6 @@ function handleClick() {
     height: to-rem(36);
     line-height: 1.1;
     color: var(--color-secondary-600, #01001f);
-    margin: 0;
 
     @include font-weight(extrabold);
 

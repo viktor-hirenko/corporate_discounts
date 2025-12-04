@@ -85,7 +85,6 @@ async function handleCopy() {
     line-height: to-rem(24);
     color: var(--color-secondary-600);
     text-transform: uppercase;
-    margin: 0;
 
     @include font-weight(semibold);
   }

@@ -154,7 +154,6 @@ onMounted(() => {
     color: var(--color-secondary-150);
     font-size: to-rem(32);
     line-height: 1.1;
-    margin: 0;
 
     @include font-weight(black);
   }
@@ -163,7 +162,6 @@ onMounted(() => {
     color: var(--color-secondary-150);
     font-size: to-rem(24);
     line-height: 1.5;
-    margin: 0;
 
     @include font-weight(regular);
 
@@ -186,7 +184,6 @@ onMounted(() => {
     font-size: to-rem(18);
     line-height: 1.5;
     color: var(--color-primary-100);
-    margin: 0;
 
     @include font-weight(semibold);
 
@@ -223,7 +220,6 @@ onMounted(() => {
       font-size: to-rem(18);
       line-height: to-rem(27);
       color: var(--color-secondary-600);
-      margin: 0;
 
       @include font-weight(semibold);
     }

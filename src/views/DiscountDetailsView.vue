@@ -303,7 +303,6 @@ $container-max-width: calc(1312px - 2 * 32px);
   &__type {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
     color: var(--color-secondary-600, #01001f);
-    margin: 0;
     line-height: 1.5;
 
     @include font-weight(regular);
@@ -317,7 +316,6 @@ $container-max-width: calc(1312px - 2 * 32px);
     font-size: to-rem(32);
     line-height: 1.1;
     color: var(--color-secondary-600, #01001f);
-    margin: 0;
 
     @include font-weight(black);
   }
@@ -326,7 +324,6 @@ $container-max-width: calc(1312px - 2 * 32px);
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
     line-height: 1.5;
     color: var(--color-secondary-600, #01001f);
-    margin: 0;
 
     @include font-weight(regular);
 
@@ -339,7 +336,6 @@ $container-max-width: calc(1312px - 2 * 32px);
     font-size: to-rem(24);
     line-height: 1.1;
     color: var(--color-secondary-400, #5535be);
-    margin: 0;
 
     @include font-weight(extrabold);
   }
@@ -426,7 +422,6 @@ $container-max-width: calc(1312px - 2 * 32px);
     font-size: to-rem(32);
     font-size: max(to-cqw(32, $container-max-width), to-rem(24));
     line-height: 1.1;
-    margin: 0;
 
     @include font-weight(black);
 
@@ -452,15 +447,12 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__info-label {
-    margin: 0;
-
     @include font-weight(extrabold);
   }
 
   &__info-value {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
     line-height: 1.5;
-    margin: 0;
 
     @include font-weight(regular);
 
@@ -520,7 +512,6 @@ $container-max-width: calc(1312px - 2 * 32px);
     flex-direction: column;
     gap: to-rem(12);
     padding: 0;
-    margin: 0;
     list-style: none;
   }
 
@@ -570,7 +561,6 @@ $container-max-width: calc(1312px - 2 * 32px);
   &__cta-title {
     font-size: max(to-cqw(32, $container-max-width), to-rem(24));
     line-height: 1.1;
-    margin: 0;
 
     @include font-weight(black);
 
@@ -582,7 +572,6 @@ $container-max-width: calc(1312px - 2 * 32px);
   &__cta-description {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
     line-height: 1.5;
-    margin: 0;
 
     @include font-weight(regular);
 

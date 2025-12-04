@@ -66,7 +66,6 @@ function handleUpdate(value: string) {
   }
 
   &__name {
-    margin: 0;
     font-size: to-rem(24);
     line-height: 1.1;
     color: var(--color-secondary-600);

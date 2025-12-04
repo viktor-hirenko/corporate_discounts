@@ -152,7 +152,6 @@ function handleStartChat() {
     color: var(--color-secondary-150);
     font-size: to-rem(32);
     line-height: 1.1;
-    margin: 0;
     @include font-weight(black);
   }
 
@@ -160,7 +159,6 @@ function handleStartChat() {
     color: var(--color-secondary-150);
     font-size: to-rem(24);
     line-height: 1.5;
-    margin: 0;
     @include font-weight(regular);
 
     @include mq(null, lg) {
@@ -230,7 +228,6 @@ function handleStartChat() {
   &__cta-title {
     font-size: to-rem(32);
     line-height: 1.1;
-    margin: 0;
 
     @include font-weight(black);
 
@@ -243,7 +240,6 @@ function handleStartChat() {
   &__cta-description {
     font-size: to-rem(24);
     line-height: 1.5;
-    margin: 0;
 
     @include font-weight(regular);
 
@@ -279,7 +275,6 @@ function handleStartChat() {
   &__notice-title {
     font-size: to-rem(18);
     line-height: 1.2;
-    margin: 0;
 
     @include font-weight(extrabold);
   }
@@ -287,7 +282,6 @@ function handleStartChat() {
   &__notice-text {
     font-size: to-rem(14);
     line-height: 1.5;
-    margin: 0;
 
     @include font-weight(semibold);
   }

@@ -73,7 +73,6 @@ function handleItemClick(item: ListItem, sectionIndex: number, itemIndex: number
     font-size: to-rem(24);
     line-height: 1.1;
     color: var(--color-secondary-600);
-    margin: 0;
 
     @include font-weight(extrabold);
   }

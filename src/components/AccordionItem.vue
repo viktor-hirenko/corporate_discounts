@@ -72,7 +72,6 @@ function toggle() {
     flex: 1;
     font-size: to-rem(24);
     line-height: 1.1;
-    margin: 0;
 
     @include font-weight(extrabold);
 
@@ -102,7 +101,6 @@ function toggle() {
     font-size: to-rem(24);
     line-height: 1.5;
     color: var(--color-secondary-600);
-    margin: 0;
 
     @include font-weight(regular);
 

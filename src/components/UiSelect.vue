@@ -195,7 +195,6 @@ function handleBlur(event: FocusEvent) {
   }
 
   &__message {
-    margin: 0;
     font-size: to-rem(13);
     line-height: to-rem(18);
 

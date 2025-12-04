@@ -112,7 +112,6 @@ function handleMenuButtonClick() {
     height: to-rem(12);
     width: auto;
     display: block;
-    margin: 0;
   }
 
   &__actions {
