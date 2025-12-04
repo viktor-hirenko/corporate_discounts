@@ -220,6 +220,6 @@ function handleClose() {
 }
 
 .filter-modal-apply {
-  width: 100%;
+    width: 100%;
 }
 </style>

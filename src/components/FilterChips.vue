@@ -106,8 +106,8 @@ function handleRemoveFilter(type: 'category' | 'location') {
   @include font-weight(extrabold);
 
   &:hover {
-    border-color: var(--color-primary-250, #ceffec);
-    color: var(--color-primary-250, #ceffec);
+    border-color: var(--color-primary-200, #ceffec);
+    color: var(--color-primary-200, #ceffec);
   }
 }
 

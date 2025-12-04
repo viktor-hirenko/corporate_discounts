@@ -203,7 +203,7 @@ function handleClick(event: MouseEvent) {
     &:disabled,
     &.ui-button--disabled {
       background-color: var(--color-secondary-300);
-      color: var(--color-secondary-200);
+      color: var(--color-primary-100);
     }
 
     &:hover:not(:disabled, &--disabled) {
