@@ -98,9 +98,17 @@ function handleRemoveFilter(type: 'category' | 'location') {
   color: var(--color-primary-100, #fcfcff);
   font-size: to-rem(18);
   cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 
   @include line-height(normal);
   @include font-weight(extrabold);
+
+  &:hover {
+    border-color: var(--color-primary-250, #ceffec);
+    color: var(--color-primary-250, #ceffec);
+  }
 }
 
 .filter-chips__label {
@@ -109,6 +117,7 @@ function handleRemoveFilter(type: 'category' | 'location') {
 
 .filter-chips__icon {
   flex-shrink: 0;
-  color: var(--color-primary-100, #fcfcff);
+  color: inherit;
+  transition: color 0.2s ease;
 }
 </style>

@@ -1,7 +1,7 @@
 /* Auto-generated design token types - DO NOT EDIT */
 /* Generated from src/design/tokens.json */
 
-export type DesignTokenKey = "color-primary-100" | "color-primary-200" | "color-primary-300" | "color-primary-400" | "color-primary-500" | "color-primary-600" | "color-secondary-100" | "color-secondary-150" | "color-secondary-200" | "color-secondary-300" | "color-secondary-400" | "color-secondary-500" | "color-secondary-600" | "color-neutral-100" | "color-neutral-200" | "color-neutral-300" | "color-neutral-400" | "color-neutral-500" | "color-neutral-600" | "color-neutral-700" | "color-semantic-error" | "color-semantic-warning" | "color-semantic-success" | "color-accent-lemon" | "color-accent-yellow" | "color-accent-green" | "color-accent-pink" | "color-accent-blue" | "color-accent-dark-blue" | "color-accent-gray" | "gradient-hero-surface" | "gradient-card-highlight" | "gradient-button-primary" | "gradient-button-secondary";
+export type DesignTokenKey = "color-primary-100" | "color-primary-200" | "color-primary-250" | "color-primary-300" | "color-primary-400" | "color-primary-500" | "color-primary-600" | "color-secondary-100" | "color-secondary-150" | "color-secondary-200" | "color-secondary-300" | "color-secondary-400" | "color-secondary-500" | "color-secondary-600" | "color-neutral-100" | "color-neutral-200" | "color-neutral-300" | "color-neutral-400" | "color-neutral-500" | "color-neutral-600" | "color-neutral-700" | "color-semantic-error" | "color-semantic-warning" | "color-semantic-success" | "color-accent-lemon" | "color-accent-yellow" | "color-accent-green" | "color-accent-pink" | "color-accent-blue" | "color-accent-dark-blue" | "color-accent-gray" | "gradient-hero-surface" | "gradient-card-highlight" | "gradient-button-primary" | "gradient-button-secondary";
 
 export type CSSVarName = `--${DesignTokenKey}`;
 
@@ -9,6 +9,7 @@ export interface DesignTokens {
   color: {
     "primary-100": string;
     "primary-200": string;
+    "primary-250": string;
     "primary-300": string;
     "primary-400": string;
     "primary-500": string;

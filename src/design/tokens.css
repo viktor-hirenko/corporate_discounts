@@ -1,10 +1,10 @@
 /* Auto-generated design tokens - DO NOT EDIT */
-
 /* Generated from src/design/tokens.json */
 
 :root {
   --color-primary-100: #FCFCFF;
   --color-primary-200: #E0FFE4;
+  --color-primary-250: #CEFFEC;
   --color-primary-300: #A6FFB1;
   --color-primary-400: #5BFC70;
   --color-primary-500: #12CC2A;
@@ -33,8 +33,8 @@
   --color-accent-blue: #448FFF;
   --color-accent-dark-blue: #0927F2;
   --color-accent-gray: #404042;
-  --gradient-hero-surface: linear-gradient(142deg, #01001F 0%, rgb(1 0 31 / 12%) 100%);
-  --gradient-card-highlight: linear-gradient(180deg, rgb(84 67 215 / 18%) 0%, rgb(1 0 31 / 48%) 100%);
+  --gradient-hero-surface: linear-gradient(142deg, #01001F 0%, rgba(1, 0, 31, 0.12) 100%);
+  --gradient-card-highlight: linear-gradient(180deg, rgba(84, 67, 215, 0.18) 0%, rgba(1, 0, 31, 0.48) 100%);
   --gradient-button-primary: linear-gradient(270deg, #5BFC70 0%, #12CC2A 100%);
   --gradient-button-secondary: linear-gradient(270deg, #4843D7 0%, #262294 100%);
 }
@@ -43,16 +43,15 @@
 [data-theme="night"] {
   --color-background-primary: #01001F;
   --color-background-surface: #0C0337;
-  --gradient-background: linear-gradient(140deg, rgb(17 7 59 / 96%) 0%, rgb(1 0 31 / 100%) 56%, rgb(1 0 31 / 32%) 100%);
+  --gradient-background: linear-gradient(140deg, rgba(17, 7, 59, 0.96) 0%, rgba(1, 0, 31, 1) 56%, rgba(1, 0, 31, 0.32) 100%);
 }
 
 /* violet theme */
 [data-theme="violet"] {
   --color-background-primary: #5535BE;
   --color-background-surface: #5F45D9;
-  --gradient-background: linear-gradient(140deg, rgb(121 85 255 / 96%) 0%, rgb(85 53 190 / 100%) 56%, rgb(85 53 190 / 24%) 100%);
+  --gradient-background: linear-gradient(140deg, rgba(121, 85, 255, 0.96) 0%, rgba(85, 53, 190, 1) 56%, rgba(85, 53, 190, 0.24) 100%);
 }
 
 /* Theme-specific overrides */
-
 /* Add custom theme overrides here if needed */
