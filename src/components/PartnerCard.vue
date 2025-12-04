@@ -10,9 +10,21 @@ interface Props {
 
 const props = defineProps<Props>()
 const router = useRouter()
-const { t, getPartnerLocalizedData, filters } = useAppConfig()
+const { t, getPartnerLocalizedData, filters, images: imagesConfig, getImage } = useAppConfig()
+
+// Ensure images is reactive
+const images = computed(() => imagesConfig)
 
 const localizedData = computed(() => getPartnerLocalizedData(props.partner.id))
+
+const partnerImage = computed(() => {
+  const partnerId = props.partner.id
+  if (!images.value?.partners || !images.value.partners[partnerId]) {
+    return props.partner.images.thumbnail
+  }
+  const imagePath = images.value.partners[partnerId]
+  return getImage(imagePath)
+})
 
 const partnerName = computed(() => {
   return localizedData.value ? t(localizedData.value.name) : props.partner.name
@@ -47,7 +59,7 @@ function handleClick() {
     </div>
     <div class="partner-card__content">
       <div class="partner-card__image-wrapper">
-        <img :src="partner.images.thumbnail" :alt="partnerName" class="partner-card__image" />
+        <img :src="partnerImage" :alt="partnerName" class="partner-card__image" />
       </div>
 
       <div class="partner-card__info">

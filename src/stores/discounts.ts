@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { partnersMock } from '@/data/partners'
+import { useAppConfig } from '@/composables/useAppConfig'
 import type {
   DiscountFilters,
   PaginationState,
@@ -114,9 +114,53 @@ export const useDiscountsStore = defineStore('discounts', {
       this.error = null
 
       try {
-        // Тимчасово працюємо з мок-даними. Замінемо, коли зʼявиться API.
-        const response = await Promise.resolve(partnersMock)
-        this.items = response
+        const appConfig = useAppConfig()
+        const config = appConfig.config.value
+        const locale = appConfig.locale.value
+        const t = appConfig.t
+        const getImage = appConfig.getImage
+
+        const partnersConfig = config.partners
+
+        // Преобразуем конфигурацию партнеров в массив Partner
+        const partners: Partner[] = Object.values(partnersConfig).map((partnerConfig) => {
+          const imagePath = config.images.partners[partnerConfig.id]
+
+          return {
+            id: partnerConfig.id,
+            slug: partnerConfig.slug,
+            name: t(partnerConfig.name),
+            category: t(partnerConfig.category) as PartnerCategory,
+            location: t(partnerConfig.location) as PartnerLocation,
+            discount: {
+              label: t(partnerConfig.discount.label),
+              description: partnerConfig.discount.description
+                ? t(partnerConfig.discount.description)
+                : undefined,
+              promoCode: partnerConfig.promoCode,
+            },
+            images: {
+              thumbnail: imagePath ? getImage(imagePath) : '',
+              hero: imagePath ? getImage(imagePath) : undefined,
+            },
+            summary: t(partnerConfig.summary),
+            description: t(partnerConfig.description),
+            contact: {
+              ...partnerConfig.contact,
+              address: partnerConfig.address
+                ? t(partnerConfig.address)
+                : partnerConfig.contact.address,
+            },
+            socials: partnerConfig.socials.map((social) => ({
+              type: social.type as Partner['socials'][0]['type'],
+              url: social.url,
+            })),
+            terms: partnerConfig.terms[locale] || [],
+            tags: partnerConfig.tags[locale] || undefined,
+          }
+        })
+
+        this.items = partners
         this.status = 'success'
       } catch (error) {
         console.error('[discounts-store] failed to load partners', error)

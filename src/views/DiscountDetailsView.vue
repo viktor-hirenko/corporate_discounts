@@ -14,7 +14,18 @@ interface Props {
 const props = defineProps<Props>()
 const router = useRouter()
 const store = useDiscountsStore()
-const { t, pages, getPartnerLocalizedData, filters, locale } = useAppConfig()
+const {
+  t,
+  pages,
+  getPartnerLocalizedData,
+  filters,
+  locale,
+  images: imagesConfig,
+  getImage,
+} = useAppConfig()
+
+// Ensure images is reactive
+const images = computed(() => imagesConfig)
 
 const isCopied = ref(false)
 
@@ -54,6 +65,18 @@ const discountDescription = computed(() => {
   return localizedData.value && localizedData.value.discount.description
     ? t(localizedData.value.discount.description)
     : partner.value.discount.description || ''
+})
+
+const partnerImage = computed(() => {
+  if (!partner.value) return ''
+  if (!images.value.partners || !images.value.partners[partner.value.id]) {
+    return partner.value.images.hero || partner.value.images.thumbnail
+  }
+  const imagePath = images.value.partners[partner.value.id]
+  if (!imagePath) {
+    return partner.value.images.hero || partner.value.images.thumbnail
+  }
+  return getImage(imagePath)
 })
 
 const partnerTerms = computed(() => {
@@ -152,11 +175,7 @@ function getSocialLabel(type: string): string {
     <!-- Main discount card -->
     <div class="discount-details__main-card">
       <div class="discount-details__logo-wrapper">
-        <img
-          :src="partner.images.hero || partner.images.thumbnail"
-          :alt="partnerName"
-          class="discount-details__logo"
-        />
+        <img :src="partnerImage" :alt="partnerName" class="discount-details__logo" />
       </div>
 
       <div class="discount-details__info">

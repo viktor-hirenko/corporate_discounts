@@ -45,21 +45,70 @@ export function useAppConfig() {
   }
 
   /**
-   * Get image path
+   * Get image path for dynamic imports in Vite
+   * Converts paths from app-config.json to valid Vite asset URLs
    */
   function getImage(path: string): string {
-    // Handle both relative paths and absolute paths
-    if (path.startsWith('src/')) {
-      return new URL(`/../../${path}`, import.meta.url).href
+    if (!path) {
+      console.warn('getImage: path is empty')
+      return ''
     }
+
+    // Handle @/ alias paths (e.g., @/assets/images/partners/roslynka.webp)
+    if (path.startsWith('@/')) {
+      // Remove @/ prefix and create relative path from composables
+      // From src/composables/ to src/assets/ = ../assets/
+      const relativePath = path.replace('@/', '../')
+      try {
+        const url = new URL(relativePath, import.meta.url).href
+        return url
+      } catch (error) {
+        console.error('getImage: Error creating URL', { path, relativePath, error })
+        return path
+      }
+    }
+
+    // Handle src/ paths (e.g., src/assets/images/bot-img.svg)
+    if (path.startsWith('src/')) {
+      // From src/composables/ to src/ = ../
+      const relativePath = path.replace('src/', '../')
+      try {
+        const url = new URL(relativePath, import.meta.url).href
+        return url
+      } catch (error) {
+        console.error('getImage: Error creating URL', { path, relativePath, error })
+        return path
+      }
+    }
+
+    // Return as-is for absolute URLs or other paths
     return path
   }
 
   /**
-   * Get localized partner data by partner ID
+   * Get partner config by partner ID
+   */
+  function getPartnerConfig(partnerId: string) {
+    return config.partners[partnerId] || null
+  }
+
+  /**
+   * Get localized partner data by partner ID (deprecated, use getPartnerConfig)
    */
   function getPartnerLocalizedData(partnerId: string): PartnerLocalizedData | null {
-    return config.partners.localizedData[partnerId] || null
+    const partnerConfig = config.partners[partnerId]
+    if (!partnerConfig) return null
+
+    // Преобразуем новую структуру в старую для обратной совместимости
+    return {
+      name: partnerConfig.name,
+      summary: partnerConfig.summary,
+      description: partnerConfig.description,
+      discount: partnerConfig.discount,
+      address: partnerConfig.address,
+      terms: partnerConfig.terms,
+      tags: partnerConfig.tags,
+    }
   }
 
   /**

@@ -138,6 +138,7 @@ export interface Images {
   avatar: {
     placeholder: string
   }
+  partners: Record<string, string>
 }
 
 export interface FaqCategory {
@@ -165,7 +166,41 @@ export interface PartnerLocalizedData {
   description: LocalizedText
   discount: {
     label: LocalizedText
-    description: LocalizedText
+    description?: LocalizedText
+  }
+  address?: LocalizedText
+  terms: {
+    ua: string[]
+    en: string[]
+  }
+  tags: {
+    ua: string[]
+    en: string[]
+  }
+}
+
+export interface PartnerConfig {
+  id: string
+  slug: string
+  promoCode: string
+  contact: {
+    website?: string
+    email?: string
+    phone?: string
+    address?: string
+  }
+  socials: Array<{
+    type: string
+    url: string
+  }>
+  category: LocalizedText
+  location: LocalizedText
+  name: LocalizedText
+  summary: LocalizedText
+  description: LocalizedText
+  discount: {
+    label: LocalizedText
+    description?: LocalizedText
   }
   address?: LocalizedText
   terms: {
@@ -179,9 +214,7 @@ export interface PartnerLocalizedData {
 }
 
 export interface PartnersConfig {
-  dataSource: string
-  note: string
-  localizedData: Record<string, PartnerLocalizedData>
+  [key: string]: PartnerConfig
 }
 
 export interface AppConfig {
