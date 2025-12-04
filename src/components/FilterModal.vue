@@ -5,6 +5,7 @@ import ModalList from './ModalList.vue'
 import PrimaryButton from './PrimaryButton.vue'
 import CloseIcon from './icons/CloseIcon.vue'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import { useAppConfig } from '@/composables/useAppConfig'
 import type { PartnerCategory, PartnerLocation } from '@/types/partner'
 import { useDiscountsStore } from '@/stores/discounts'
 
@@ -34,6 +35,7 @@ const emit = defineEmits<{
 }>()
 
 const store = useDiscountsStore()
+const { t, filters } = useAppConfig()
 
 // Определяем мобильную версию (меньше 768px - breakpoint lg)
 const isMobile = useMediaQuery('(max-width: 768px)')
@@ -42,81 +44,85 @@ const isMobile = useMediaQuery('(max-width: 768px)')
 const modalPosition = computed(() => (isMobile.value ? 'mobile' : 'dropdown'))
 const showBackdrop = computed(() => isMobile.value)
 
-const locationOptions = [
+const locationOptions = computed(() => {
+  return [
   {
-    value: 'Усі',
-    label: 'Всі локаціі',
-    description: 'Показати вісх партнерів',
+      value: filters.locations.all.value,
+      label: t(filters.locations.all.label),
+      description: t(filters.locations.all.description),
   },
   {
-    value: 'UA',
-    label: 'Україна',
-    description: 'Фізичні локації в Україні',
+      value: filters.locations.ua.value,
+      label: t(filters.locations.ua.label),
+      description: t(filters.locations.ua.description),
   },
   {
-    value: 'LT/Рига',
-    label: 'Європа',
-    description: 'Партнери у Європі',
+      value: filters.locations.europe.value,
+      label: t(filters.locations.europe.label),
+      description: t(filters.locations.europe.description),
   },
   {
-    value: 'Global',
-    label: 'Онлайн',
-    description: 'Віртуальні та онлайн-сервіси',
+      value: filters.locations.online.value,
+      label: t(filters.locations.online.label),
+      description: t(filters.locations.online.description),
   },
 ]
+})
 
-const categoryOptions = [
+const categoryOptions = computed(() => {
+  return [
   {
-    value: 'Усі',
-    label: 'Всі категорії',
-    description: 'Переглянути всі пропозиції',
+      value: filters.categories.all.value,
+      label: t(filters.categories.all.label),
+      description: t(filters.categories.all.description),
   },
   {
-    value: 'Подорожі',
-    label: 'Подорожі',
-    description: 'Туристичні агенства та авіквитки',
+      value: filters.categories.travel.value,
+      label: t(filters.categories.travel.label),
+      description: t(filters.categories.travel.description),
   },
   {
-    value: 'Фітнес-клуб',
-    label: 'Фітнес-клуб',
-    description: 'Спортзали та тренувальні центри',
+      value: filters.categories.fitness.value,
+      label: t(filters.categories.fitness.label),
+      description: t(filters.categories.fitness.description),
   },
   {
-    value: 'Онлайн',
-    label: 'Онлайн',
-    description: 'Віртуальні та онлайн-сервіси',
+      value: filters.categories.online.value,
+      label: t(filters.categories.online.label),
+      description: t(filters.categories.online.description),
   },
   {
-    value: 'Салон краси',
-    label: 'Салон краси',
-    description: 'Спа та велнес-послуги',
+      value: filters.categories.beauty.value,
+      label: t(filters.categories.beauty.label),
+      description: t(filters.categories.beauty.description),
+    },
+    {
+      value: filters.categories.shop.value,
+      label: t(filters.categories.shop.label),
+      description: t(filters.categories.shop.description),
   },
   {
-    value: 'Магазин',
-    label: 'Магазин',
-    description: 'Роздрібна торгівля та e-commerce',
+      value: filters.categories.food.value,
+      label: t(filters.categories.food.label),
+      description: t(filters.categories.food.description),
   },
   {
-    value: 'Їжа',
-    label: 'Їжа',
-    description: 'Ресторани, кафе та здорове харчування',
+      value: filters.categories.health.value,
+      label: t(filters.categories.health.label),
+      description: t(filters.categories.health.description),
   },
   {
-    value: 'Здоровʼя',
-    label: 'Здоровʼя',
-    description: 'Лікарні, клініки та медичні послуги',
+      value: filters.categories.education.value,
+      label: t(filters.categories.education.label),
+      description: t(filters.categories.education.description),
   },
   {
-    value: 'Навчання',
-    label: 'Навчання',
-    description: 'Освітні курси та професійний розвиток',
-  },
-  {
-    value: 'Інше',
-    label: 'Інше',
-    description: 'Інші послуги та пропозиції',
+      value: filters.categories.other.value,
+      label: t(filters.categories.other.label),
+      description: t(filters.categories.other.description),
   },
 ]
+})
 
 const selectedLocation = computed(() => store.filters.location)
 const selectedCategory = computed(() => store.filters.category)
@@ -125,7 +131,7 @@ const filterSections = computed<ListSection[]>(() => {
   return [
     {
       title: 'Локація',
-      items: locationOptions.map((option) => ({
+      items: locationOptions.value.map((option) => ({
         value: option.value,
         label: option.label,
         description: option.description,
@@ -134,7 +140,7 @@ const filterSections = computed<ListSection[]>(() => {
     },
     {
       title: 'Категорія',
-      items: categoryOptions.map((option) => ({
+      items: categoryOptions.value.map((option) => ({
         value: option.value,
         label: option.label,
         description: option.description,
@@ -188,7 +194,11 @@ function handleClose() {
     <ModalList :sections="filterSections" @item-click="handleItemClick" />
 
     <template #footer>
-      <PrimaryButton class="filter-modal-apply" label="Застосувати" @click="handleResetFilters" />
+      <PrimaryButton
+        class="filter-modal-apply"
+        :label="t(filters.apply)"
+        @click="handleResetFilters"
+      />
     </template>
   </UiModal>
 </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import ArrowBackIcon from './icons/ArrowBackIcon.vue'
+import { useAppConfig } from '@/composables/useAppConfig'
 
 interface Props {
   currentPage: number
@@ -13,6 +14,7 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+const { t, tTemplate, pagination } = useAppConfig()
 
 // Максимальное количество страниц без эллипсиса
 const MAX_PAGES_WITHOUT_ELLIPSIS = 7
@@ -108,17 +110,17 @@ function handleNext() {
 </script>
 
 <template>
-  <nav class="pagination" aria-label="Навігація по сторінках">
+  <nav class="pagination" :aria-label="t(pagination.ariaLabels.navigation)">
     <!-- Previous button -->
     <button
       class="pagination__button pagination__button--prev"
       :class="{ 'pagination__button--disabled': currentPage === 1 }"
       :disabled="currentPage === 1"
       type="button"
-      aria-label="Попередня сторінка"
+      :aria-label="t(pagination.ariaLabels.previousPage)"
       @click="handlePrevious"
     >
-      <span class="pagination__button-text">#попередня</span>
+      <span class="pagination__button-text">{{ t(pagination.previous) }}</span>
       <ArrowBackIcon class="pagination__button-icon" :size="16" />
     </button>
 
@@ -131,7 +133,11 @@ function handleNext() {
         :class="{ 'pagination__page--active': page === currentPage }"
         :disabled="page === '...'"
         type="button"
-        :aria-label="page === '...' ? 'Пропуск сторінок' : `Перейти на сторінку ${page}`"
+        :aria-label="
+          page === '...'
+            ? t(pagination.ariaLabels.skipPages)
+            : tTemplate(pagination.ariaLabels.goToPage, { page: String(page) })
+        "
         :aria-current="page === currentPage ? 'page' : undefined"
         @click="handlePageClick(page)"
       >
@@ -145,10 +151,10 @@ function handleNext() {
       :class="{ 'pagination__button--disabled': currentPage === totalPages }"
       :disabled="currentPage === totalPages"
       type="button"
-      aria-label="Наступна сторінка"
+      :aria-label="t(pagination.ariaLabels.nextPage)"
       @click="handleNext"
     >
-      <span class="pagination__button-text">#наступна</span>
+      <span class="pagination__button-text">{{ t(pagination.next) }}</span>
       <ArrowBackIcon class="pagination__button-icon" :size="16" />
     </button>
   </nav>

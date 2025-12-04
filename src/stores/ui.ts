@@ -1,9 +1,14 @@
 import { defineStore } from 'pinia'
+import type { Locale } from '@/types/app-config'
+import appConfigData from '@/data/app-config.json'
 
 const THEME_STORAGE_KEY = 'corporate-discounts:theme'
+const LOCALE_STORAGE_KEY = 'corporate-discounts:locale'
 const THEMES = ['night', 'violet'] as const
 
 export type ThemeName = (typeof THEMES)[number]
+
+const DEFAULT_LOCALE: Locale = (appConfigData as { defaultLocale: Locale }).defaultLocale || 'ua'
 
 const themesSet = new Set<ThemeName>(THEMES)
 
@@ -67,9 +72,27 @@ function readThemeFromSystem(): ThemeName | null {
 
 const DEFAULT_THEME: ThemeName = 'night'
 
+function readLocaleFromStorage(): Locale | null {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  try {
+    const storedLocale = localStorage.getItem(LOCALE_STORAGE_KEY)
+    if (storedLocale === 'ua' || storedLocale === 'en') {
+      return storedLocale
+    }
+  } catch (error) {
+    console.warn('[ui-store] Failed to read locale from localStorage.', error)
+  }
+
+  return null
+}
+
 export const useUiStore = defineStore('ui', {
   state: () => ({
     theme: DEFAULT_THEME as ThemeName,
+    locale: (readLocaleFromStorage() ?? DEFAULT_LOCALE) as Locale,
   }),
   actions: {
     initTheme(): void {
@@ -95,6 +118,24 @@ export const useUiStore = defineStore('ui', {
         localStorage.setItem(THEME_STORAGE_KEY, theme)
       } catch (error) {
         console.warn('[ui-store] Failed to persist theme in localStorage.', error)
+      }
+    },
+    setLocale(locale: Locale, { persist = true }: { persist?: boolean } = {}): void {
+      if (locale !== 'ua' && locale !== 'en') {
+        console.warn(`[ui-store] Unknown locale "${locale}" was ignored.`)
+        return
+      }
+
+      this.locale = locale
+
+      if (!persist) {
+        return
+      }
+
+      try {
+        localStorage.setItem(LOCALE_STORAGE_KEY, locale)
+      } catch (error) {
+        console.warn('[ui-store] Failed to persist locale in localStorage.', error)
       }
     },
   },

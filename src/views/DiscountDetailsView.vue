@@ -5,6 +5,7 @@ import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
 import { useDiscountsStore } from '@/stores/discounts'
+import { useAppConfig } from '@/composables/useAppConfig'
 
 interface Props {
   slug: string
@@ -13,12 +14,65 @@ interface Props {
 const props = defineProps<Props>()
 const router = useRouter()
 const store = useDiscountsStore()
+const { t, pages, getPartnerLocalizedData, filters, locale } = useAppConfig()
 
 const isCopied = ref(false)
 
 // Получаем партнера по slug из props
 const partner = computed(() => {
   return store.getPartnerBySlug(props.slug)
+})
+
+// Локализованные данные партнера
+const localizedData = computed(() => {
+  if (!partner.value) return null
+  return getPartnerLocalizedData(partner.value.id)
+})
+
+const partnerName = computed(() => {
+  if (!partner.value) return ''
+  return localizedData.value ? t(localizedData.value.name) : partner.value.name
+})
+
+const partnerSummary = computed(() => {
+  if (!partner.value) return ''
+  return localizedData.value ? t(localizedData.value.summary) : partner.value.summary
+})
+
+const partnerDescription = computed(() => {
+  if (!partner.value) return ''
+  return localizedData.value ? t(localizedData.value.description) : partner.value.description
+})
+
+const discountLabel = computed(() => {
+  if (!partner.value) return ''
+  return localizedData.value ? t(localizedData.value.discount.label) : partner.value.discount.label
+})
+
+const discountDescription = computed(() => {
+  if (!partner.value) return ''
+  return localizedData.value && localizedData.value.discount.description
+    ? t(localizedData.value.discount.description)
+    : partner.value.discount.description || ''
+})
+
+const partnerTerms = computed(() => {
+  if (!partner.value) return []
+  return localizedData.value ? localizedData.value.terms[locale.value] || [] : partner.value.terms
+})
+
+const partnerCategory = computed(() => {
+  if (!partner.value) return ''
+  const category = filters.categoryLabels[partner.value.category]
+  return category ? t(category) : partner.value.category
+})
+
+const partnerAddress = computed(() => {
+  if (!partner.value) return ''
+  if (localizedData.value?.address) {
+    return t(localizedData.value.address)
+  }
+  return partner.value.contact.address || ''
 })
 
 // Функция для загрузки данных и проверки партнера
@@ -74,11 +128,12 @@ function handleVisitWebsite() {
 }
 
 function getSocialLabel(type: string): string {
+  const socialLabels = pages.discountDetails.contactInfo.socials
   const labels: Record<string, string> = {
-    facebook: 'Facebook',
-    instagram: 'Instagram',
-    telegram: 'Telegram',
-    linkedin: 'LinkedIn',
+    facebook: t(socialLabels.facebook),
+    instagram: t(socialLabels.instagram),
+    telegram: t(socialLabels.telegram),
+    linkedin: t(socialLabels.linkedin),
   }
   return labels[type] || type
 }
@@ -90,7 +145,7 @@ function getSocialLabel(type: string): string {
     <div class="discount-details__back">
       <button class="discount-details__back-button" type="button" @click="handleBack">
         <ChevronLeftIcon :size="16" />
-        <span>Назад до списку пропозицій</span>
+        <span>{{ t(pages.discountDetails.backButton) }}</span>
       </button>
     </div>
 
@@ -99,34 +154,45 @@ function getSocialLabel(type: string): string {
       <div class="discount-details__logo-wrapper">
         <img
           :src="partner.images.hero || partner.images.thumbnail"
-          :alt="partner.name"
+          :alt="partnerName"
           class="discount-details__logo"
         />
       </div>
 
       <div class="discount-details__info">
         <div class="discount-details__info-top">
-          <p class="discount-details__type">Магазин</p>
-          <h1 class="discount-details__title">{{ partner.name }}</h1>
+          <p class="discount-details__type">{{ partnerCategory }}</p>
+          <h1 class="discount-details__title">{{ partnerName }}</h1>
         </div>
-        <p class="discount-details__description">{{ partner.summary }}</p>
+        <p class="discount-details__description">{{ partnerSummary }}</p>
+        <!-- <p v-if="partnerDescription" class="discount-details__description-full">
+          {{ partnerDescription }}
+        </p> -->
         <p class="discount-details__offer">
-          Пропозиція:
-          <span class="discount-details__offer-value">{{ partner.discount.label }}</span>
+          {{ t(pages.discountDetails.offer) }}
+          <span class="discount-details__offer-value">{{ discountLabel }}</span>
         </p>
+        <!-- <p v-if="discountDescription" class="discount-details__discount-description">
+          {{ discountDescription }}
+        </p> -->
 
         <div class="discount-details__promo">
           <div class="discount-details__promo-code-wrapper">
-            <p class="discount-details__promo-label">Promo code</p>
+            <p class="discount-details__promo-label">
+              {{ t(pages.discountDetails.promoCode.label) }}
+            </p>
             <p class="discount-details__promo-code">{{ partner.discount.promoCode }}</p>
           </div>
           <PrimaryButton
             size="large"
             class="discount-details__copy-button"
+            :label="
+              isCopied
+                ? t(pages.discountDetails.promoCode.copied)
+                : t(pages.discountDetails.promoCode.copy)
+            "
             @click="handleCopyPromoCode"
-          >
-            {{ isCopied ? 'Скопійовано!' : 'СКОПІЮВАТИ КОД' }}
-          </PrimaryButton>
+          />
         </div>
       </div>
     </div>
@@ -135,14 +201,20 @@ function getSocialLabel(type: string): string {
     <div class="discount-details__details-grid">
       <!-- Contact Information -->
       <div class="discount-details__card">
-        <h2 class="discount-details__card-title">Контактна інформація</h2>
+        <h2 class="discount-details__card-title">
+          {{ t(pages.discountDetails.contactInfo.title) }}
+        </h2>
         <div class="discount-details__card-content">
-          <div v-if="partner.contact.address" class="discount-details__info-item">
-            <p class="discount-details__info-label">Адреса</p>
-            <p class="discount-details__info-value">{{ partner.contact.address }}</p>
+          <div v-if="partnerAddress" class="discount-details__info-item">
+            <p class="discount-details__info-label">
+              {{ t(pages.discountDetails.contactInfo.address) }}
+            </p>
+            <p class="discount-details__info-value">{{ partnerAddress }}</p>
           </div>
           <div v-if="partner.contact.website" class="discount-details__info-item">
-            <p class="discount-details__info-label">Вебсайт</p>
+            <p class="discount-details__info-label">
+              {{ t(pages.discountDetails.contactInfo.website) }}
+            </p>
             <a
               :href="partner.contact.website"
               target="_blank"
@@ -169,10 +241,10 @@ function getSocialLabel(type: string): string {
 
       <!-- Terms of Use -->
       <div class="discount-details__card">
-        <h2 class="discount-details__card-title">Умови використання</h2>
+        <h2 class="discount-details__card-title">{{ t(pages.discountDetails.terms.title) }}</h2>
         <div class="discount-details__card-content">
           <ul class="discount-details__terms-list">
-            <li v-for="(term, index) in partner.terms" :key="index" class="discount-details__term">
+            <li v-for="(term, index) in partnerTerms" :key="index" class="discount-details__term">
               {{ term }}
             </li>
           </ul>
@@ -183,9 +255,9 @@ function getSocialLabel(type: string): string {
     <!-- Call to Action -->
     <div class="discount-details__cta">
       <div class="discount-details__cta-content">
-        <h2 class="discount-details__cta-title">Готові скористатися знижкою?</h2>
+        <h2 class="discount-details__cta-title">{{ t(pages.discountDetails.cta.title) }}</h2>
         <p class="discount-details__cta-description">
-          Відвідайте веб-сайт партнера та застосуйте промокод під час оформлення
+          {{ t(pages.discountDetails.cta.description) }}
         </p>
       </div>
 
@@ -193,10 +265,9 @@ function getSocialLabel(type: string): string {
         v-if="partner.contact.website"
         size="large"
         class="discount-details__cta-button"
+        :label="t(pages.discountDetails.cta.button)"
         @click="handleVisitWebsite"
-      >
-        ВІДВІДАТИ ВЕБ-САЙТ ПАРТНЕРА
-      </SecondaryButton>
+      />
     </div>
   </div>
 </template>
@@ -329,6 +400,30 @@ $container-max-width: calc(1312px - 2 * 32px);
 
     @include mq(null, lg) {
       @include font-weight(semibold);
+    }
+  }
+
+  &__description-full {
+    color: var(--color-secondary-600, #01001f);
+    font-size: max(to-cqw(20, $container-max-width), to-rem(16));
+
+    @include line-height(relaxed);
+    @include font-weight(regular);
+
+    @include mq(null, lg) {
+      font-size: to-rem(16);
+    }
+  }
+
+  &__discount-description {
+    color: var(--color-neutral-400, #81818e);
+    font-size: max(to-cqw(20, $container-max-width), to-rem(16));
+
+    @include line-height(relaxed);
+    @include font-weight(regular);
+
+    @include mq(null, lg) {
+      font-size: to-rem(16);
     }
   }
 

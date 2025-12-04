@@ -1,20 +1,32 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
+import { useAppConfig } from '@/composables/useAppConfig'
+import { useUiStore } from '@/stores/ui'
 
 const { variant = 'default' } = defineProps<{
   variant?: 'default' | 'mobile'
 }>()
 
-const currentLanguage = ref<'ua' | 'en'>('ua')
+const { languages: configLanguages, locale, t } = useAppConfig()
+const uiStore = useUiStore()
 
-const languages = [
-  { code: 'ua' as const, label: 'Українська', shortLabel: 'ua' },
-  { code: 'en' as const, label: 'English', shortLabel: 'en' },
-]
+const currentLanguage = computed({
+  get: () => uiStore.locale,
+  set: (value) => {
+    uiStore.setLocale(value)
+  },
+})
+
+const languages = computed(() =>
+  configLanguages.value.map((lang) => ({
+    code: lang.code,
+    label: t(lang.label),
+    shortLabel: lang.shortLabel,
+  })),
+)
 
 function handleLanguageChange(lang: 'ua' | 'en') {
   currentLanguage.value = lang
-  // TODO: добавить логику смены языка (i18n, store и т.д.)
 }
 </script>
 
@@ -29,7 +41,7 @@ function handleLanguageChange(lang: 'ua' | 'en') {
         type="button"
         @click="handleLanguageChange(lang.code)"
       >
-        {{ lang.shortLabel }}
+          {{ lang.shortLabel }}
       </button>
     </template>
   </div>

@@ -1,53 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import AccordionItem from '@/components/AccordionItem.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
+import { useAppConfig } from '@/composables/useAppConfig'
 import botImg from '@/assets/images/bot-img.svg'
 
-interface FaqItem {
-  question: string
-  answer: string
-}
+const { t, pages, faq, getImage } = useAppConfig()
 
 const openIndex = ref<number | null>(0)
 
-const faqItems: FaqItem[] = [
-  {
-    question: 'Як скористатися корпоративною знижкою?',
-    answer:
-      'Більшість промокодів дійсні протягом усього календарного року, але деякі партнери можуть мати сезонні або обмежені за часом пропозиції. Завжди перевіряйте сторінку деталей партнера.',
-  },
-  {
-    question: 'Як часто додаються нові партнери?',
-    answer:
-      'Ми регулярно додаємо нових партнерів до нашої програми корпоративних знижок. Перевіряйте каталог щомісяця, щоб дізнатися про нові пропозиції.',
-  },
-  {
-    question: 'Чи можу я передати промокод іншій особі?',
-    answer:
-      'Ні, корпоративні знижки є пільгою, що надається лише активним співробітникам. Передача промокодів стороннім особам може призвести до скасування привілеїв знижок.',
-  },
-  {
-    question: 'Як довго дійсні промокоди?',
-    answer:
-      'Термін дії промокодів залежить від умов конкретного партнера. Деякі промокоди дійсні протягом усього року, інші мають обмежений термін дії. Завжди перевіряйте сторінку деталей партнера для актуальної інформації.',
-  },
-  {
-    question: 'Що робити, якщо промокод не працює?',
-    answer:
-      "Якщо промокод не працює, перевірте правильність введення коду, термін його дії та умови використання на сторінці деталей партнера. Якщо проблема залишається, зв'яжіться з нашою службою підтримки.",
-  },
-  {
-    question: 'Чи можу я використовувати кілька промокодів одночасно?',
-    answer:
-      'Умови використання промокодів залежать від політики кожного партнера. Деякі партнери дозволяють комбінувати знижки, інші - ні. Перевіряйте умови на сторінці деталей партнера.',
-  },
-  {
-    question: 'Як я можу запропонувати нового партнера?',
-    answer:
-      "Якщо у вас є пропозиція щодо нового партнера, зв'яжіться з нашою службою підтримки через чат-бот у Slack або надішліть запит через форму зворотного зв'язку.",
-  },
-]
+const faqItems = computed(() =>
+  faq.items.map((item) => ({
+    question: t(item.question),
+    answer: t(item.answer),
+  })),
+)
 
 function handleStartChat() {
   // TODO: Implement chat functionality
@@ -59,10 +26,9 @@ function handleStartChat() {
     <!-- Hero Section -->
     <div class="faq__hero">
       <div class="faq__title-section">
-        <h1 class="faq__title">#Часті запитання</h1>
+        <h1 class="faq__title">{{ t(pages.faq.title) }}</h1>
         <p class="faq__description">
-          Знайдіть відповіді на поширені питання про корпоративні знижки. Не знайшли те, що шукаєте?
-          Зв'яжіться з нашою службою підтримки.
+          {{ t(pages.faq.description) }}
         </p>
       </div>
     </div>
@@ -86,23 +52,23 @@ function handleStartChat() {
           <img :src="botImg" alt="Bot icon" />
         </div>
         <div class="faq__cta-text">
-          <h2 class="faq__cta-title">Цілодобовий коннект з People Unit</h2>
-          <p class="faq__cta-description">Маєш ідеї або реквести? Спробуйте наш чат-бот у Slack</p>
+          <h2 class="faq__cta-title">{{ t(pages.faq.cta.title) }}</h2>
+          <p class="faq__cta-description">{{ t(pages.faq.cta.description) }}</p>
         </div>
       </div>
-      <SecondaryButton size="large" class="faq__cta-button" @click="handleStartChat">
-        ПОЧАТИ ЧАТ
-      </SecondaryButton>
+      <SecondaryButton
+        size="large"
+        class="faq__cta-button"
+        :label="t(pages.faq.cta.button)"
+        @click="handleStartChat"
+      />
     </div>
 
     <!-- Important Notice -->
     <div class="faq__notice">
-      <h3 class="faq__notice-title">Важливе повідомлення</h3>
+      <h3 class="faq__notice-title">{{ t(pages.faq.notice.title) }}</h3>
       <p class="faq__notice-text">
-        Корпоративні знижки є пільгою, що надається лише активним співробітникам. Неправильне
-        використання промокодів або передача кодів сторонніми особами може призвести до скасування
-        привілеїв знижок. Всі знижки підпорядковуються умовам партнерів і можуть бути змінені або
-        припинені в будь-який час.
+        {{ t(pages.faq.notice.text) }}
       </p>
     </div>
   </div>

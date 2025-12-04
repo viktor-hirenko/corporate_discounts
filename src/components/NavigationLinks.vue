@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAppConfig } from '@/composables/useAppConfig'
 
 interface Props {
   variant?: 'desktop' | 'mobile'
@@ -12,6 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const route = useRoute()
+const { t, navigation } = useAppConfig()
 
 const isHomeActive = computed(() => {
   const name = route.name
@@ -38,7 +40,7 @@ function handleClick() {
       :class="{ 'navigation-links__link--active': isHomeActive }"
       @click="handleClick"
     >
-      #головна
+      {{ t(navigation.home) }}
     </router-link>
 
     <router-link
@@ -47,7 +49,7 @@ function handleClick() {
       :class="{ 'navigation-links__link--active': isFaqActive }"
       @click="handleClick"
     >
-      #питання
+      {{ t(navigation.faq) }}
     </router-link>
   </nav>
 </template>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAppConfig } from '@/composables/useAppConfig'
 import type { Partner } from '@/types/partner'
 
 interface Props {
@@ -8,6 +10,27 @@ interface Props {
 
 const props = defineProps<Props>()
 const router = useRouter()
+const { t, getPartnerLocalizedData, filters } = useAppConfig()
+
+const localizedData = computed(() => getPartnerLocalizedData(props.partner.id))
+
+const partnerName = computed(() => {
+  return localizedData.value ? t(localizedData.value.name) : props.partner.name
+})
+
+const discountLabel = computed(() => {
+  return localizedData.value ? t(localizedData.value.discount.label) : props.partner.discount.label
+})
+
+const categoryLabel = computed(() => {
+  const category = filters.categoryLabels[props.partner.category]
+  return category ? t(category) : props.partner.category
+})
+
+const locationLabel = computed(() => {
+  const location = filters.locationLabels[props.partner.location]
+  return location ? t(location) : props.partner.location
+})
 
 function handleClick() {
   router.push({
@@ -20,20 +43,20 @@ function handleClick() {
 <template>
   <article class="partner-card" @click="handleClick">
     <div class="partner-card__badge">
-      {{ partner.discount.label }}
+      {{ discountLabel }}
     </div>
     <div class="partner-card__content">
-    <div class="partner-card__image-wrapper">
-      <img :src="partner.images.thumbnail" :alt="partner.name" class="partner-card__image" />
-    </div>
+      <div class="partner-card__image-wrapper">
+        <img :src="partner.images.thumbnail" :alt="partnerName" class="partner-card__image" />
+      </div>
 
-    <div class="partner-card__info">
-    <div class="partner-card__meta">
-      <span class="partner-card__category">{{ partner.category }}</span>
-          <span class="partner-card__location">#{{ partner.location }}</span>
+      <div class="partner-card__info">
+        <div class="partner-card__meta">
+          <span class="partner-card__category">{{ categoryLabel }}</span>
+          <span class="partner-card__location">#{{ locationLabel }}</span>
         </div>
-        <h3 class="partner-card__title">{{ partner.name }}</h3>
-    </div>
+        <h3 class="partner-card__title">{{ partnerName }}</h3>
+      </div>
     </div>
   </article>
 </template>
@@ -55,10 +78,10 @@ function handleClick() {
 
   &__content {
     position: relative;
-  display: flex;
+    display: flex;
     padding: to-rem(16);
-  flex-direction: column;
-  gap: to-rem(16);
+    flex-direction: column;
+    gap: to-rem(16);
     border: to-rem(1) solid var(--color-secondary-600);
     border-radius: to-rem(16);
   }

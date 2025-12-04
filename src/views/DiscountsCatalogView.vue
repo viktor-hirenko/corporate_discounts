@@ -7,8 +7,10 @@ import PagesPagination from '@/components/PagesPagination.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import { useDiscountsStore } from '@/stores/discounts'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import { useAppConfig } from '@/composables/useAppConfig'
 
 const store = useDiscountsStore()
+const { t, tTemplate, pages } = useAppConfig()
 
 const isLoading = computed(() => store.status === 'loading')
 const isError = computed(() => store.status === 'error')
@@ -44,10 +46,11 @@ onMounted(() => {
     <div class="discounts-catalog__content container">
       <section class="discounts-catalog__hero" aria-labelledby="discounts-heading">
         <div class="discounts-catalog__title-section">
-          <h1 id="discounts-heading" class="discounts-catalog__title">#Корпоративні знижки</h1>
+          <h1 id="discounts-heading" class="discounts-catalog__title">
+            {{ t(pages.discounts.title) }}
+          </h1>
           <p class="discounts-catalog__description">
-            Ексклюзивні пропозиції від партнерів для тіммейтів. Фільтруйте за локацією та
-            категорією, щоб знайти найкращі знижки.
+            {{ t(pages.discounts.description) }}
           </p>
         </div>
 
@@ -63,7 +66,13 @@ onMounted(() => {
         v-if="!isLoading && !isError && totalPartners > 0"
         class="discounts-catalog__results-count"
       >
-        Показано {{ displayedRange.start }}-{{ displayedRange.end }} з {{ totalPartners }} партнерів
+        {{
+          tTemplate(pages.discounts.messages.resultsCount, {
+            start: displayedRange.start,
+            end: displayedRange.end,
+            total: totalPartners,
+          })
+        }}
       </p>
 
       <!-- Позиция FilterChips для десктопной версии -->
@@ -72,12 +81,13 @@ onMounted(() => {
       <!-- Loading state -->
       <div v-if="isLoading" class="discounts-catalog__loading">
         <div class="discounts-catalog__spinner"></div>
+        <p class="discounts-catalog__loading-text">{{ t(pages.discounts.messages.loading) }}</p>
       </div>
 
       <!-- Error state -->
       <div v-else-if="isError" class="discounts-catalog__error">
-        <p>{{ errorMessage || 'Не вдалося завантажити партнерів. Спробуйте ще раз пізніше.' }}</p>
-        <PrimaryButton label="Спробувати ще раз" @click="store.loadPartners" />
+        <p>{{ errorMessage || t(pages.discounts.messages.error) }}</p>
+        <PrimaryButton :label="t(pages.discounts.messages.retry)" @click="store.loadPartners" />
       </div>
 
       <!-- Content -->
@@ -88,8 +98,7 @@ onMounted(() => {
 
         <div v-else class="discounts-catalog__empty">
           <p>
-            Партнерів не знайдено. <br />
-            Спробуйте змінити фільтри.
+            {{ t(pages.discounts.messages.empty) }}
           </p>
         </div>
       </template>

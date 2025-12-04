@@ -1,21 +1,32 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useDiscountsStore } from '@/stores/discounts'
+import { useAppConfig } from '@/composables/useAppConfig'
 import type { PartnerCategory, PartnerLocation } from '@/types/partner'
 import CloseIcon from './icons/CloseIcon.vue'
 
 const store = useDiscountsStore()
+const { t, tTemplate, filters } = useAppConfig()
 
 const ALL_OPTION = 'Усі'
 
 // Маппинг локаций для отображения
-const locationLabels: Record<PartnerLocation, string> = {
-  UA: 'Україна',
-  'UA/Київ': 'Київ',
-  'UA/Львів': 'Львів',
-  'LT/Рига': 'Рига',
-  Global: 'Global',
-}
+const locationLabels = computed(() => {
+  const labels: Record<string, string> = {}
+  Object.entries(filters.locationLabels).forEach(([key, value]) => {
+    labels[key] = t(value)
+  })
+  return labels as Record<PartnerLocation, string>
+})
+
+// Маппинг категорий для отображения
+const categoryLabels = computed(() => {
+  const labels: Record<string, string> = {}
+  Object.entries(filters.categoryLabels).forEach(([key, value]) => {
+    labels[key] = t(value)
+  })
+  return labels as Record<PartnerCategory, string>
+})
 
 // Активные фильтры (исключая "Усі")
 const activeFilters = computed(() => {
@@ -28,7 +39,7 @@ const activeFilters = computed(() => {
   if (store.filters.location && store.filters.location !== ALL_OPTION) {
     filters.push({
       type: 'location',
-      label: locationLabels[store.filters.location],
+      label: locationLabels.value[store.filters.location] || store.filters.location,
       value: store.filters.location,
     })
   }
@@ -36,7 +47,7 @@ const activeFilters = computed(() => {
   if (store.filters.category && store.filters.category !== ALL_OPTION) {
     filters.push({
       type: 'category',
-      label: store.filters.category,
+      label: categoryLabels.value[store.filters.category] || store.filters.category,
       value: store.filters.category,
     })
   }
@@ -68,7 +79,7 @@ function handleRemoveFilter(type: 'category' | 'location') {
       :key="`${filter.type}-${filter.value}`"
       class="filter-chips__chip"
       type="button"
-      :aria-label="`Видалити фільтр ${filter.label}`"
+      :aria-label="tTemplate(filters.removeFilter, { label: filter.label })"
       @click="handleRemoveFilter(filter.type)"
     >
       <span class="filter-chips__label">{{ filter.label }}</span>

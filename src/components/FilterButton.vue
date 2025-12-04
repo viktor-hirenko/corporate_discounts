@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SecondaryButton from './SecondaryButton.vue'
 import ChevronDownIcon from './icons/ChevronDownIcon.vue'
+import { useAppConfig } from '@/composables/useAppConfig'
 
 interface Props {
   isOpen: boolean
@@ -12,13 +13,15 @@ const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
 
+const { t, filters } = useAppConfig()
+
 function handleClick(event: MouseEvent) {
   emit('click', event)
 }
 </script>
 
 <template>
-  <SecondaryButton label="Фільтр" @click="handleClick" class="filter-button">
+  <SecondaryButton :label="t(filters.button)" @click="handleClick" class="filter-button">
     <template #icon-right>
       <span class="filter-button__icon" :class="{ 'filter-button__icon--rotated': isOpen }">
         <ChevronDownIcon />

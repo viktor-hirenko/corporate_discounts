@@ -1,0 +1,996 @@
+{
+  "locales": ["ua", "en"],
+  "defaultLocale": "ua",
+  "languages": [
+    {
+      "code": "ua",
+      "label": {
+        "ua": "Українська",
+        "en": "Ukrainian"
+      },
+      "shortLabel": "ua"
+    },
+    {
+      "code": "en",
+      "label": {
+        "ua": "English",
+        "en": "English"
+      },
+      "shortLabel": "en"
+    }
+  ],
+  "pages": {
+    "discounts": {
+      "title": {
+        "ua": "#Корпоративні знижки",
+        "en": "#Corporate Discounts"
+      },
+      "description": {
+        "ua": "Ексклюзивні пропозиції від партнерів для тіммейтів. Фільтруйте за локацією та категорією, щоб знайти найкращі знижки.",
+        "en": "Exclusive offers from partners for teammates. Filter by location and category to find the best discounts."
+      },
+      "messages": {
+        "resultsCount": {
+          "ua": "Показано {{start}}-{{end}} з {{total}} партнерів",
+          "en": "Showing {{start}}-{{end}} of {{total}} partners"
+        },
+        "empty": {
+          "ua": "Партнерів не знайдено. Спробуйте змінити фільтри.",
+          "en": "No partners found. Try changing filters."
+        },
+        "loading": {
+          "ua": "Завантаження партнерів...",
+          "en": "Loading partners..."
+        },
+        "error": {
+          "ua": "Не вдалося завантажити партнерів. Спробуйте ще раз пізніше.",
+          "en": "Failed to load partners. Please try again later."
+        },
+        "retry": {
+          "ua": "Спробувати ще раз",
+          "en": "Try again"
+        }
+      }
+    },
+    "faq": {
+      "title": {
+        "ua": "#Часті запитання",
+        "en": "#Frequently Asked Questions"
+      },
+      "description": {
+        "ua": "Знайдіть відповіді на поширені питання про корпоративні знижки. Не знайшли те, що шукаєте? Зв'яжіться з нашою службою підтримки.",
+        "en": "Find answers to common questions about corporate discounts. Can't find what you're looking for? Contact our support team."
+      },
+      "cta": {
+        "title": {
+          "ua": "Цілодобовий коннект з People Unit",
+          "en": "24/7 Connection with People Unit"
+        },
+        "description": {
+          "ua": "Маєш ідеї або реквести? Спробуйте наш чат-бот у Slack",
+          "en": "Have ideas or requests? Try our chat bot in Slack"
+        },
+        "button": {
+          "ua": "ПОЧАТИ ЧАТ",
+          "en": "START CHAT"
+        }
+      },
+      "notice": {
+        "title": {
+          "ua": "Важливе повідомлення",
+          "en": "Important Notice"
+        },
+        "text": {
+          "ua": "Корпоративні знижки є пільгою, що надається лише активним співробітникам. Неправильне використання промокодів або передача кодів сторонніми особами може призвести до скасування привілеїв знижок. Всі знижки підпорядковуються умовам партнерів і можуть бути змінені або припинені в будь-який час.",
+          "en": "Corporate discounts are a privilege granted only to active employees. Improper use of promo codes or sharing codes with third parties may result in the cancellation of discount privileges. All discounts are subject to partner terms and may be changed or terminated at any time."
+        }
+      }
+    },
+    "discountDetails": {
+      "backButton": {
+        "ua": "Назад до списку пропозицій",
+        "en": "Back to offers list"
+      },
+      "offer": {
+        "ua": "Пропозиція:",
+        "en": "Offer:"
+      },
+      "promoCode": {
+        "label": {
+          "ua": "Promo code",
+          "en": "Promo code"
+        },
+        "copy": {
+          "ua": "СКОПІЮВАТИ КОД",
+          "en": "COPY CODE"
+        },
+        "copied": {
+          "ua": "Скопійовано!",
+          "en": "Copied!"
+        }
+      },
+      "contactInfo": {
+        "title": {
+          "ua": "Контактна інформація",
+          "en": "Contact Information"
+        },
+        "address": {
+          "ua": "Адреса",
+          "en": "Address"
+        },
+        "website": {
+          "ua": "Вебсайт",
+          "en": "Website"
+        },
+        "socials": {
+          "facebook": {
+            "ua": "Facebook",
+            "en": "Facebook"
+          },
+          "instagram": {
+            "ua": "Instagram",
+            "en": "Instagram"
+          },
+          "telegram": {
+            "ua": "Telegram",
+            "en": "Telegram"
+          },
+          "linkedin": {
+            "ua": "LinkedIn",
+            "en": "LinkedIn"
+          }
+        }
+      },
+      "terms": {
+        "title": {
+          "ua": "Умови використання",
+          "en": "Terms of Use"
+        }
+      },
+      "cta": {
+        "title": {
+          "ua": "Готові скористатися знижкою?",
+          "en": "Ready to use the discount?"
+        },
+        "description": {
+          "ua": "Відвідайте веб-сайт партнера та застосуйте промокод під час оформлення",
+          "en": "Visit the partner's website and apply the promo code during checkout"
+        },
+        "button": {
+          "ua": "ВІДВІДАТИ ВЕБ-САЙТ ПАРТНЕРА",
+          "en": "VISIT PARTNER WEBSITE"
+        }
+      }
+    }
+  },
+  "pagination": {
+    "previous": {
+      "ua": "#попередня",
+      "en": "#previous"
+    },
+    "next": {
+      "ua": "#наступна",
+      "en": "#next"
+    },
+    "ariaLabels": {
+      "navigation": {
+        "ua": "Навігація по сторінках",
+        "en": "Page navigation"
+      },
+      "previousPage": {
+        "ua": "Попередня сторінка",
+        "en": "Previous page"
+      },
+      "nextPage": {
+        "ua": "Наступна сторінка",
+        "en": "Next page"
+      },
+      "skipPages": {
+        "ua": "Пропуск сторінок",
+        "en": "Skip pages"
+      },
+      "goToPage": {
+        "ua": "Перейти на сторінку {{page}}",
+        "en": "Go to page {{page}}"
+      }
+    }
+  },
+  "navigation": {
+    "home": {
+      "ua": "#головна",
+      "en": "#home"
+    },
+    "faq": {
+      "ua": "#питання",
+      "en": "#questions"
+    }
+  },
+  "filters": {
+    "button": {
+      "ua": "Фільтр",
+      "en": "Filter"
+    },
+    "apply": {
+      "ua": "Застосувати",
+      "en": "Apply"
+    },
+    "locations": {
+      "all": {
+        "value": "Усі",
+        "label": {
+          "ua": "Всі локаціі",
+          "en": "All locations"
+        },
+        "description": {
+          "ua": "Показати вісх партнерів",
+          "en": "Show all partners"
+        }
+      },
+      "ua": {
+        "value": "UA",
+        "label": {
+          "ua": "Україна",
+          "en": "Ukraine"
+        },
+        "description": {
+          "ua": "Фізичні локації в Україні",
+          "en": "Physical locations in Ukraine"
+        }
+      },
+      "europe": {
+        "value": "LT/Рига",
+        "label": {
+          "ua": "Європа",
+          "en": "Europe"
+        },
+        "description": {
+          "ua": "Партнери у Європі",
+          "en": "Partners in Europe"
+        }
+      },
+      "online": {
+        "value": "Global",
+        "label": {
+          "ua": "Онлайн",
+          "en": "Online"
+        },
+        "description": {
+          "ua": "Віртуальні та онлайн-сервіси",
+          "en": "Virtual and online services"
+        }
+      }
+    },
+    "categories": {
+      "all": {
+        "value": "Усі",
+        "label": {
+          "ua": "Всі категорії",
+          "en": "All categories"
+        },
+        "description": {
+          "ua": "Переглянути всі пропозиції",
+          "en": "View all offers"
+        }
+      },
+      "travel": {
+        "value": "Подорожі",
+        "label": {
+          "ua": "Подорожі",
+          "en": "Travel"
+        },
+        "description": {
+          "ua": "Туристичні агенства та авіквитки",
+          "en": "Travel agencies and airline tickets"
+        }
+      },
+      "fitness": {
+        "value": "Фітнес-клуб",
+        "label": {
+          "ua": "Фітнес-клуб",
+          "en": "Fitness Club"
+        },
+        "description": {
+          "ua": "Спортзали та тренувальні центри",
+          "en": "Gyms and training centers"
+        }
+      },
+      "online": {
+        "value": "Онлайн",
+        "label": {
+          "ua": "Онлайн",
+          "en": "Online"
+        },
+        "description": {
+          "ua": "Віртуальні та онлайн-сервіси",
+          "en": "Virtual and online services"
+        }
+      },
+      "beauty": {
+        "value": "Салон краси",
+        "label": {
+          "ua": "Салон краси",
+          "en": "Beauty Salon"
+        },
+        "description": {
+          "ua": "Спа та велнес-послуги",
+          "en": "Spa and wellness services"
+        }
+      },
+      "shop": {
+        "value": "Магазин",
+        "label": {
+          "ua": "Магазин",
+          "en": "Shop"
+        },
+        "description": {
+          "ua": "Роздрібна торгівля та e-commerce",
+          "en": "Retail and e-commerce"
+        }
+      },
+      "food": {
+        "value": "Їжа",
+        "label": {
+          "ua": "Їжа",
+          "en": "Food"
+        },
+        "description": {
+          "ua": "Ресторани, кафе та здорове харчування",
+          "en": "Restaurants, cafes and healthy food"
+        }
+      },
+      "health": {
+        "value": "Здоровʼя",
+        "label": {
+          "ua": "Здоровʼя",
+          "en": "Health"
+        },
+        "description": {
+          "ua": "Лікарні, клініки та медичні послуги",
+          "en": "Hospitals, clinics and medical services"
+        }
+      },
+      "education": {
+        "value": "Навчання",
+        "label": {
+          "ua": "Навчання",
+          "en": "Education"
+        },
+        "description": {
+          "ua": "Освітні курси та професійний розвиток",
+          "en": "Educational courses and professional development"
+        }
+      },
+      "other": {
+        "value": "Інше",
+        "label": {
+          "ua": "Інше",
+          "en": "Other"
+        },
+        "description": {
+          "ua": "Інші послуги та пропозиції",
+          "en": "Other services and offers"
+        }
+      }
+    },
+    "locationLabels": {
+      "UA": {
+        "ua": "Україна",
+        "en": "Ukraine"
+      },
+      "UA/Київ": {
+        "ua": "Київ",
+        "en": "Kyiv"
+      },
+      "UA/Львів": {
+        "ua": "Львів",
+        "en": "Lviv"
+      },
+      "LT/Рига": {
+        "ua": "Рига",
+        "en": "Riga"
+      },
+      "Global": {
+        "ua": "Global",
+        "en": "Global"
+      }
+    },
+    "categoryLabels": {
+      "Подорожі": {
+        "ua": "Подорожі",
+        "en": "Travel"
+      },
+      "Воркшоп": {
+        "ua": "Воркшоп",
+        "en": "Workshop"
+      },
+      "Краса": {
+        "ua": "Краса",
+        "en": "Beauty"
+      },
+      "Освіта": {
+        "ua": "Освіта",
+        "en": "Education"
+      },
+      "Здоровʼя": {
+        "ua": "Здоровʼя",
+        "en": "Health"
+      },
+      "Техніка": {
+        "ua": "Техніка",
+        "en": "Technology"
+      },
+      "Розваги": {
+        "ua": "Розваги",
+        "en": "Entertainment"
+      },
+      "Фітнес-клуб": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness Club"
+      },
+      "Онлайн": {
+        "ua": "Онлайн",
+        "en": "Online"
+      },
+      "Салон краси": {
+        "ua": "Салон краси",
+        "en": "Beauty Salon"
+      },
+      "Магазин": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "Їжа": {
+        "ua": "Їжа",
+        "en": "Food"
+      },
+      "Навчання": {
+        "ua": "Навчання",
+        "en": "Education"
+      },
+      "Інше": {
+        "ua": "Інше",
+        "en": "Other"
+      }
+    },
+    "removeFilter": {
+      "ua": "Видалити фільтр {{label}}",
+      "en": "Remove filter {{label}}"
+    }
+  },
+  "images": {
+    "logo": {
+      "dark": "src/assets/images/upstars-logo-dark.svg",
+      "light": "src/assets/images/upstars-logo-light.svg"
+    },
+    "tagline": "src/assets/images/corporate-discounts-text.svg",
+    "loginBackground": "src/assets/images/login-background.svg",
+    "bot": "src/assets/images/bot-img.svg",
+    "avatar": {
+      "placeholder": "src/assets/images/avatar/avarar-placeholder.webp"
+    }
+  },
+  "faq": {
+    "categories": {
+      "general": {
+        "ua": "Загальні питання",
+        "en": "General Questions"
+      },
+      "promoCodes": {
+        "ua": "Промокоди",
+        "en": "Promo Codes"
+      },
+      "catalog": {
+        "ua": "Каталог партнерів",
+        "en": "Partners Catalog"
+      },
+      "support": {
+        "ua": "Технічна підтримка",
+        "en": "Technical Support"
+      }
+    },
+    "items": [
+      {
+        "id": "faq-001",
+        "category": "general",
+        "question": {
+          "ua": "Як отримати доступ до корпоративних знижок?",
+          "en": "How to get access to corporate discounts?"
+        },
+        "answer": {
+          "ua": "Авторизуйтесь через корпоративний email на сторінці логіну. Після входу відкриється каталог з партнерами та промокодами.",
+          "en": "Log in with your corporate email on the login page. After logging in, you'll see the catalog with partners and promo codes."
+        }
+      },
+      {
+        "id": "faq-002",
+        "category": "promoCodes",
+        "question": {
+          "ua": "Що робити, якщо промокод не працює?",
+          "en": "What to do if the promo code doesn't work?"
+        },
+        "answer": {
+          "ua": "Переконайтеся, що промокод введено без пробілів і він ще чинний. Якщо проблема залишилась — натисніть \"Не працює промокод\" у картці партнера або напишіть на support@upstars.com.",
+          "en": "Make sure the promo code is entered without spaces and is still valid. If the problem persists, click \"Promo code doesn't work\" on the partner card or write to support@upstars.com."
+        }
+      },
+      {
+        "id": "faq-003",
+        "category": "catalog",
+        "question": {
+          "ua": "Як відфільтрувати партнерів за локацією чи категорією?",
+          "en": "How to filter partners by location or category?"
+        },
+        "answer": {
+          "ua": "Скористайтеся кнопкою \"Фільтри\" у каталозі. Оберіть потрібну категорію (подорожі, воркшопи тощо) і локацію — список оновиться автоматично.",
+          "en": "Use the \"Filter\" button in the catalog. Select the desired category (travel, workshops, etc.) and location — the list will update automatically."
+        }
+      },
+      {
+        "id": "faq-004",
+        "category": "catalog",
+        "question": {
+          "ua": "Чи можу я запропонувати нового партнера?",
+          "en": "Can I suggest a new partner?"
+        },
+        "answer": {
+          "ua": "Так, заповніть форму \"Запропонувати партнера\" у футері сайту або напишіть вашій People-партнерці. Команда перевірить пропозицію та додасть бренд до каталогу.",
+          "en": "Yes, fill out the \"Suggest a partner\" form in the footer or write to your People partner. The team will review the proposal and add the brand to the catalog."
+        }
+      },
+      {
+        "id": "faq-005",
+        "category": "support",
+        "question": {
+          "ua": "Сторінка не відкривається або з'являється помилка. Що робити?",
+          "en": "The page doesn't open or an error appears. What to do?"
+        },
+        "answer": {
+          "ua": "Оновіть сторінку, перевірте VPN (якщо працюєте з-за кордону) та кеш браузера. Якщо помилка повторюється — зверніться у Slack (#help-upstars) або на support@upstars.com.",
+          "en": "Refresh the page, check your VPN (if working from abroad) and browser cache. If the error persists, contact Slack (#help-upstars) or support@upstars.com."
+        }
+      },
+      {
+        "id": "faq-006",
+        "category": "promoCodes",
+        "question": {
+          "ua": "Чи можу я використовувати кілька промокодів одночасно?",
+          "en": "Can I use multiple promo codes at the same time?"
+        },
+        "answer": {
+          "ua": "Умови використання промокодів залежать від політики кожного партнера. Деякі партнери дозволяють комбінувати знижки, інші - ні. Перевіряйте умови на сторінці деталей партнера.",
+          "en": "The terms of using promo codes depend on each partner's policy. Some partners allow combining discounts, others don't. Check the terms on the partner's details page."
+        }
+      },
+      {
+        "id": "faq-007",
+        "category": "catalog",
+        "question": {
+          "ua": "Як я можу запропонувати нового партнера?",
+          "en": "How can I suggest a new partner?"
+        },
+        "answer": {
+          "ua": "Якщо у вас є пропозиція щодо нового партнера, зв'яжіться з нашою службою підтримки через чат-бот у Slack або надішліть запит через форму зворотного зв'язку.",
+          "en": "If you have a proposal for a new partner, contact our support team through the chat bot in Slack or send a request through the feedback form."
+        }
+      }
+    ]
+  },
+  "partners": {
+    "dataSource": "src/data/partners.ts",
+    "note": "Partner data is stored in partners.ts file. This reference is for documentation purposes.",
+    "localizedData": {
+      "roslynka": {
+        "name": {
+          "ua": "Roslynka",
+          "en": "Roslynka"
+        },
+        "summary": {
+          "ua": "Флораріум-студія та рослинні воркшопи для команд.",
+          "en": "Florarium studio and plant workshops for teams."
+        },
+        "description": {
+          "ua": "Roslynka проводить творчі воркшопи з флораріумів та живих композицій. Для тіммейтів доступні індивідуальні комплекти з рослинами та матеріалами для домашньої збірки.",
+          "en": "Roslynka conducts creative workshops on florariums and live compositions. Individual kits with plants and materials for home assembly are available for teammates."
+        },
+        "discount": {
+          "label": {
+            "ua": "-10%",
+            "en": "-10%"
+          },
+          "description": {
+            "ua": "Діє на всі флораріуми та майстер-класи студії",
+            "en": "Valid for all florariums and studio master classes"
+          }
+        },
+        "address": {
+          "ua": "Київ, вул. Шулявська, 10",
+          "en": "Kyiv, Shuliavska St, 10"
+        },
+        "terms": {
+          "ua": [
+            "Знижка діє на майстер-класи та флораріуми власного виробництва.",
+            "Не сумується з іншими акціями студії.",
+            "Промокод потрібно назвати перед оплатою."
+          ],
+          "en": [
+            "Discount applies to master classes and in-house florariums.",
+            "Cannot be combined with other studio promotions.",
+            "Promo code must be mentioned before payment."
+          ]
+        },
+        "tags": {
+          "ua": ["тімбілдинг", "рослини", "творчість"],
+          "en": ["team building", "plants", "creativity"]
+        }
+      },
+      "otoy": {
+        "name": {
+          "ua": "Otoy.event",
+          "en": "Otoy.event"
+        },
+        "summary": {
+          "ua": "Креативні арт-вечірки та воркшопи по створенню картин.",
+          "en": "Creative art evenings and painting workshops."
+        },
+        "description": {
+          "ua": "Otoy.event організовує вечірки для команд, де кожен учасник створює власну картину під супровід професійного художника. Матеріали та напої включені.",
+          "en": "Otoy.event organizes evenings for teams where each participant creates their own painting under the guidance of a professional artist. Materials and drinks are included."
+        },
+        "discount": {
+          "label": {
+            "ua": "-100 грн знижки",
+            "en": "-100 UAH discount"
+          },
+          "description": {
+            "ua": "На участь у командних арт-вечірках",
+            "en": "For participation in team art evenings"
+          }
+        },
+        "address": {
+          "ua": "Київ, вул. Сагайдачного, 25",
+          "en": "Kyiv, Sahaidachnoho St, 25"
+        },
+        "terms": {
+          "ua": [
+            "Знижка діє для груп від 10 осіб.",
+            "Попередня оплата 50% — обовʼязкова.",
+            "Промокод активується під час бронювання дати."
+          ],
+          "en": [
+            "Discount applies to groups of 10 or more people.",
+            "50% advance payment is required.",
+            "Promo code is activated when booking a date."
+          ]
+        },
+        "tags": {
+          "ua": ["тімбілдинг", "мистецтво"],
+          "en": ["team building", "art"]
+        }
+      },
+      "reikartz": {
+        "name": {
+          "ua": "Reikartz",
+          "en": "Reikartz"
+        },
+        "summary": {
+          "ua": "Мережа готелів по всій Україні з комфортними умовами.",
+          "en": "Hotel network throughout Ukraine with comfortable conditions."
+        },
+        "description": {
+          "ua": "Reikartz Hospitality Group надає номерний фонд у різних містах України. Знижка поширюється на бронювання для особистих подорожей та відряджень.",
+          "en": "Reikartz Hospitality Group provides accommodation in various cities of Ukraine. The discount applies to bookings for personal travel and business trips."
+        },
+        "discount": {
+          "label": {
+            "ua": "10% знижки",
+            "en": "10% discount"
+          },
+          "description": {
+            "ua": "На бронювання номерів мережі",
+            "en": "On network hotel bookings"
+          }
+        },
+        "terms": {
+          "ua": [
+            "Знижка застосовується на стандартні тарифи.",
+            "Не діє на групові заїзди понад 20 осіб.",
+            "Бронювання потрібно здійснювати через корпоративний відділ або офіційний сайт."
+          ],
+          "en": [
+            "Discount applies to standard rates.",
+            "Does not apply to group bookings of more than 20 people.",
+            "Bookings must be made through the corporate department or official website."
+          ]
+        },
+        "tags": {
+          "ua": ["готелі", "подорожі", "комфорт"],
+          "en": ["hotels", "travel", "comfort"]
+        }
+      },
+      "your-dream-trips": {
+        "name": {
+          "ua": "Your Dream Trips",
+          "en": "Your Dream Trips"
+        },
+        "summary": {
+          "ua": "Агентство індивідуальних турів та корпоративних подорожей.",
+          "en": "Agency for individual tours and corporate travel."
+        },
+        "description": {
+          "ua": "Команда Your Dream Trips підбирає маршрути та організовує індивідуальні тури по всьому світу. Працюють з корпоративними групами, відпустками та тревел-консьєрж сервісом.",
+          "en": "The Your Dream Trips team selects routes and organizes individual tours around the world. They work with corporate groups, vacations, and travel concierge services."
+        },
+        "discount": {
+          "label": {
+            "ua": "5% знижки",
+            "en": "5% discount"
+          },
+          "description": {
+            "ua": "",
+            "en": ""
+          }
+        },
+        "terms": {
+          "ua": [
+            "Знижка застосовується до вартості наземного обслуговування.",
+            "Авіаквитки та додаткові послуги не входять у промо."
+          ],
+          "en": [
+            "Discount applies to ground service costs.",
+            "Airline tickets and additional services are not included in the promotion."
+          ]
+        },
+        "tags": {
+          "ua": [],
+          "en": []
+        }
+      },
+      "ribas": {
+        "name": {
+          "ua": "Ribas Hotels",
+          "en": "Ribas Hotels"
+        },
+        "summary": {
+          "ua": "Розгалужена мережа дизайн-готелів з сервісом на рівні.",
+          "en": "Extensive network of design hotels with premium service."
+        },
+        "description": {
+          "ua": "Ribas Hotels керує понад 30 готелями та апартаментами в Україні. Для тіммейтів UPSTARS діє фіксована знижка на проживання.",
+          "en": "Ribas Hotels manages over 30 hotels and apartments in Ukraine. A fixed discount on accommodation applies for UPSTARS teammates."
+        },
+        "discount": {
+          "label": {
+            "ua": "10% знижки",
+            "en": "10% discount"
+          },
+          "description": {
+            "ua": "",
+            "en": ""
+          }
+        },
+        "terms": {
+          "ua": [
+            "Пропозиція діє на прямі бронювання через сайт.",
+            "Промокод потрібно ввести під час оформлення."
+          ],
+          "en": [
+            "Offer applies to direct bookings through the website.",
+            "Promo code must be entered during checkout."
+          ]
+        },
+        "tags": {
+          "ua": [],
+          "en": []
+        }
+      },
+      "captain-kyiv": {
+        "name": {
+          "ua": "Captain Kyiv",
+          "en": "Captain Kyiv"
+        },
+        "summary": {
+          "ua": "Авторські екскурсії Києвом з елементами сторітелінгу та квесту.",
+          "en": "Author's tours of Kyiv with storytelling and quest elements."
+        },
+        "description": {
+          "ua": "Команда Captain Kyiv проводить екскурсії по нестандартних маршрутах столиці. Вибирайте прогулянки вихідного дня або вечірні тури з дегустаціями.",
+          "en": "The Captain Kyiv team conducts tours on non-standard routes of the capital. Choose weekend walks or evening tours with tastings."
+        },
+        "discount": {
+          "label": {
+            "ua": "-30 грн знижки",
+            "en": "-30 UAH discount"
+          },
+          "description": {
+            "ua": "На тематичні екскурсії містом",
+            "en": "On themed city tours"
+          }
+        },
+        "terms": {
+          "ua": [
+            "Знижка діє на групові екскурсії до 15 осіб.",
+            "Промокод необхідно вказати при бронюванні на сайті."
+          ],
+          "en": [
+            "Discount applies to group tours of up to 15 people.",
+            "Promo code must be specified when booking on the website."
+          ]
+        },
+        "tags": {
+          "ua": [],
+          "en": []
+        }
+      },
+      "eurotrips": {
+        "name": {
+          "ua": "Eurotrips",
+          "en": "Eurotrips"
+        },
+        "summary": {
+          "ua": "Міжнародні тури з молодіжною атмосферою.",
+          "en": "International tours with a youthful atmosphere."
+        },
+        "description": {
+          "ua": "Eurotrips організовує подорожі Європою та світом з гідом, активностями та новими знайомствами. Для тіммейтів доступна знижка на будь-який тур.",
+          "en": "Eurotrips organizes trips across Europe and the world with guides, activities, and new acquaintances. A discount is available for teammates on any tour."
+        },
+        "discount": {
+          "label": {
+            "ua": "-20 EURO знижки",
+            "en": "-20 EUR discount"
+          },
+          "description": {
+            "ua": "",
+            "en": ""
+          }
+        },
+        "terms": {
+          "ua": [
+            "Промокод діє на базову вартість туру.",
+            "Не поширюється на додаткові опції та страховку."
+          ],
+          "en": [
+            "Promo code applies to the base tour price.",
+            "Does not apply to additional options and insurance."
+          ]
+        },
+        "tags": {
+          "ua": [],
+          "en": []
+        }
+      },
+      "travel-one": {
+        "name": {
+          "ua": "1Travel",
+          "en": "1Travel"
+        },
+        "summary": {
+          "ua": "Латвійський тревел-оператор з турами по Скандинавії.",
+          "en": "Latvian travel operator with tours to Scandinavia."
+        },
+        "description": {
+          "ua": "1Travel спеціалізується на автобусних турах Балтією та Скандинавськими країнами. Знижка доступна для тіммейтів та їх друзів.",
+          "en": "1Travel specializes in bus tours to the Baltic and Scandinavian countries. Discount is available for teammates and their friends."
+        },
+        "discount": {
+          "label": {
+            "ua": "5% знижки",
+            "en": "5% discount"
+          },
+          "description": {
+            "ua": "",
+            "en": ""
+          }
+        },
+        "address": {
+          "ua": "Латвія, Рига",
+          "en": "Latvia, Riga"
+        },
+        "terms": {
+          "ua": [
+            "5% на тури, екскурсії і чартерні авіабілети.",
+            "Наш менеджер Olga Altuhova +371 67283006.",
+            "Знижка поширюється на всі тури сезону 2025 року."
+          ],
+          "en": [
+            "5% on tours, excursions and charter flights.",
+            "Our manager Olga Altuhova +371 67283006.",
+            "Discount applies to all 2025 season tours."
+          ]
+        },
+        "tags": {
+          "ua": [],
+          "en": []
+        }
+      },
+      "mandra": {
+        "name": {
+          "ua": "Mandra",
+          "en": "Mandra"
+        },
+        "summary": {
+          "ua": "Кемпінгові подорожі та відпочинок на природі.",
+          "en": "Camping trips and nature relaxation."
+        },
+        "description": {
+          "ua": "Mandra організовує кемпінги, глемпінг та активні тури територією України. Знижка діє на бронювання наметів та пакети відпочинку.",
+          "en": "Mandra organizes camping, glamping and active tours across Ukraine. Discount applies to tent bookings and relaxation packages."
+        },
+        "discount": {
+          "label": {
+            "ua": "10% знижки",
+            "en": "10% discount"
+          },
+          "description": {
+            "ua": "",
+            "en": ""
+          }
+        },
+        "terms": {
+          "ua": [
+            "Знижка діє на базові пакети та не сумується з іншими акціями.",
+            "Промокод потрібно ввести під час бронювання на сайті."
+          ],
+          "en": [
+            "Discount applies to basic packages and cannot be combined with other promotions.",
+            "Promo code must be entered when booking on the website."
+          ]
+        },
+        "tags": {
+          "ua": [],
+          "en": []
+        }
+      },
+      "integral": {
+        "name": {
+          "ua": "Integral",
+          "en": "Integral"
+        },
+        "summary": {
+          "ua": "Фітнес-клуб з хот пілатесом, баре, йогою та функціональними тренуваннями.",
+          "en": "Fitness club with hot pilates, barre, yoga and functional training."
+        },
+        "description": {
+          "ua": "Integral пропонує студійні тренування у Києві та Варшаві: хот пілатес, баре, йога, функціональні та силові заняття. Команда UPSTARS отримує знижку на всі види тренувань, а промокод можна використовувати як офлайн, так і онлайн.",
+          "en": "Integral offers studio training in Kyiv and Warsaw: hot pilates, barre, yoga, functional and strength classes. The UPSTARS team gets a discount on all types of training, and the promo code can be used both offline and online."
+        },
+        "discount": {
+          "label": {
+            "ua": "10% знижки",
+            "en": "10% discount"
+          },
+          "description": {
+            "ua": "Діє на всі види тренувань та абонементи Integral.",
+            "en": "Valid for all types of training and Integral memberships."
+          }
+        },
+        "address": {
+          "ua": "Київ, Іоанна Павла II, 21 / Казимира Малевича, 86П",
+          "en": "Kyiv, Ioanna Pavla II St, 21 / Kazymyra Malevycha St, 86P"
+        },
+        "terms": {
+          "ua": [
+            "Промокод UPSTARS діє як офлайн, так і онлайн.",
+            "Цей код багаторазового використання — кожен тіммейт може використовувати його безлімітно протягом періоду дії.",
+            "Код не діє на абонементи Welcome Pack, Morning Unlimited, Special Self-Care та подарункові сертифікати.",
+            "Всі види тренувань та абонементів доступні із знижкою 10%.",
+            "15% на всі класичні абонементи.",
+            "Термін дії до 31.12.2025 року."
+          ],
+          "en": [
+            "UPSTARS promo code works both offline and online.",
+            "This is a reusable code — each teammate can use it unlimited times during the validity period.",
+            "Code does not apply to Welcome Pack, Morning Unlimited, Special Self-Care memberships and gift certificates.",
+            "All types of training and memberships are available with a 10% discount.",
+            "15% on all classic memberships.",
+            "Valid until December 31, 2025."
+          ]
+        },
+        "tags": {
+          "ua": ["фітнес", "пілатес", "йога"],
+          "en": ["fitness", "pilates", "yoga"]
+        }
+      }
+    }
+  }
+}
