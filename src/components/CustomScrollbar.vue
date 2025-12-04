@@ -189,23 +189,23 @@ onUnmounted(() => {
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 10;
   width: to-rem(8);
   background-color: var(--color-neutral-400);
   cursor: pointer;
-  z-index: 10;
 
   &__thumb {
     position: absolute;
     left: 0;
     width: 100%;
-    background-color: #0927f2;
     border-radius: to-rem(4);
-    cursor: grab;
+    background-color: #0927f2;
     transition: background-color 0.2s ease;
+    cursor: grab;
 
     &:active {
-      cursor: grabbing;
       background-color: #0719c4;
+      cursor: grabbing;
     }
   }
 }

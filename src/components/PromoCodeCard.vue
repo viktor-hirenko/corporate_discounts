@@ -53,50 +53,50 @@ async function handleCopy() {
 <style scoped lang="scss">
 .promo-code-card {
   display: flex;
-  gap: to-rem(16);
-  align-items: flex-end;
   padding: to-rem(32);
-  background-color: var(--color-secondary-150);
+  align-items: flex-end;
+  gap: to-rem(16);
   border: to-rem(3) solid var(--color-secondary-400);
+  background-color: var(--color-secondary-150);
 
   @include mq(null, lg) {
     min-width: to-rem(343);
-    align-items: flex-end;
     justify-content: space-between;
+    align-items: flex-end;
     gap: 0;
   }
 
   &__content {
     display: flex;
+    min-width: 0;
+    flex: 1;
     flex-direction: column;
     gap: to-rem(16);
-    flex: 1;
-    min-width: 0;
 
     @include mq(null, lg) {
-      gap: to-rem(12);
-      flex: 0 0 auto;
       width: to-rem(213);
+      flex: 0 0 auto;
+      gap: to-rem(12);
     }
   }
 
   &__label {
-    font-size: to-rem(16);
-    @include line-height(relaxed);
     color: var(--color-secondary-600);
+    font-size: to-rem(16);
     text-transform: uppercase;
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
   }
 
   &__field {
     display: flex;
-    align-items: center;
-    padding: to-rem(12) to-rem(16);
-    background-color: var(--color-primary-100);
-    border: to-rem(1) solid var(--color-secondary-400);
-    height: to-rem(60);
     box-sizing: border-box;
+    height: to-rem(60);
+    padding: to-rem(12) to-rem(16);
+    align-items: center;
+    border: to-rem(1) solid var(--color-secondary-400);
+    background-color: var(--color-primary-100);
 
     @include mq(null, lg) {
       height: to-rem(48);
@@ -104,18 +104,19 @@ async function handleCopy() {
   }
 
   &__code {
-    font-size: to-rem(24);
-    @include line-height(relaxed);
-    color: var(--color-secondary-600);
-    text-transform: uppercase;
-    white-space: nowrap;
     overflow: hidden;
+    color: var(--color-secondary-600);
+    font-size: to-rem(24);
+    text-transform: uppercase;
     text-overflow: ellipsis;
+    white-space: nowrap;
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
 
     @include mq(null, lg) {
       font-size: to-rem(12);
+
       @include line-height(relaxed);
     }
   }
@@ -125,9 +126,9 @@ async function handleCopy() {
 
     @include mq(null, lg) {
       width: to-rem(48);
-      height: to-rem(48);
       min-width: to-rem(48);
       max-width: to-rem(48);
+      height: to-rem(48);
       min-height: to-rem(48);
       flex-shrink: 0;
     }

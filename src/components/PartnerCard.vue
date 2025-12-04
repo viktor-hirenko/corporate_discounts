@@ -46,11 +46,11 @@ function handleClick() {
   width: 100%;
   padding: to-rem(16);
   background: var(--color-secondary-150, #f0efff);
-  cursor: pointer;
   transition: box-shadow 0.2s ease;
+  cursor: pointer;
 
   &:hover {
-    box-shadow: 0 to-rem(4) to-rem(12) rgba(0, 0, 0, 0.15);
+    box-shadow: 0 to-rem(4) to-rem(12) rgb(0 0 0 / 15%);
   }
 
   &__content {
@@ -65,14 +65,14 @@ function handleClick() {
 
   &__image-wrapper {
     position: relative;
-    width: 100%;
-    aspect-ratio: 1;
-    overflow: hidden;
-    background-color: var(--color-primary-100, #fcfcff);
     display: flex;
-    align-items: center;
+    overflow: hidden;
+    width: 100%;
     justify-content: center;
+    align-items: center;
     border-radius: to-rem(8);
+    background-color: var(--color-primary-100, #fcfcff);
+    aspect-ratio: 1;
   }
 
   &__image {
@@ -86,35 +86,35 @@ function handleClick() {
     position: absolute;
     top: 0;
     right: to-rem(32);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: to-rem(24) to-rem(16);
-    background-color: var(--color-accent-pink, #ef50cc);
-    font-size: to-rem(18);
-    @include line-height(normal);
-    color: var(--color-secondary-600);
-    white-space: nowrap;
     z-index: 2;
+    display: inline-flex;
+    padding: to-rem(24) to-rem(16);
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-accent-pink, #ef50cc);
+    color: var(--color-secondary-600);
+    font-size: to-rem(18);
+    white-space: nowrap;
 
+    @include line-height(normal);
     @include font-weight(extrabold);
   }
 
   &__info {
     display: flex;
+    padding: 0;
     flex-direction: column;
     gap: to-rem(7);
-    padding: 0;
   }
 
   &__meta {
     display: flex;
-    gap: to-rem(16);
     align-items: center;
-    font-size: to-rem(16);
-    @include line-height(relaxed);
+    gap: to-rem(16);
     color: var(--color-neutral-400, #81818e);
+    font-size: to-rem(16);
 
+    @include line-height(relaxed);
     @include font-weight(regular);
   }
 
@@ -129,11 +129,11 @@ function handleClick() {
   }
 
   &__title {
-    font-size: to-rem(24);
     height: to-rem(36);
-    @include line-height(tight);
     color: var(--color-secondary-600, #01001f);
+    font-size: to-rem(24);
 
+    @include line-height(tight);
     @include font-weight(extrabold);
 
     @include mq(null, lg) {

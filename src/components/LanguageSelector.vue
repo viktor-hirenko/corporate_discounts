@@ -38,25 +38,25 @@ function handleLanguageChange(lang: 'ua' | 'en') {
 <style scoped lang="scss">
 .language-selector {
   display: flex;
-  gap: to-rem(4);
   align-items: center;
+  gap: to-rem(4);
 
   &--mobile {
-    gap: to-rem(16);
     width: auto;
     justify-content: center;
+    gap: to-rem(16);
   }
 
   &__button {
     padding: 0;
-    background-color: var(--color-secondary-100, #fcfcff);
     border: none;
-    font-size: to-rem(16);
-    @include line-height(relaxed);
+    background-color: var(--color-secondary-100, #fcfcff);
     color: var(--color-secondary-600, #01001f);
-    cursor: pointer;
+    font-size: to-rem(16);
     transition: color 0.2s ease;
+    cursor: pointer;
 
+    @include line-height(relaxed);
     @include font-weight(extrabold);
 
     &--active {
@@ -69,14 +69,14 @@ function handleLanguageChange(lang: 'ua' | 'en') {
   }
 
   &--mobile &__button {
-    font-size: to-rem(32);
-    @include line-height(tight);
     color: var(--secondary-600-main, #01001f);
+    font-size: to-rem(32);
     transition: opacity 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
 
+    @include line-height(tight);
     @include font-weight(black);
 
     &:hover,

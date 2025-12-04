@@ -159,8 +159,8 @@ function handleNext() {
   display: flex;
   width: 100%;
   padding: to-rem(16) to-rem(24);
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   background-color: var(--color-secondary-100, #fcfcff);
 
   @include mq(null, md) {
@@ -169,17 +169,17 @@ function handleNext() {
 
   &__button {
     display: flex;
+    padding: 0;
     align-items: center;
     gap: to-rem(8);
-    padding: 0;
     border: none;
     background: none;
-    cursor: pointer;
     color: var(--color-secondary-600, #01001f);
+    font-size: to-rem(16);
     transition: opacity 0.2s ease;
+    cursor: pointer;
 
     @include font-weight(extrabold);
-    font-size: to-rem(16);
     @include line-height(relaxed);
 
     &-text {
@@ -204,10 +204,10 @@ function handleNext() {
     &--next {
       @include mq(null, md) {
         display: flex;
-        align-items: center;
-        justify-content: center;
         width: to-rem(24);
         height: to-rem(24);
+        justify-content: center;
+        align-items: center;
       }
     }
 
@@ -225,9 +225,9 @@ function handleNext() {
 
   &__pages {
     display: flex;
-    align-items: center;
     flex: 1;
     justify-content: center;
+    align-items: center;
 
     @include mq(null, md) {
       gap: to-rem(8);
@@ -236,32 +236,32 @@ function handleNext() {
 
   &__page {
     display: flex;
-    align-items: center;
-    justify-content: center;
     min-width: to-rem(32);
     height: to-rem(32);
     padding: 0;
+    justify-content: center;
+    align-items: center;
     border: none;
     background: none;
-    cursor: pointer;
     color: var(--color-secondary-600, #01001f);
-    transition: opacity 0.2s ease;
     font-size: to-rem(16);
-    @include line-height(relaxed);
+    transition: opacity 0.2s ease;
+    cursor: pointer;
 
+    @include line-height(relaxed);
     @include font-family(primary);
     @include font-weight(extrabold);
 
-    &:hover:not(&--active):not(:disabled) {
+    &:disabled {
+      cursor: default;
+    }
+
+    &:hover:not(&--active, :disabled) {
       opacity: 0.8;
     }
 
     &--active {
       color: var(--color-secondary-400, #5535be);
-      cursor: default;
-    }
-
-    &:disabled {
       cursor: default;
     }
   }

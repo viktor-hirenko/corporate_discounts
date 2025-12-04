@@ -14,6 +14,11 @@
   font-weight: inherit;
 }
 
+button {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
 html,
 body {
   height: 100%;
@@ -35,10 +40,10 @@ body {
 
 #app {
   display: flex;
-  min-height: 100svh;
-  flex-direction: column;
   width: 100%;
+  min-height: 100svh;
   padding: to-rem(32);
+  flex-direction: column;
 
   @include mq(null, lg) {
     padding: to-rem(24);

@@ -45,23 +45,23 @@ function toggle() {
   display: flex;
   width: 100%;
   flex-direction: column;
-  color: var(--color-secondary-600, #01001f);
   background-color: var(--color-secondary-150, #f0efff);
+  color: var(--color-secondary-600, #01001f);
 
   &__header {
     display: flex;
     width: 100%;
     padding: to-rem(32) to-rem(24);
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     gap: to-rem(16);
     border: none;
     background: none;
-    cursor: pointer;
     text-align: left;
+    cursor: pointer;
+    user-select: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
-    user-select: none;
 
     @include mq(null, lg) {
       padding: to-rem(16);
@@ -71,12 +71,13 @@ function toggle() {
   &__question {
     flex: 1;
     font-size: to-rem(24);
-    @include line-height(tight);
 
+    @include line-height(tight);
     @include font-weight(extrabold);
 
     @include mq(null, lg) {
       font-size: to-rem(18);
+
       @include line-height(normal);
     }
   }
@@ -98,10 +99,10 @@ function toggle() {
 
   &__answer {
     padding: to-rem(32) to-rem(72) to-rem(62);
-    font-size: to-rem(24);
-    @include line-height(relaxed);
     color: var(--color-secondary-600);
+    font-size: to-rem(24);
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     @include mq(null, lg) {
@@ -113,10 +114,10 @@ function toggle() {
 
 .accordion-enter-active,
 .accordion-leave-active {
+  overflow: hidden;
   transition:
     max-height 0.3s ease,
     opacity 0.3s ease;
-  overflow: hidden;
 }
 
 .accordion-enter-from,

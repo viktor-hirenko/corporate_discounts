@@ -40,10 +40,10 @@ function handleClose() {
 <style scoped lang="scss">
 .mobile-menu {
   display: flex;
+  height: 100dvh;
+  min-height: 0;
+  padding: to-rem(32) to-rem(16) to-rem(40);
   flex-direction: column;
   justify-content: space-between;
-  min-height: 0;
-  height: 100dvh;
-  padding: to-rem(32) to-rem(16) to-rem(40);
 }
 </style>

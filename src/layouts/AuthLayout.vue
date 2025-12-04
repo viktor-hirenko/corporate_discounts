@@ -10,12 +10,12 @@ import { RouterView } from 'vue-router'
 
 <style scoped lang="scss">
 .auth-layout {
-  min-height: 100vh;
   display: flex;
   width: 100%;
+  min-height: 100vh;
   padding: to-rem(32);
-  align-items: center;
   justify-content: center;
+  align-items: center;
   background-image: url('@/assets/images/login-background.svg');
   background-size: cover;
   background-position: 34% center;

@@ -52,24 +52,24 @@ function handleUpdate(value: string) {
   text-align: center;
 
   &__avatar {
+    overflow: hidden;
     width: to-rem(120);
     height: to-rem(120);
     border-radius: 50%;
-    overflow: hidden;
 
     img {
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
     }
   }
 
   &__name {
-    font-size: to-rem(24);
-    @include line-height(tight);
     color: var(--color-secondary-600);
+    font-size: to-rem(24);
 
+    @include line-height(tight);
     @include font-weight(extrabold);
 
     @include mq(null, lg) {

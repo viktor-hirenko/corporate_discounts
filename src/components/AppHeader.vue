@@ -58,10 +58,10 @@ function handleMenuButtonClick() {
 <style scoped lang="scss">
 .header {
   position: relative;
+  z-index: 9999;
   width: 100%;
   padding: to-rem(12) to-rem(24);
   background-color: var(--color-secondary-100, #fcfcff);
-  z-index: 9999;
 
   // Когда открыт dropdown фильтра, уменьшаем z-index чтобы хедер не был поверх модалки
   body.filter-modal-open & {
@@ -70,17 +70,16 @@ function handleMenuButtonClick() {
 
   // Псевдоэлемент для размытия пространства над хедером
   &::before {
-    content: '';
     position: absolute;
     top: to-rem(-32);
-    left: 0;
     right: 0;
+    left: 0;
+    z-index: -1;
     width: 100%;
     height: to-rem(32);
     backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
     pointer-events: none;
-    z-index: -1;
+    content: '';
 
     @include mq(null, lg) {
       top: to-rem(-24);
@@ -91,33 +90,33 @@ function handleMenuButtonClick() {
   &__inner {
     display: flex;
     width: 100%;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     gap: to-rem(16);
   }
 
   &__brand {
     display: flex;
+    min-width: 0;
     flex-direction: column;
     align-items: flex-start;
-    min-width: 0;
   }
 
   &__logo {
-    height: to-rem(20);
     width: auto;
+    height: to-rem(20);
   }
 
   &__tagline {
-    height: to-rem(12);
-    width: auto;
     display: block;
+    width: auto;
+    height: to-rem(12);
   }
 
   &__actions {
     display: flex;
-    gap: to-rem(16);
     align-items: center;
+    gap: to-rem(16);
 
     @include mq(null, lg) {
       display: none;
@@ -126,16 +125,16 @@ function handleMenuButtonClick() {
 
   &__menu-button {
     display: none;
-    align-items: center;
-    justify-content: center;
     width: to-rem(24);
     height: to-rem(24);
     padding: 0;
+    justify-content: center;
+    align-items: center;
     border: none;
     background: none;
-    cursor: pointer;
     color: var(--color-secondary-600, #01001f);
     transition: opacity 0.2s ease;
+    cursor: pointer;
 
     :deep(svg) {
       width: to-rem(16);

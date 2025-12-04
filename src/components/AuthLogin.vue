@@ -53,13 +53,13 @@ function handleSwitchAccount(event: Event) {
 
 <style scoped lang="scss">
 .auth-login {
+  display: flex;
   width: 100%;
   max-width: to-rem(640);
   padding: to-rem(32);
-  background: var(--color-secondary-100);
-  display: flex;
   flex-direction: column;
   gap: to-rem(40);
+  background: var(--color-secondary-100);
 
   @include mq(null, lg) {
     width: 100%;
@@ -73,8 +73,8 @@ function handleSwitchAccount(event: Event) {
 
   &__actions {
   display: flex;
-  flex-direction: column;
   width: 100%;
+  flex-direction: column;
   gap: to-rem(16);
 }
 
@@ -87,11 +87,11 @@ function handleSwitchAccount(event: Event) {
   }
 
   &__switch-text {
-  font-size: to-rem(16);
-    @include line-height(relaxed);
   color: var(--color-secondary-600);
+  font-size: to-rem(16);
   font-style: normal;
 
+    @include line-height(relaxed);
     @include font-weight(extrabold);
   }
 

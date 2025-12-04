@@ -13,10 +13,10 @@ import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
 <style scoped lang="scss">
 .login-view {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   @include mq(null, lg) {
     gap: to-rem(24);
@@ -27,9 +27,9 @@ import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
   position: absolute;
   top: to-rem(66);
   left: 50%;
-  transform: translateX(-50%);
   width: to-rem(146);
   height: auto;
+  transform: translateX(-50%);
 
   @include mq(null, lg) {
     top: to-rem(64);

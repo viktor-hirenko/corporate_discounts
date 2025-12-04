@@ -41,15 +41,15 @@ function handleClick(event: MouseEvent) {
 
 .modal-list-item {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   width: 100%;
   padding: to-rem(8) to-rem(16);
+  justify-content: space-between;
+  align-items: center;
   border: none;
   background-color: var(--color-primary-100);
-  cursor: pointer;
   text-align: left;
   transition: background-color 0.2s ease;
+  cursor: pointer;
 
   &:hover:not(&--active) {
     background-color: var(--color-primary-200, #ceffec);
@@ -61,10 +61,10 @@ function handleClick(event: MouseEvent) {
 
   &__content {
     display: flex;
+    min-width: 0;
+    flex: 1;
     flex-direction: column;
     gap: 0;
-    flex: 1;
-    min-width: 0;
     color: var(--color-secondary-600);
 
     @include font-family(primary);
@@ -72,8 +72,8 @@ function handleClick(event: MouseEvent) {
 
   &__label {
     font-size: to-rem(18);
-    @include line-height(normal);
 
+    @include line-height(normal);
     @include font-weight(extrabold);
 
     .modal-list-item--active & {
@@ -83,8 +83,8 @@ function handleClick(event: MouseEvent) {
 
   &__description {
     font-size: to-rem(14);
-    @include line-height(relaxed);
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
   }
 
@@ -92,9 +92,9 @@ function handleClick(event: MouseEvent) {
     display: inline-block;
     width: to-rem(5);
     height: to-rem(5);
+    flex-shrink: 0;
     border-radius: 50%;
     background-color: var(--color-secondary-400);
-    flex-shrink: 0;
     margin-left: to-rem(16);
   }
 }

@@ -100,9 +100,9 @@ function handleBlur(event: FocusEvent) {
 <style scoped lang="scss">
 .ui-input {
   display: flex;
+  width: 100%;
   flex-direction: column;
   gap: to-rem(8);
-  width: 100%;
 
   &__header {
     display: flex;
@@ -111,10 +111,10 @@ function handleBlur(event: FocusEvent) {
   }
 
   &__label {
-    font-size: to-rem(14);
-    @include line-height(relaxed);
     color: var(--color-secondary-600, #01001f);
+    font-size: to-rem(14);
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
   }
 
@@ -150,10 +150,10 @@ function handleBlur(event: FocusEvent) {
     padding: to-rem(12) to-rem(16);
     border: none;
     background: transparent;
-    font-size: to-rem(18);
-    @include line-height(relaxed);
     color: var(--color-secondary-600, #01001f);
+    font-size: to-rem(18);
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
 
     &::placeholder {
@@ -172,8 +172,8 @@ function handleBlur(event: FocusEvent) {
 
   &__message {
     font-size: to-rem(13);
-    @include line-height(relaxed);
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     &--error {
@@ -187,8 +187,8 @@ function handleBlur(event: FocusEvent) {
 
   &--disabled {
     .ui-input__control {
-      background: var(--color-secondary-100, #fcfcff);
       border-color: var(--color-secondary-600, #01001f);
+      background: var(--color-secondary-100, #fcfcff);
       opacity: 0.5;
       cursor: not-allowed;
     }

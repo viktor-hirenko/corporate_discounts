@@ -109,9 +109,9 @@ function handleBlur(event: FocusEvent) {
 
 .ui-select {
   display: flex;
+  width: 100%;
   flex-direction: column;
   gap: to-rem(8);
-  width: 100%;
 
   &__header {
     display: flex;
@@ -120,10 +120,10 @@ function handleBlur(event: FocusEvent) {
   }
 
   &__label {
-    font-size: to-rem(14);
-    @include line-height(relaxed);
     color: var(--color-neutral-300);
+    font-size: to-rem(14);
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
   }
 
@@ -145,7 +145,7 @@ function handleBlur(event: FocusEvent) {
 
     &.is-focused {
       border-color: var(--color-secondary-400);
-      box-shadow: 0 0 0 to-rem(2) rgba(72, 67, 215, 0.15);
+      box-shadow: 0 0 0 to-rem(2) rgb(72 67 215 / 15%);
     }
 
     &.is-error {
@@ -158,12 +158,12 @@ function handleBlur(event: FocusEvent) {
     padding: to-rem(14) to-rem(44) to-rem(14) to-rem(16);
     border: none;
     background: transparent;
-    font-size: to-rem(16);
-    @include line-height(relaxed);
     color: var(--color-secondary-600);
+    font-size: to-rem(16);
     cursor: pointer;
     appearance: none;
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
 
     &:focus {
@@ -176,8 +176,8 @@ function handleBlur(event: FocusEvent) {
     }
 
     option {
-      color: var(--color-secondary-600);
       background-color: var(--color-primary-100);
+      color: var(--color-secondary-600);
     }
   }
 
@@ -187,17 +187,17 @@ function handleBlur(event: FocusEvent) {
     right: to-rem(16);
     width: 0;
     height: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
     border-left: to-rem(6) solid transparent;
     border-right: to-rem(6) solid transparent;
     border-top: to-rem(6) solid var(--color-secondary-500);
-    transform: translateY(-50%);
-    pointer-events: none;
   }
 
   &__message {
     font-size: to-rem(13);
-    @include line-height(relaxed);
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     &--error {
@@ -211,8 +211,8 @@ function handleBlur(event: FocusEvent) {
 
   &--disabled {
     .ui-select__control {
-      background-color: var(--color-neutral-600);
       border-color: var(--color-neutral-500);
+      background-color: var(--color-neutral-600);
       cursor: not-allowed;
     }
   }

@@ -83,23 +83,23 @@ function handleRemoveFilter(type: 'category' | 'location') {
 
 .filter-chips {
   display: flex;
-  gap: to-rem(16);
-  align-items: center;
   flex-wrap: wrap;
+  align-items: center;
+  gap: to-rem(16);
 }
 
 .filter-chips__chip {
   display: inline-flex;
-  align-items: center;
   padding: to-rem(16);
+  align-items: center;
   gap: to-rem(12);
-  background-color: transparent;
   border: to-rem(3) solid var(--color-primary-100, #fcfcff);
+  background-color: transparent;
   color: var(--color-primary-100, #fcfcff);
-  cursor: pointer;
   font-size: to-rem(18);
-  @include line-height(normal);
+  cursor: pointer;
 
+  @include line-height(normal);
   @include font-weight(extrabold);
 }
 

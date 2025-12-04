@@ -160,15 +160,12 @@ onUnmounted(() => {
   // Для mobile и center - fixed позиционирование
   &:not(&--dropdown) {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     justify-content: center;
   }
 
   &--with-backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgb(0 0 0 / 50%);
   }
 
   &--mobile {
@@ -177,28 +174,25 @@ onUnmounted(() => {
 
   &--dropdown {
     position: absolute;
-    top: 100%;
-    right: 0;
-    left: auto;
-    bottom: auto;
-    align-items: flex-start;
+    inset: 100% 0 auto auto;
     justify-content: flex-end;
+    align-items: flex-start;
   }
 
   &__content {
     position: relative;
     display: flex;
-    flex-direction: column;
+    overflow: hidden;
     max-width: 100%;
     max-height: 100vh;
+    flex-direction: column;
+    box-shadow: 0 0 to-rem(25) rgb(0 0 0 / 25%);
     background-color: var(--color-primary-100);
-    box-shadow: 0 0 to-rem(25) rgba(0, 0, 0, 0.25);
-    overflow: hidden;
 
     &--custom-scroll {
+      -ms-overflow-style: none; // IE/Edge
       // Скрываем нативный скроллбар для всех браузеров
       scrollbar-width: none; // Firefox
-      -ms-overflow-style: none; // IE/Edge
 
       // WebKit браузеры (Chrome, Safari)
       &::-webkit-scrollbar {
@@ -219,44 +213,44 @@ onUnmounted(() => {
   &__header {
     display: flex;
     height: to-rem(48);
-    gap: to-rem(12);
     padding: to-rem(12) to-rem(16);
-    background-color: var(--color-primary-100);
+    gap: to-rem(12);
     border-radius: to-rem(8) to-rem(8) 0 0;
+    background-color: var(--color-primary-100);
 
     &--absolute {
       position: absolute;
       top: 0;
-      left: 0;
       right: 0;
+      left: 0;
       z-index: 1;
       display: flex;
-      align-items: end;
       height: to-rem(58);
       padding: to-rem(24) to-rem(16) to-rem(8);
+      align-items: end;
       background-color: transparent;
     }
   }
 
   &__header-default {
     display: flex;
-    align-items: center;
-    justify-content: flex-end;
     width: 100%;
+    justify-content: flex-end;
+    align-items: center;
   }
 
   &__close {
     display: flex;
-    align-items: center;
-    justify-content: center;
     width: to-rem(16);
     height: to-rem(16);
     padding: 0;
+    justify-content: center;
+    align-items: center;
     border: none;
     background: none;
-    cursor: pointer;
     color: var(--color-secondary-600);
     transition: color 0.2s ease;
+    cursor: pointer;
 
     :deep(svg) {
       width: to-rem(16);
@@ -269,16 +263,16 @@ onUnmounted(() => {
   }
 
   &__body {
-    flex: 1;
+    position: relative;
     overflow-y: auto;
     min-height: 0;
-    position: relative;
+    flex: 1;
   }
 
   &__footer {
-    flex-shrink: 0;
-    padding: to-rem(24) to-rem(16);
     position: relative;
+    padding: to-rem(24) to-rem(16);
+    flex-shrink: 0;
 
     @include mq(null, md) {
       padding: to-rem(16);
@@ -287,14 +281,14 @@ onUnmounted(() => {
     // Тень сверху футера для визуального разделения контента и футера
     // Показывается только если есть скролл
     &--has-scroll::before {
-      content: '';
       position: absolute;
       top: 0;
-      left: 0;
       right: 0;
+      left: 0;
       height: 100%;
-      box-shadow: 0 0 20px 0 rgba(33, 14, 95, 0.2);
+      box-shadow: 0 0 20px 0 rgb(33 14 95 / 20%);
       pointer-events: none;
+      content: '';
     }
   }
 }

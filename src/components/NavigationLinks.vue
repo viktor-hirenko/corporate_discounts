@@ -58,25 +58,25 @@ function handleClick() {
 
 .navigation-links {
   display: flex;
-  gap: to-rem(16);
   align-items: center;
+  gap: to-rem(16);
 
   &--mobile {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: to-rem(40);
-    flex: 1;
     min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: to-rem(40);
   }
 
   &__link {
-    font-size: to-rem(16);
-    @include line-height(relaxed);
     color: var(--secondary-600-main, #01001f);
+    font-size: to-rem(16);
     text-decoration: none;
     transition: opacity 0.2s ease;
 
+    @include line-height(relaxed);
     @include font-weight(extrabold);
 
     &:hover {
@@ -90,16 +90,16 @@ function handleClick() {
   }
 
   &--mobile &__link {
-    font-size: to-rem(32);
-    @include line-height(tight);
+    padding: 0;
     border: none;
     background: none;
+    font-size: to-rem(32);
     cursor: pointer;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
 
+    @include line-height(tight);
     @include font-weight(black);
   }
 }

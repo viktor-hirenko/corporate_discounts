@@ -33,8 +33,8 @@ function handleClick(event: MouseEvent) {
 
   :deep(.ui-button__label) {
     font-size: to-rem(18);
-    @include line-height(normal);
 
+    @include line-height(normal);
     @include font-weight(extrabold);
   }
 

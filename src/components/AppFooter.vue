@@ -28,13 +28,13 @@ import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
 <style scoped lang="scss">
 .footer-cta {
   --footer-height: 240px;
+
   position: relative;
   display: flex;
-  flex-direction: column;
-
   width: 100%;
-  justify-content: center;
   padding: to-rem(32) to-rem(64);
+  flex-direction: column;
+  justify-content: center;
   background-color: #050223;
 
   &__content {
@@ -43,8 +43,8 @@ import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
     width: 100%;
     max-width: to-rem(1200);
     flex-direction: column;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     gap: to-rem(24);
 
     @include mq(null, md) {
@@ -64,8 +64,8 @@ import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
   }
 
   &__text {
-    flex: 1;
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: to-rem(4);
     color: var(--color-neutral-50);
@@ -76,16 +76,19 @@ import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
 
   &__title {
     font-size: to-rem(24);
+
     @include line-height(relaxed);
 
     @include mq(null, md) {
       font-size: to-rem(24);
+
       @include line-height(relaxed);
     }
   }
 
   &__subtitle {
     font-size: to-rem(18);
+
     @include line-height(relaxed);
   }
 

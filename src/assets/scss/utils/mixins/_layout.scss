@@ -20,14 +20,15 @@
   color: var(--color-secondary-150);
 
   @if $with-border {
-    padding-bottom: to-rem(45);
     border-bottom: to-rem(3) solid var(--color-neutral-400);
+    padding-bottom: to-rem(45);
   }
 
   @include mq(null, md) {
     @if $with-border {
       padding-bottom: to-rem(24);
     }
+
     flex-direction: column;
     align-items: flex-start;
     gap: to-rem(24);
@@ -37,16 +38,17 @@
 // Hero title section
 @mixin hero-title-section {
   display: flex;
+  min-width: 0;
   max-width: to-rem(1044);
   flex-direction: column;
   gap: to-rem(16);
-  min-width: 0;
 }
 
 // Hero title
 @mixin hero-title {
   color: var(--color-secondary-150);
   font-size: to-rem(32);
+
   @include line-height(tight);
   @include font-weight(black);
 }
@@ -55,11 +57,13 @@
 @mixin hero-description {
   color: var(--color-secondary-150);
   font-size: to-rem(24);
+
   @include line-height(relaxed);
   @include font-weight(regular);
 
   @include mq(null, lg) {
     font-size: to-rem(18);
+
     @include font-weight(semibold);
   }
 }

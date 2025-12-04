@@ -111,9 +111,9 @@ onMounted(() => {
 
   &__content {
     display: flex;
-    padding-top: to-rem(32);
     flex-direction: column;
     gap: to-rem(32);
+    padding-top: to-rem(32);
 
     @include mq(null, lg) {
       padding-top: to-rem(24);
@@ -149,10 +149,10 @@ onMounted(() => {
   }
 
   &__results-count {
-    font-size: to-rem(18);
-    @include line-height(relaxed);
     color: var(--color-primary-100);
+    font-size: to-rem(18);
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
 
     @include mq(null, md) {
@@ -162,14 +162,15 @@ onMounted(() => {
 
   &__grid {
     display: grid;
+    justify-content: center;
+    gap: to-rem(32);
+
     // margin: to-rem(20) 0;
     grid-template-columns: repeat(3, minmax(0, to-rem(416)));
-    gap: to-rem(32);
-    justify-content: center;
 
     @include mq(null, xl) {
-      grid-template-columns: repeat(2, 1fr);
       gap: to-rem(24);
+      grid-template-columns: repeat(2, 1fr);
     }
 
     @include mq(null, md) {
@@ -179,16 +180,16 @@ onMounted(() => {
 
   &__empty {
     display: flex;
-    align-items: center;
-    justify-content: center;
     padding: to-rem(48) to-rem(24);
+    justify-content: center;
+    align-items: center;
     text-align: center;
 
     p {
-      font-size: to-rem(18);
-      @include line-height(relaxed);
       color: var(--color-secondary-600);
+      font-size: to-rem(18);
 
+      @include line-height(relaxed);
       @include font-weight(semibold);
     }
   }

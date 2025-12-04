@@ -113,9 +113,9 @@ function handleStartChat() {
 .faq {
   display: flex;
   width: 100%;
-  padding-top: to-rem(32);
   flex-direction: column;
   gap: to-rem(32);
+  padding-top: to-rem(32);
 
   @include mq(null, lg) {
     padding-top: to-rem(24);
@@ -151,10 +151,10 @@ function handleStartChat() {
   &__cta {
     display: flex;
     width: 100%;
-    align-items: center;
-    justify-content: space-between;
-    gap: to-rem(32);
     padding: to-rem(32);
+    justify-content: space-between;
+    align-items: center;
+    gap: to-rem(32);
     background-color: var(--color-secondary-600, #01001f);
 
     @include mq(null, lg) {
@@ -167,9 +167,9 @@ function handleStartChat() {
 
   &__cta-content {
     display: flex;
+    flex: 1;
     align-items: center;
     gap: to-rem(32);
-    flex: 1;
 
     @include mq(null, lg) {
       flex-direction: column;
@@ -182,8 +182,8 @@ function handleStartChat() {
     width: to-rem(96);
     height: to-rem(96);
     flex-shrink: 0;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     border-radius: to-rem(8);
     background: #3c94f7;
   }
@@ -201,24 +201,26 @@ function handleStartChat() {
 
   &__cta-title {
     font-size: to-rem(32);
-    @include line-height(tight);
 
+    @include line-height(tight);
     @include font-weight(black);
 
     @include mq(null, lg) {
       font-size: to-rem(24);
+
       @include font-weight(extrabold);
     }
   }
 
   &__cta-description {
     font-size: to-rem(24);
-    @include line-height(relaxed);
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     @include mq(null, lg) {
       font-size: to-rem(18);
+
       @include font-weight(semibold);
     }
   }
@@ -248,15 +250,15 @@ function handleStartChat() {
 
   &__notice-title {
     font-size: to-rem(18);
-    @include line-height(normal);
 
+    @include line-height(normal);
     @include font-weight(extrabold);
   }
 
   &__notice-text {
     font-size: to-rem(14);
-    @include line-height(relaxed);
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
   }
 }

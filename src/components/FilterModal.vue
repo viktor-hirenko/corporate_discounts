@@ -191,16 +191,16 @@ function handleClose() {
 <style scoped lang="scss">
 .filter-modal-close {
   display: flex;
-  align-items: center;
-  justify-content: center;
   width: to-rem(24);
   height: to-rem(24);
   padding: 0;
+  justify-content: center;
+  align-items: center;
   border: none;
   background: none;
-  cursor: pointer;
   color: var(--color-secondary-600, #01001f);
   transition: opacity 0.2s ease;
+  cursor: pointer;
   margin-left: auto;
 
   :deep(svg) {

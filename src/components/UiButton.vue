@@ -113,13 +113,13 @@ function handleClick(event: MouseEvent) {
   align-items: center;
   gap: to-rem(8);
   border: to-rem(1) solid transparent;
+  text-decoration: none;
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
     color 0.2s ease,
     box-shadow 0.2s ease;
   cursor: pointer;
-  text-decoration: none;
 
   @include font-family(primary);
 
@@ -130,8 +130,8 @@ function handleClick(event: MouseEvent) {
 
   &:disabled,
   &--disabled {
-    cursor: not-allowed;
     opacity: 0.6;
+    cursor: not-allowed;
     pointer-events: none;
   }
 
@@ -140,11 +140,11 @@ function handleClick(event: MouseEvent) {
     justify-content: center;
     align-items: center;
     font-size: to-rem(16);
-    @include line-height(relaxed);
     letter-spacing: track(normal);
-    text-decoration: none;
     text-transform: uppercase;
+    text-decoration: none;
 
+    @include line-height(relaxed);
     @include font-weight(bold);
   }
 
@@ -164,10 +164,10 @@ function handleClick(event: MouseEvent) {
   }
 
   &--icon {
-    padding: to-rem(10);
     width: to-rem(48);
-    height: to-rem(48);
     min-width: auto;
+    height: to-rem(48);
+    padding: to-rem(10);
     gap: 0;
   }
 
@@ -177,13 +177,14 @@ function handleClick(event: MouseEvent) {
 
     .ui-button__label {
       font-size: to-rem(16);
+
       @include line-height(relaxed);
     }
 
     &.ui-button--icon {
-      padding: to-rem(8);
       width: to-rem(40);
       height: to-rem(40);
+      padding: to-rem(8);
     }
   }
 
@@ -205,34 +206,34 @@ function handleClick(event: MouseEvent) {
       color: var(--color-secondary-200);
     }
 
-    &:hover:not(:disabled):not(&--disabled) {
+    &:hover:not(:disabled, &--disabled) {
       background-color: var(--color-secondary-400);
     }
 
-    &:active:not(:disabled):not(&--disabled) {
+    &:active:not(:disabled, &--disabled) {
       background-color: var(--color-secondary-400);
       color: var(--color-secondary-200);
     }
   }
 
   &--secondary {
+    border: none;
     background: var(--color-primary-400);
     color: var(--color-secondary-500, #210e5f);
-    border: none;
 
     &:disabled,
     &.ui-button--disabled {
       background: var(--color-primary-400);
-      color: var(--color-primary-100);
       opacity: 0.8;
+      color: var(--color-primary-100);
     }
 
-    &:hover:not(:disabled):not(&--disabled) {
+    &:hover:not(:disabled, &--disabled) {
       background: var(--color-primary-400);
       opacity: 0.8;
     }
 
-    &:active:not(:disabled):not(&--disabled) {
+    &:active:not(:disabled, &--disabled) {
       background: var(--color-primary-300);
       opacity: 0.8;
     }
@@ -251,8 +252,8 @@ function handleClick(event: MouseEvent) {
 
     .ui-button__label {
       text-decoration: underline;
-      @include line-height(relaxed);
 
+      @include line-height(relaxed);
       @include font-weight(extrabold);
     }
 
@@ -262,17 +263,17 @@ function handleClick(event: MouseEvent) {
       color: var(--color-secondary-300);
     }
 
-    &:hover:not(:disabled):not(&--disabled) {
-      color: var(--color-secondary-400);
-    }
-
-    &:active:not(:disabled):not(&--disabled) {
-      color: var(--color-secondary-500);
-    }
-
     &:focus-visible {
       outline: to-rem(2) solid var(--color-secondary-400);
       outline-offset: to-rem(2);
+    }
+
+    &:hover:not(:disabled, &--disabled) {
+      color: var(--color-secondary-400);
+    }
+
+    &:active:not(:disabled, &--disabled) {
+      color: var(--color-secondary-500);
     }
   }
 }

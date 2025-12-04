@@ -225,17 +225,17 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__back-button {
     display: flex;
+    padding: 0;
     align-items: center;
     gap: to-rem(15);
-    padding: 0;
     border: none;
     background: none;
-    cursor: pointer;
     color: var(--color-neutral-700, #fcfcff);
-    transition: opacity 0.2s ease;
     font-size: to-rem(16);
-    @include line-height(relaxed);
+    transition: opacity 0.2s ease;
+    cursor: pointer;
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     &:hover {
@@ -244,13 +244,13 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__main-card {
-    container-type: inline-size;
     display: flex;
     width: 100%;
     padding: max(to-cqw(32, $container-max-width), to-rem(24));
-    gap: to-cqw(32, $container-max-width);
     align-items: center;
+    gap: to-cqw(32, $container-max-width);
     background-color: var(--color-secondary-150, #f0efff);
+    container-type: inline-size;
 
     @include mq(null, lg) {
       flex-direction: column;
@@ -260,14 +260,14 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__logo-wrapper {
     display: flex;
-    width: max(to-cqw(384, $container-max-width), to-rem(351));
-    aspect-ratio: 1;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--color-secondary-600, #01001f);
-    border-radius: to-rem(8);
     overflow: hidden;
+    width: max(to-cqw(384, $container-max-width), to-rem(351));
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    border-radius: to-rem(8);
+    background-color: var(--color-secondary-600, #01001f);
+    aspect-ratio: 1;
 
     @include mq(null, lg) {
       width: 100%;
@@ -283,11 +283,11 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__info {
     display: flex;
+    min-width: 0;
     flex: 1;
     flex-direction: column;
     justify-content: center;
     gap: to-cqw(24, $container-max-width);
-    min-width: 0;
 
     @include mq(null, lg) {
       width: 100%;
@@ -301,10 +301,10 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__type {
-    font-size: max(to-cqw(24, $container-max-width), to-rem(18));
     color: var(--color-secondary-600, #01001f);
-    @include line-height(relaxed);
+    font-size: max(to-cqw(24, $container-max-width), to-rem(18));
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     @include mq(null, lg) {
@@ -313,18 +313,18 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__title {
-    font-size: to-rem(32);
-    @include line-height(tight);
     color: var(--color-secondary-600, #01001f);
+    font-size: to-rem(32);
 
+    @include line-height(tight);
     @include font-weight(black);
   }
 
   &__description {
-    font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    @include line-height(relaxed);
     color: var(--color-secondary-600, #01001f);
+    font-size: max(to-cqw(24, $container-max-width), to-rem(18));
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     @include mq(null, lg) {
@@ -333,10 +333,10 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__offer {
-    font-size: to-rem(24);
-    @include line-height(tight);
     color: var(--color-secondary-400, #5535be);
+    font-size: to-rem(24);
 
+    @include line-height(tight);
     @include font-weight(extrabold);
   }
 
@@ -344,9 +344,9 @@ $container-max-width: calc(1312px - 2 * 32px);
     display: flex;
     padding: max(to-cqw(32, $container-max-width), to-rem(16));
     flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
     gap: to-rem(24);
-    justify-content: space-between;
     background-color: var(--color-secondary-200, #d9d8ff);
 
     @include mq(null, 1009px) {
@@ -370,19 +370,19 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__promo-label {
-    font-size: to-rem(18);
-    @include line-height(relaxed);
     color: var(--color-neutral-100, #464657);
+    font-size: to-rem(18);
 
+    @include line-height(relaxed);
     @include font-weight(semibold);
   }
 
   &__promo-code {
-    font-size: to-rem(24);
-    @include line-height(tight);
     color: var(--color-secondary-600, #01001f);
+    font-size: to-rem(24);
     text-transform: uppercase;
 
+    @include line-height(tight);
     @include font-weight(extrabold);
   }
 
@@ -393,16 +393,16 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__details-grid {
-    container-type: inline-size;
     display: grid;
     padding: max(to-cqw(32, $container-max-width), to-rem(24));
-    grid-template-columns: repeat(2, 1fr);
     gap: to-rem(24);
     background-color: var(--color-secondary-150, #f0efff);
+    container-type: inline-size;
+    grid-template-columns: repeat(2, 1fr);
 
     @include mq(null, lg) {
-      grid-template-columns: 1fr;
       gap: to-cqw(16);
+      grid-template-columns: 1fr;
     }
   }
 
@@ -412,17 +412,17 @@ $container-max-width: calc(1312px - 2 * 32px);
     flex-direction: column;
     gap: to-cqw(24, $container-max-width);
     gap: max(to-cqw(24, $container-max-width), to-rem(24));
-    background-color: var(--color-primary-100, #fcfcff);
     border: to-rem(1) solid var(--color-secondary-600);
     border-radius: to-rem(16);
+    background-color: var(--color-primary-100, #fcfcff);
     color: var(--color-secondary-600, #01001f);
   }
 
   &__card-title {
     font-size: to-rem(32);
     font-size: max(to-cqw(32, $container-max-width), to-rem(24));
-    @include line-height(tight);
 
+    @include line-height(tight);
     @include font-weight(black);
 
     @include mq(null, lg) {
@@ -431,8 +431,8 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__card-content {
-    height: 100%;
     display: flex;
+    height: 100%;
     flex-direction: column;
     gap: to-rem(24);
   }
@@ -440,9 +440,10 @@ $container-max-width: calc(1312px - 2 * 32px);
   &__info-item {
     display: flex;
     flex-direction: column;
-    align-self: baseline;
     gap: to-rem(8);
     font-size: to-rem(24);
+    align-self: baseline;
+
     @include line-height(tight);
   }
 
@@ -452,8 +453,8 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__info-value {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    @include line-height(relaxed);
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     @include mq(null, lg) {
@@ -462,12 +463,12 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__info-link {
-    font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    @include line-height(relaxed);
     color: var(--color-secondary-600, #01001f);
+    font-size: max(to-cqw(24, $container-max-width), to-rem(18));
     text-decoration: none;
     transition: opacity 0.2s ease;
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     &:hover {
@@ -482,9 +483,9 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__socials {
     display: flex;
-    margin-top: auto;
-    align-self: flex-end;
     gap: to-rem(24);
+    align-self: flex-end;
+    margin-top: auto;
 
     @include mq(null, lg) {
       flex-direction: column;
@@ -493,12 +494,12 @@ $container-max-width: calc(1312px - 2 * 32px);
   }
 
   &__social-link {
-    font-size: to-rem(24);
-    @include line-height(tight);
     color: var(--color-secondary-600, #01001f);
+    font-size: to-rem(24);
     text-decoration: none;
     transition: opacity 0.2s ease;
 
+    @include line-height(tight);
     @include font-weight(extrabold);
 
     &:hover {
@@ -509,25 +510,25 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__terms-list {
     display: flex;
+    padding: 0;
     flex-direction: column;
     gap: to-rem(12);
-    padding: 0;
     list-style: none;
   }
 
   &__term {
     position: relative;
-    padding-left: to-rem(20);
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    @include line-height(relaxed);
+    padding-left: to-rem(20);
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     &::before {
-      content: '•';
       position: absolute;
       left: 0;
       color: var(--color-secondary-600, #01001f);
+      content: '•';
     }
   }
 
@@ -560,8 +561,8 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__cta-title {
     font-size: max(to-cqw(32, $container-max-width), to-rem(24));
-    @include line-height(tight);
 
+    @include line-height(tight);
     @include font-weight(black);
 
     @include mq(null, lg) {
@@ -571,8 +572,8 @@ $container-max-width: calc(1312px - 2 * 32px);
 
   &__cta-description {
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
-    @include line-height(relaxed);
 
+    @include line-height(relaxed);
     @include font-weight(regular);
 
     @include mq(null, lg) {

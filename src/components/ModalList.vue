@@ -70,10 +70,10 @@ function handleItemClick(item: ListItem, sectionIndex: number, itemIndex: number
   }
 
   &__section-title {
-    font-size: to-rem(24);
-    @include line-height(tight);
     color: var(--color-secondary-600);
+    font-size: to-rem(24);
 
+    @include line-height(tight);
     @include font-weight(extrabold);
   }
 

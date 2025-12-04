@@ -16,16 +16,16 @@ import AppHeader from '@/components/AppHeader.vue'
 }
 
 main {
-  min-height: calc(100vh - to-rem(var(--header-height)));
   width: 100%;
+  min-height: calc(100vh - to-rem(var(--header-height)));
   margin-top: var(--header-height);
 }
 
 .header {
   position: fixed;
   top: to-rem(32);
-  left: 0;
   right: 0;
+  left: 0;
   width: calc(100% - to-rem(64));
 
   @include mq(null, lg) {
