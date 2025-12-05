@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import UiButton from '@/components/UiButton.vue'
 import UserInfo from '@/components/UserInfo.vue'
-import avatarPlaceholder from '@/assets/images/avatar/avarar-placeholder.webp'
+import { useAppConfig } from '@/composables/useAppConfig'
+
+const { images, getImage } = useAppConfig()
 
 const userFullName = ref('Імʼя Прізвище')
 const userEmail = ref('')
+
+const avatarUrl = computed(() => getImage(images.avatar.placeholder))
 
 function handleContinue() {
   console.info('[auth-login] continue as', userEmail.value)
@@ -30,7 +34,7 @@ function handleSwitchAccount(event: Event) {
       <UserInfo
         v-model="userEmail"
         :full-name="userFullName"
-        :image-src="avatarPlaceholder"
+        :image-src="avatarUrl"
         image-alt="User avatar"
       />
 
@@ -65,31 +69,31 @@ function handleSwitchAccount(event: Event) {
     width: 100%;
     padding: to-rem(24);
     border: none;
-}
+  }
 
   &__panel {
-  display: contents;
-}
+    display: contents;
+  }
 
   &__actions {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  gap: to-rem(16);
-}
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: to-rem(16);
+  }
 
   &__switch-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: to-rem(4);
-  text-align: center;
+    text-align: center;
   }
 
   &__switch-text {
-  color: var(--color-secondary-600);
-  font-size: to-rem(16);
-  font-style: normal;
+    color: var(--color-secondary-600);
+    font-size: to-rem(16);
+    font-style: normal;
 
     @include line-height(relaxed);
     @include font-weight(extrabold);

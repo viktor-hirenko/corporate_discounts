@@ -1,11 +1,16 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import AuthLogin from '@/components/AuthLogin.vue'
-import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
+import { useAppConfig } from '@/composables/useAppConfig'
+
+const { images, getImage } = useAppConfig()
+
+const logoUrl = computed(() => getImage(images.logo.light))
 </script>
 
 <template>
   <div class="login-view">
-    <img :src="logoUpstars" alt="UPSTARS" class="login-view__logo" />
+    <img :src="logoUrl" alt="UPSTARS" class="login-view__logo" />
     <AuthLogin />
   </div>
 </template>

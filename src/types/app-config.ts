@@ -23,6 +23,13 @@ export interface PageDiscounts {
   }
 }
 
+export interface FaqItem {
+  id: string
+  category: string
+  question: LocalizedText
+  answer: LocalizedText
+}
+
 export interface PageFaq {
   title: LocalizedText
   description: LocalizedText
@@ -35,6 +42,7 @@ export interface PageFaq {
     title: LocalizedText
     text: LocalizedText
   }
+  items: FaqItem[]
 }
 
 export interface PageDiscountDetails {
@@ -138,7 +146,6 @@ export interface Images {
   avatar: {
     placeholder: string
   }
-  partners: Record<string, string>
 }
 
 export interface FaqCategory {
@@ -153,11 +160,6 @@ export interface FaqItem {
   category: keyof FaqCategory
   question: LocalizedText
   answer: LocalizedText
-}
-
-export interface Faq {
-  categories: FaqCategory
-  items: FaqItem[]
 }
 
 export interface PartnerLocalizedData {
@@ -182,6 +184,7 @@ export interface PartnerLocalizedData {
 export interface PartnerConfig {
   id: string
   slug: string
+  image: string
   promoCode: string
   contact: {
     website?: string
@@ -226,6 +229,5 @@ export interface AppConfig {
   filters: Filters
   pagination: Pagination
   images: Images
-  faq: Faq
   partners: PartnersConfig
 }

@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import PrimaryButton from './PrimaryButton.vue'
-import logoUpstars from '@/assets/images/upstars-logo-light.svg?url'
+import { useAppConfig } from '@/composables/useAppConfig'
+
+const { images, getImage } = useAppConfig()
+
+const logoUrl = computed(() => getImage(images.logo.light))
 </script>
 
 <template>
   <footer class="footer-cta" role="contentinfo">
     <div class="footer-cta__content">
-      <img :src="logoUpstars" alt="UPSTARS" class="footer-cta__logo" />
+      <img :src="logoUrl" alt="UPSTARS" class="footer-cta__logo" />
 
       <div class="footer-cta__text">
         <p class="footer-cta__title">Готові скористатися знижкою?</p>

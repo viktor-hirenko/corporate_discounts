@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import LanguageSelector from './LanguageSelector.vue'
 import MobileMenu from './MobileMenu.vue'
 import NavigationLinks from './NavigationLinks.vue'
 import BarsIcon from './icons/BarsIcon.vue'
 import CloseIcon from './icons/CloseIcon.vue'
-import logoUpstars from '@/assets/images/upstars-logo-dark.svg?url'
-import taglineSvg from '@/assets/images/corporate-discounts-text.svg?url'
+import { useAppConfig } from '@/composables/useAppConfig'
+
+const { images, getImage } = useAppConfig()
 
 const isMobileMenuOpen = ref(false)
+
+const logoUrl = computed(() => getImage(images.logo.dark))
+const taglineUrl = computed(() => getImage(images.tagline))
 
 function handleToggleMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -31,8 +35,8 @@ function handleMenuButtonClick() {
   <header class="header">
     <div class="header__inner">
       <div class="header__brand">
-        <img :src="logoUpstars" alt="UPSTARS" class="header__logo" />
-        <img :src="taglineSvg" alt="Корпоративні знижки" class="header__tagline" />
+        <img :src="logoUrl" alt="UPSTARS" class="header__logo" />
+        <img :src="taglineUrl" alt="Корпоративні знижки" class="header__tagline" />
       </div>
 
       <div class="header__actions">

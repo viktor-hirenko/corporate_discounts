@@ -10,7 +10,6 @@ import type {
   Filters,
   Pagination,
   Images,
-  Faq,
   PartnerLocalizedData,
 } from '@/types/app-config'
 import { useUiStore } from '@/stores/ui'
@@ -141,7 +140,6 @@ export function useAppConfig() {
     filters: config.filters,
     pagination: config.pagination,
     images: config.images,
-    faq: config.faq,
     partners: config.partners,
     t,
     tTemplate,

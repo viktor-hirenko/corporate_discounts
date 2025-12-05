@@ -3,14 +3,15 @@ import { ref, computed } from 'vue'
 import AccordionItem from '@/components/AccordionItem.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
 import { useAppConfig } from '@/composables/useAppConfig'
-import botImg from '@/assets/images/bot-img.svg'
 
-const { t, pages, faq, getImage } = useAppConfig()
+const { t, pages, images, getImage } = useAppConfig()
+
+const botImgUrl = computed(() => getImage(images.bot))
 
 const openIndex = ref<number | null>(0)
 
 const faqItems = computed(() =>
-  faq.items.map((item) => ({
+  pages.faq.items.map((item) => ({
     question: t(item.question),
     answer: t(item.answer),
   })),
@@ -49,7 +50,7 @@ function handleStartChat() {
     <div class="faq__cta">
       <div class="faq__cta-content">
         <div class="faq__cta-icon">
-          <img :src="botImg" alt="Bot icon" />
+          <img :src="botImgUrl" alt="Bot icon" />
         </div>
         <div class="faq__cta-text">
           <h2 class="faq__cta-title">{{ t(pages.faq.cta.title) }}</h2>

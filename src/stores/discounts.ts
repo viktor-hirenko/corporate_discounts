@@ -124,7 +124,7 @@ export const useDiscountsStore = defineStore('discounts', {
 
         // Преобразуем конфигурацию партнеров в массив Partner
         const partners: Partner[] = Object.values(partnersConfig).map((partnerConfig) => {
-          const imagePath = config.images.partners[partnerConfig.id]
+          const imagePath = partnerConfig.image
 
           return {
             id: partnerConfig.id,
