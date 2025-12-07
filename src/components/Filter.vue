@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import FilterButton from './FilterButton.vue'
 import FilterModal from './FilterModal.vue'
 import { useDiscountsStore } from '@/stores/discounts'
@@ -8,9 +8,20 @@ import type { PartnerCategory, PartnerLocation } from '@/types/partner'
 const store = useDiscountsStore()
 
 const isFilterModalOpen = ref(false)
-const filterWrapperRef = ref<HTMLElement | null>(null)
 
 const BODY_CLASS = 'filter-modal-open'
+
+function handleToggleFilters() {
+  if (isFilterModalOpen.value) {
+    // Если дропдаун открыт - закрываем
+    isFilterModalOpen.value = false
+    document.body.classList.remove(BODY_CLASS)
+  } else {
+    // Если дропдаун закрыт - открываем
+    isFilterModalOpen.value = true
+    document.body.classList.add(BODY_CLASS)
+  }
+}
 
 function handleOpenFilters() {
   isFilterModalOpen.value = true
@@ -22,47 +33,31 @@ function handleCloseFilters() {
   document.body.classList.remove(BODY_CLASS)
 }
 
-function handleClickOutside(event: MouseEvent) {
-  if (
-    isFilterModalOpen.value &&
-    filterWrapperRef.value &&
-    !filterWrapperRef.value.contains(event.target as Node)
-  ) {
-    handleCloseFilters()
-  }
-}
-
-function handleLocationSelect(location: PartnerLocation | 'Усі' | null) {
+function handleApplyFilters(
+  location: PartnerLocation | 'Усі' | null,
+  category: PartnerCategory | 'Усі' | null,
+) {
+  // Применяем фильтры только при нажатии "Применить"
   store.setLocation(location)
-}
-
-function handleCategorySelect(category: PartnerCategory | 'Усі' | null) {
   store.setCategory(category)
+  handleCloseFilters()
 }
 
 function handleResetFilters() {
-  store.resetFilters()
+  // Сбрасываем фильтры в модалке (временное состояние)
+  // Реальная логика сброса находится в FilterModal
 }
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>
 
 <template>
-  <div ref="filterWrapperRef" class="filter">
-    <FilterButton :is-open="isFilterModalOpen" @click.stop="handleOpenFilters" />
+  <div class="filter">
+    <FilterButton :is-open="isFilterModalOpen" @click="handleToggleFilters" />
 
     <FilterModal
       :is-open="isFilterModalOpen"
       @close="handleCloseFilters"
-      @location-select="handleLocationSelect"
-      @category-select="handleCategorySelect"
       @reset-filters="handleResetFilters"
+      @apply-filters="handleApplyFilters"
     />
   </div>
 </template>

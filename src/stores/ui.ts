@@ -90,10 +90,18 @@ function readLocaleFromStorage(): Locale | null {
 }
 
 export const useUiStore = defineStore('ui', {
-  state: () => ({
-    theme: DEFAULT_THEME as ThemeName,
-    locale: (readLocaleFromStorage() ?? DEFAULT_LOCALE) as Locale,
-  }),
+  state: () => {
+    const initialLocale = (readLocaleFromStorage() ?? DEFAULT_LOCALE) as Locale
+    // Устанавливаем начальный lang атрибут в HTML
+    if (typeof document !== 'undefined') {
+      const htmlLang = initialLocale === 'en' ? 'en' : 'uk'
+      document.documentElement.lang = htmlLang
+    }
+    return {
+      theme: DEFAULT_THEME as ThemeName,
+      locale: initialLocale,
+    }
+  },
   actions: {
     initTheme(): void {
       const theme =
@@ -127,6 +135,13 @@ export const useUiStore = defineStore('ui', {
       }
 
       this.locale = locale
+
+      // Обновляем lang атрибут в HTML для Google SDK и других библиотек
+      if (typeof document !== 'undefined') {
+        const htmlLang = locale === 'en' ? 'en' : 'uk'
+        document.documentElement.lang = htmlLang
+        console.log('[ui-store] HTML lang attribute updated to:', htmlLang)
+      }
 
       if (!persist) {
         return

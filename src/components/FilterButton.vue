@@ -21,7 +21,7 @@ function handleClick(event: MouseEvent) {
 </script>
 
 <template>
-  <SecondaryButton :label="t(filters.button)" @click="handleClick" class="filter-button">
+  <SecondaryButton :label="t(filters.button)" class="filter-button" @click="handleClick">
     <template #icon-right>
       <span class="filter-button__icon" :class="{ 'filter-button__icon--rotated': isOpen }">
         <ChevronDownIcon />

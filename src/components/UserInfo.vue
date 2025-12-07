@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import UiInput from '@/components/UiInput.vue'
+import { useAppConfig } from '@/composables/useAppConfig'
+
+const { auth, t, tTemplate } = useAppConfig()
 
 interface Props {
   imageSrc: string
@@ -25,11 +29,11 @@ function handleUpdate(value: string) {
 
 <template>
   <div class="user-info">
-    <div class="user-info__avatar">
+    <div v-if="imageSrc" class="user-info__avatar">
       <img :src="imageSrc" :alt="imageAlt" />
     </div>
 
-    <p class="user-info__name">Welcome back, {{ props.fullName }}</p>
+    <p class="user-info__name">{{ tTemplate(auth.welcomeBack, { name: props.fullName }) }}</p>
 
     <UiInput
       class="user-info__input"

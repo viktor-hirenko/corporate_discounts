@@ -141,9 +141,16 @@ watch(
         window.addEventListener('scroll', handleResize, true)
         isResizeListenerAttached = true
       }
+    } else if (isOpen && position === 'mobile') {
+      // Блокируем скролл страницы для мобильного меню
+      scrollPosition = window.scrollY || document.documentElement.scrollTop
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollPosition}px`
+      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden'
     } else {
       // Разблокируем скролл страницы
-      if (position === 'dropdown') {
+      if (position === 'dropdown' || position === 'mobile') {
         document.body.style.position = ''
         document.body.style.top = ''
         document.body.style.width = ''
@@ -177,7 +184,7 @@ onUnmounted(() => {
     clearTimeout(resizeTimeout)
   }
   // Восстанавливаем скролл при размонтировании компонента
-  if (props.position === 'dropdown' && props.isOpen) {
+  if ((props.position === 'dropdown' || props.position === 'mobile') && props.isOpen) {
     document.body.style.position = ''
     document.body.style.top = ''
     document.body.style.width = ''

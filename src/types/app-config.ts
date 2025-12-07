@@ -74,6 +74,16 @@ export interface PageDiscountDetails {
   }
 }
 
+export interface AuthConfig {
+  continue: LocalizedText
+  login: LocalizedText
+  or: LocalizedText
+  welcomeBack: LocalizedText
+  notYou: LocalizedText
+  useAnotherAccount: LocalizedText
+  logout: LocalizedText
+}
+
 export interface Pages {
   discounts: PageDiscounts
   faq: PageFaq
@@ -225,6 +235,7 @@ export interface AppConfig {
   defaultLocale: Locale
   languages: Language[]
   pages: Pages
+  auth: AuthConfig
   navigation: Navigation
   filters: Filters
   pagination: Pagination

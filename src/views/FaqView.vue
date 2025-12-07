@@ -209,10 +209,10 @@ function handleStartChat() {
     color: var(--color-secondary-600, #01001f);
 
     @include mq(null, lg) {
-      padding: to-rem(24);
+  padding: to-rem(24);
       gap: to-rem(8);
     }
-  }
+}
 
   &__notice-title {
     font-size: to-rem(18);

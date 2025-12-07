@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import UiModal from './UiModal.vue'
 import ModalList from './ModalList.vue'
 import PrimaryButton from './PrimaryButton.vue'
@@ -29,9 +29,11 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   close: []
-  'location-select': [location: PartnerLocation | 'Усі' | null]
-  'category-select': [category: PartnerCategory | 'Усі' | null]
   'reset-filters': []
+  'apply-filters': [
+    location: PartnerLocation | 'Усі' | null,
+    category: PartnerCategory | 'Усі' | null,
+  ]
 }>()
 
 const store = useDiscountsStore()
@@ -44,54 +46,71 @@ const isMobile = useMediaQuery('(max-width: 768px)')
 const modalPosition = computed(() => (isMobile.value ? 'mobile' : 'dropdown'))
 const showBackdrop = computed(() => isMobile.value)
 
+// Временное состояние фильтров (не применяется до нажатия "Применить")
+const pendingLocation = ref<PartnerLocation | 'Усі' | null>(store.filters.location)
+const pendingCategory = ref<PartnerCategory | 'Усі' | null>(store.filters.category)
+
+// Сбрасываем временное состояние при открытии модалки
+watch(
+  () => props.isOpen,
+  (isOpen) => {
+    if (isOpen) {
+      // При открытии модалки инициализируем временное состояние текущими фильтрами
+      pendingLocation.value = store.filters.location
+      pendingCategory.value = store.filters.category
+    }
+  },
+  { immediate: true },
+)
+
 const locationOptions = computed(() => {
   return [
-  {
+    {
       value: filters.locations.all.value,
       label: t(filters.locations.all.label),
       description: t(filters.locations.all.description),
-  },
-  {
+    },
+    {
       value: filters.locations.ua.value,
       label: t(filters.locations.ua.label),
       description: t(filters.locations.ua.description),
-  },
-  {
+    },
+    {
       value: filters.locations.europe.value,
       label: t(filters.locations.europe.label),
       description: t(filters.locations.europe.description),
-  },
-  {
+    },
+    {
       value: filters.locations.online.value,
       label: t(filters.locations.online.label),
       description: t(filters.locations.online.description),
-  },
-]
+    },
+  ]
 })
 
 const categoryOptions = computed(() => {
   return [
-  {
+    {
       value: filters.categories.all.value,
       label: t(filters.categories.all.label),
       description: t(filters.categories.all.description),
-  },
-  {
+    },
+    {
       value: filters.categories.travel.value,
       label: t(filters.categories.travel.label),
       description: t(filters.categories.travel.description),
-  },
-  {
+    },
+    {
       value: filters.categories.fitness.value,
       label: t(filters.categories.fitness.label),
       description: t(filters.categories.fitness.description),
-  },
-  {
+    },
+    {
       value: filters.categories.online.value,
       label: t(filters.categories.online.label),
       description: t(filters.categories.online.description),
-  },
-  {
+    },
+    {
       value: filters.categories.beauty.value,
       label: t(filters.categories.beauty.label),
       description: t(filters.categories.beauty.description),
@@ -100,33 +119,31 @@ const categoryOptions = computed(() => {
       value: filters.categories.shop.value,
       label: t(filters.categories.shop.label),
       description: t(filters.categories.shop.description),
-  },
-  {
+    },
+    {
       value: filters.categories.food.value,
       label: t(filters.categories.food.label),
       description: t(filters.categories.food.description),
-  },
-  {
+    },
+    {
       value: filters.categories.health.value,
       label: t(filters.categories.health.label),
       description: t(filters.categories.health.description),
-  },
-  {
+    },
+    {
       value: filters.categories.education.value,
       label: t(filters.categories.education.label),
       description: t(filters.categories.education.description),
-  },
-  {
+    },
+    {
       value: filters.categories.other.value,
       label: t(filters.categories.other.label),
       description: t(filters.categories.other.description),
-  },
-]
+    },
+  ]
 })
 
-const selectedLocation = computed(() => store.filters.location)
-const selectedCategory = computed(() => store.filters.category)
-
+// Используем временное состояние для отображения активных элементов
 const filterSections = computed<ListSection[]>(() => {
   return [
     {
@@ -135,7 +152,7 @@ const filterSections = computed<ListSection[]>(() => {
         value: option.value,
         label: option.label,
         description: option.description,
-        isActive: selectedLocation.value === option.value,
+        isActive: pendingLocation.value === option.value,
       })),
     },
     {
@@ -144,7 +161,7 @@ const filterSections = computed<ListSection[]>(() => {
         value: option.value,
         label: option.label,
         description: option.description,
-        isActive: selectedCategory.value === option.value,
+        isActive: pendingCategory.value === option.value,
       })),
     },
   ]
@@ -157,19 +174,34 @@ function handleItemClick(
 ) {
   void itemIndex // Не используется, но передается из ModalList
   if (sectionIndex === 0) {
-    // Location section
-    emit('location-select', item.value as PartnerLocation | 'Усі' | null)
+    // Location section - обновляем только временное состояние
+    pendingLocation.value = item.value as PartnerLocation | 'Усі' | null
   } else if (sectionIndex === 1) {
-    // Category section
-    emit('category-select', item.value as PartnerCategory | 'Усі' | null)
+    // Category section - обновляем только временное состояние
+    pendingCategory.value = item.value as PartnerCategory | 'Усі' | null
   }
+  // НЕ применяем фильтры сразу и НЕ закрываем модалку
+}
+
+function handleApplyFilters() {
+  // Применяем временное состояние к store
+  emit('apply-filters', pendingLocation.value, pendingCategory.value)
+  // Закрываем модалку
+  emit('close')
 }
 
 function handleResetFilters() {
-  emit('reset-filters')
+  // Сбрасываем временное состояние к значениям по умолчанию
+  pendingLocation.value = 'Усі'
+  pendingCategory.value = 'Усі'
+  // НЕ применяем фильтры и НЕ закрываем модалку
 }
 
 function handleClose() {
+  // При закрытии отменяем изменения - не применяем временное состояние
+  // Восстанавливаем временное состояние из текущих фильтров
+  pendingLocation.value = store.filters.location
+  pendingCategory.value = store.filters.category
   emit('close')
 }
 </script>
@@ -197,7 +229,7 @@ function handleClose() {
       <PrimaryButton
         class="filter-modal-apply"
         :label="t(filters.apply)"
-        @click="handleResetFilters"
+        @click="handleApplyFilters"
       />
     </template>
   </UiModal>
@@ -230,6 +262,6 @@ function handleClose() {
 }
 
 .filter-modal-apply {
-    width: 100%;
+  width: 100%;
 }
 </style>

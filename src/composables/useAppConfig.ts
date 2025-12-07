@@ -136,6 +136,7 @@ export function useAppConfig() {
     defaultLocale: computed(() => config.defaultLocale),
     languages: computed(() => config.languages),
     pages: config.pages,
+    auth: config.auth,
     navigation: config.navigation,
     filters: config.filters,
     pagination: config.pagination,

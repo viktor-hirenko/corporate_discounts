@@ -47,16 +47,16 @@
           "en": "Showing {{start}}-{{end}} of {{total}} partners"
         },
         "empty": {
-          "ua": "Партнерів не знайдено. Спробуйте змінити фільтри.",
-          "en": "No partners found. Try changing filters."
+          "ua": "Партнерів не знайдено.\nСпробуйте змінити фільтри.",
+          "en": "No partners found.\nTry changing filters."
         },
         "loading": {
           "ua": "Завантаження партнерів...",
           "en": "Loading partners..."
         },
         "error": {
-          "ua": "Не вдалося завантажити партнерів. Спробуйте ще раз пізніше.",
-          "en": "Failed to load partners. Please try again later."
+          "ua": "Не вдалося завантажити партнерів. \nСпробуйте ще раз пізніше.",
+          "en": "Failed to load partners. \nPlease try again later."
         },
         "retry": {
           "ua": "Спробувати ще раз",
@@ -259,6 +259,36 @@
           }
         }
       ]
+    }
+  },
+  "auth": {
+    "continue": {
+      "ua": "ПРОДОВЖИТИ",
+      "en": "CONTINUE"
+    },
+    "login": {
+      "ua": "УВІЙТИ",
+      "en": "SIGN IN"
+    },
+    "or": {
+      "ua": "або",
+      "en": "or"
+    },
+    "welcomeBack": {
+      "ua": "Ласкаво просимо, {{name}}",
+      "en": "Welcome back, {{name}}"
+    },
+    "notYou": {
+      "ua": "Не ви?",
+      "en": "Not you?"
+    },
+    "useAnotherAccount": {
+      "ua": "Використати інший акаунт",
+      "en": "Use another account"
+    },
+    "logout": {
+      "ua": "Вийти",
+      "en": "Log out"
     }
   },
   "navigation": {

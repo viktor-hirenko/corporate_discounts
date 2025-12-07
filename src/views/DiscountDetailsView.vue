@@ -471,8 +471,8 @@ $container-max-width: calc(1312px);
     }
 
     @include mq(null, lg) {
-      padding: to-rem(24);
-    }
+  padding: to-rem(24);
+}
   }
 
   &__promo-code-wrapper {

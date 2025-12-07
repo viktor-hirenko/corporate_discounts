@@ -117,8 +117,7 @@ function handleClick(event: MouseEvent) {
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease;
+    color 0.2s ease;
   cursor: pointer;
 
   @include font-family(primary);
@@ -220,21 +219,21 @@ function handleClick(event: MouseEvent) {
     border: none;
     background: var(--color-primary-400);
     color: var(--color-secondary-500, #210e5f);
+    transition: opacity 0.2s ease;
 
     &:disabled,
     &.ui-button--disabled {
       background: var(--color-primary-400);
-      opacity: 0.8;
-      color: var(--color-primary-100);
+      opacity: 0.6;
+      color: var(--color-secondary-300);
+      cursor: not-allowed;
     }
 
     &:hover:not(:disabled, &--disabled) {
-      background: var(--color-primary-400);
       opacity: 0.8;
     }
 
     &:active:not(:disabled, &--disabled) {
-      background: var(--color-primary-300);
       opacity: 0.8;
     }
 

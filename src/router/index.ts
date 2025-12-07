@@ -1,19 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/discounts',
+      redirect: '/login',
     },
     {
       path: '/login',
-      name: 'login',
       component: () => import('../layouts/AuthLayout.vue'),
       children: [
         {
           path: '',
+          name: 'login',
           component: () => import('../views/LoginView.vue'),
         },
       ],
@@ -27,9 +28,9 @@ const router = createRouter({
           name: 'discounts',
           component: () => import('../views/DiscountsCatalogView.vue'),
         },
-    {
+        {
           path: ':slug',
-      name: 'discount-details',
+          name: 'discount-details',
           component: () => import('../views/DiscountDetailsView.vue'),
           props: (route) => ({ slug: route.params.slug }),
         },
@@ -37,20 +38,43 @@ const router = createRouter({
     },
     {
       path: '/faq',
-      name: 'faq',
       component: () => import('../layouts/DefaultLayout.vue'),
       children: [
         {
           path: '',
+          name: 'faq',
           component: () => import('../views/FaqView.vue'),
         },
       ],
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/discounts',
+      redirect: '/login',
     },
   ],
+})
+
+// Navigation guard для проверки авторизации
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  // Публичные маршруты (не требуют авторизации)
+  const publicRoutes = ['/login']
+  const isPublicRoute = publicRoutes.includes(to.path)
+
+  // Если пользователь не авторизован и пытается попасть на защищенный маршрут
+  if (!authStore.isLoggedIn && !isPublicRoute) {
+    next({ name: 'login', query: { redirect: to.fullPath } })
+    return
+  }
+
+  // Если пользователь авторизован и пытается попасть на страницу логина
+  if (authStore.isLoggedIn && to.path === '/login') {
+    next({ name: 'discounts' })
+    return
+  }
+
+  next()
 })
 
 export default router

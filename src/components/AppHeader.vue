@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import LanguageSelector from './LanguageSelector.vue'
 import MobileMenu from './MobileMenu.vue'
 import NavigationLinks from './NavigationLinks.vue'
+import UserDropdown from './UserDropdown.vue'
 import BarsIcon from './icons/BarsIcon.vue'
 import CloseIcon from './icons/CloseIcon.vue'
 import { useAppConfig } from '@/composables/useAppConfig'
@@ -10,6 +11,8 @@ import { useAppConfig } from '@/composables/useAppConfig'
 const { images, getImage } = useAppConfig()
 
 const isMobileMenuOpen = ref(false)
+const hasShadow = ref(true)
+let shadowTimeoutId: ReturnType<typeof setTimeout> | null = null
 
 const logoUrl = computed(() => getImage(images.logo.dark))
 const taglineUrl = computed(() => getImage(images.tagline))
@@ -29,10 +32,35 @@ function handleMenuButtonClick() {
     handleToggleMenu()
   }
 }
+
+// Управление тенью хедера при открытии/закрытии мобильного меню
+watch(
+  isMobileMenuOpen,
+  (isOpen) => {
+    // Очищаем предыдущий таймаут, если он есть
+    if (shadowTimeoutId) {
+      clearTimeout(shadowTimeoutId)
+      shadowTimeoutId = null
+    }
+
+    if (isOpen) {
+      // При открытии меню - убираем тень мгновенно
+      hasShadow.value = false
+    } else {
+      // При закрытии меню - возвращаем тень с задержкой
+      // Задержка нужна, чтобы тень не появлялась поверх закрывающегося меню
+      shadowTimeoutId = setTimeout(() => {
+        hasShadow.value = true
+        shadowTimeoutId = null
+      }, 300) // Задержка 300ms - примерно время закрытия модалки
+    }
+  },
+  { immediate: false },
+)
 </script>
 
 <template>
-  <header class="header">
+  <header class="header" :class="{ 'header--no-shadow': !hasShadow }">
     <div class="header__inner">
       <div class="header__brand">
         <img :src="logoUrl" alt="UPSTARS" class="header__logo" />
@@ -42,17 +70,21 @@ function handleMenuButtonClick() {
       <div class="header__actions">
         <NavigationLinks variant="desktop" class="header__navigation" />
         <LanguageSelector />
+        <UserDropdown class="header__user-dropdown" />
       </div>
 
-      <button
-        class="header__menu-button"
-        type="button"
-        :aria-label="isMobileMenuOpen ? 'Закрити меню' : 'Відкрити меню'"
-        @click="handleMenuButtonClick"
-      >
-        <CloseIcon v-if="isMobileMenuOpen" />
-        <BarsIcon v-else :size="24" />
-      </button>
+      <div class="header__mobile-actions">
+        <UserDropdown class="header__user-dropdown-mobile" />
+        <button
+          class="header__menu-button"
+          type="button"
+          :aria-label="isMobileMenuOpen ? 'Закрити меню' : 'Відкрити меню'"
+          @click="handleMenuButtonClick"
+        >
+          <CloseIcon v-if="isMobileMenuOpen" />
+          <BarsIcon v-else :size="24" />
+        </button>
+      </div>
 
       <MobileMenu :is-open="isMobileMenuOpen" @close="handleCloseMenu" />
     </div>
@@ -66,10 +98,17 @@ function handleMenuButtonClick() {
   width: 100%;
   padding: to-rem(12) to-rem(24);
   background-color: var(--color-secondary-100, #fcfcff);
+  box-shadow: 0 to-rem(2) to-rem(8) rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0s ease;
 
   // Когда открыт dropdown фильтра, уменьшаем z-index чтобы хедер не был поверх модалки
   body.filter-modal-open & {
     z-index: 999;
+  }
+
+  // Убираем тень при открытом мобильном меню
+  &--no-shadow {
+    box-shadow: none;
   }
 
   // Псевдоэлемент для размытия пространства над хедером
@@ -124,6 +163,30 @@ function handleMenuButtonClick() {
 
     @include mq(null, lg) {
       display: none;
+    }
+  }
+
+  &__mobile-actions {
+    display: none;
+    align-items: center;
+    gap: to-rem(12);
+
+    @include mq(null, lg) {
+      display: flex;
+    }
+  }
+
+  &__user-dropdown {
+    @include mq(null, lg) {
+      display: none;
+    }
+  }
+
+  &__user-dropdown-mobile {
+    display: none;
+
+    @include mq(null, lg) {
+      display: block;
     }
   }
 

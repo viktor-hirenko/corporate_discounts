@@ -196,6 +196,7 @@ onMounted(() => {
     p {
       color: var(--color-secondary-150);
       font-size: to-rem(18);
+      white-space: pre-line;
 
       @include line-height(relaxed);
       @include font-weight(semibold);
