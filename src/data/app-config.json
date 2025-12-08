@@ -592,7 +592,7 @@
       "image": "@/assets/images/partners/roslynka.webp",
       "promoCode": "UPSTARS.ROSLYNKA",
       "contact": {
-        "website": "https://roslynka.com",
+        "website": "https://www.instagram.com/roslynka_studio/",
         "email": "hello@roslynka.com",
         "phone": "+380 67 123 45 67"
       },
@@ -637,19 +637,21 @@
         }
       },
       "address": {
-        "ua": "Київ, вул. Шулявська, 10",
-        "en": "Kyiv, Shuliavska St, 10"
+        "ua": "Київ, Шулявська, Україна",
+        "en": "Kyiv, Shuliavska, Ukraine"
       },
       "terms": {
         "ua": [
-          "Знижка діє на майстер-класи та флораріуми власного виробництва.",
-          "Не сумується з іншими акціями студії.",
-          "Промокод потрібно назвати перед оплатою."
+          "10% знижки на продукцію власного виробництва ТМ Roslynka:",
+          "Майстер-клас \"Садочок у флораріумі\"",
+          "Майстер-клас \"Картина зі стабілізованими рослинами\"",
+          "Майстер-клас \"Паяння рамочки з гербарієм або флораріума\""
         ],
         "en": [
-          "Discount applies to master classes and in-house florariums.",
-          "Cannot be combined with other studio promotions.",
-          "Promo code must be mentioned before payment."
+          "10% discount on TM Roslynka's own production:",
+          "Master class \"Garden in a florarium\"",
+          "Master class \"Picture with stabilized plants\"",
+          "Master class \"Soldering a frame with herbarium or florarium\""
         ]
       },
       "tags": {
@@ -663,7 +665,7 @@
       "image": "@/assets/images/partners/otoy.webp",
       "promoCode": "UPSTARS100",
       "contact": {
-        "website": "https://otoy.event",
+        "website": "https://instagram.com/otoy.event?igshid=MzRIODBINWFIZA==",
         "phone": "+380 44 456 78 90"
       },
       "socials": [
@@ -689,8 +691,8 @@
         "en": "Otoy.event"
       },
       "summary": {
-        "ua": "Креативні арт-вечірки та воркшопи по створенню картин.",
-        "en": "Creative art evenings and painting workshops."
+        "ua": "Івенти, бранчі, майстер-класи, матриця, т-ігри, малювання, флористика",
+        "en": "Events, brunches, master classes, matrix, T-games, drawing, floristry"
       },
       "description": {
         "ua": "Otoy.event організовує вечірки для команд, де кожен учасник створює власну картину під супровід професійного художника. Матеріали та напої включені.",
@@ -707,20 +709,12 @@
         }
       },
       "address": {
-        "ua": "Київ, вул. Сагайдачного, 25",
-        "en": "Kyiv, Sahaidachnoho St, 25"
+        "ua": "Київ, Хрещатик, Україна",
+        "en": "Kyiv, Khreshchatyk, Ukraine"
       },
       "terms": {
-        "ua": [
-          "Знижка діє для груп від 10 осіб.",
-          "Попередня оплата 50% — обовʼязкова.",
-          "Промокод активується під час бронювання дати."
-        ],
-        "en": [
-          "Discount applies to groups of 10 or more people.",
-          "50% advance payment is required.",
-          "Promo code is activated when booking a date."
-        ]
+        "ua": ["100 грн на будь-який івент"],
+        "en": ["100 UAH for any event"]
       },
       "tags": {
         "ua": ["тімбілдинг", "мистецтво"],
@@ -733,7 +727,7 @@
       "image": "@/assets/images/partners/reikarts-1.webp",
       "promoCode": "UPSTARS10",
       "contact": {
-        "website": "https://reikartz.com",
+        "website": "https://reikartz.com/uk/hotels/",
         "email": "corporate@reikartz.com",
         "phone": "+380 800 308 888"
       },
@@ -751,13 +745,17 @@
         "ua": "UA",
         "en": "UA"
       },
+      "address": {
+        "ua": "Вся Україна, де є готелі",
+        "en": "All Ukraine, where there are hotels"
+      },
       "name": {
         "ua": "Reikartz",
         "en": "Reikartz"
       },
       "summary": {
-        "ua": "Мережа готелів по всій Україні з комфортними умовами.",
-        "en": "Hotel network throughout Ukraine with comfortable conditions."
+        "ua": "Проживання в мережі готелів",
+        "en": "Accommodation in a hotel chain"
       },
       "description": {
         "ua": "Reikartz Hospitality Group надає номерний фонд у різних містах України. Знижка поширюється на бронювання для особистих подорожей та відряджень.",
@@ -774,16 +772,8 @@
         }
       },
       "terms": {
-        "ua": [
-          "Знижка застосовується на стандартні тарифи.",
-          "Не діє на групові заїзди понад 20 осіб.",
-          "Бронювання потрібно здійснювати через корпоративний відділ або офіційний сайт."
-        ],
-        "en": [
-          "Discount applies to standard rates.",
-          "Does not apply to group bookings of more than 20 people.",
-          "Bookings must be made through the corporate department or official website."
-        ]
+        "ua": ["Знижка 10% на проживання в мережі готелів Reikartz."],
+        "en": ["10% discount on accommodation in Reikartz hotel chain."]
       },
       "tags": {
         "ua": ["готелі", "подорожі", "комфорт"],
@@ -796,7 +786,7 @@
       "image": "@/assets/images/partners/your-dream-trip.webp",
       "promoCode": "UPSTARS5",
       "contact": {
-        "website": "https://yourdreamtrips.com",
+        "website": "https://instagram.com/your_dream_trips_?igshid=MzRLODBINWFIZA==",
         "email": "travel@ydt.com"
       },
       "socials": [
@@ -813,13 +803,17 @@
         "ua": "UA",
         "en": "UA"
       },
+      "address": {
+        "ua": "Україна/за кордоном",
+        "en": "Ukraine/abroad"
+      },
       "name": {
-        "ua": "Your Dream Trips",
-        "en": "Your Dream Trips"
+        "ua": "Your dream trips",
+        "en": "Your dream trips"
       },
       "summary": {
-        "ua": "Агентство індивідуальних турів та корпоративних подорожей.",
-        "en": "Agency for individual tours and corporate travel."
+        "ua": "Авторські тури. Танзанія, Ісландія, Маврикій, Азори та інше",
+        "en": "Author's tours. Tanzania, Iceland, Mauritius, Azores and others"
       },
       "description": {
         "ua": "Команда Your Dream Trips підбирає маршрути та організовує індивідуальні тури по всьому світу. Працюють з корпоративними групами, відпустками та тревел-консьєрж сервісом.",
@@ -836,14 +830,8 @@
         }
       },
       "terms": {
-        "ua": [
-          "Знижка застосовується до вартості наземного обслуговування.",
-          "Авіаквитки та додаткові послуги не входять у промо."
-        ],
-        "en": [
-          "Discount applies to ground service costs.",
-          "Airline tickets and additional services are not included in the promotion."
-        ]
+        "ua": ["Знижка 5%"],
+        "en": ["5% discount"]
       },
       "tags": {
         "ua": [],
@@ -854,9 +842,9 @@
       "id": "ribas",
       "slug": "ribas-hotels",
       "image": "@/assets/images/partners/ribas.webp",
-      "promoCode": "UPSTARS10",
+      "promoCode": "UPSTARS10%",
       "contact": {
-        "website": "https://ribashotels.com",
+        "website": "https://ribas.ua/hotels",
         "phone": "+380 93 123 45 67"
       },
       "socials": [
@@ -873,13 +861,17 @@
         "ua": "UA",
         "en": "UA"
       },
+      "address": {
+        "ua": "Україна",
+        "en": "Ukraine"
+      },
       "name": {
-        "ua": "Ribas Hotels",
-        "en": "Ribas Hotels"
+        "ua": "Ribas",
+        "en": "Ribas"
       },
       "summary": {
-        "ua": "Розгалужена мережа дизайн-готелів з сервісом на рівні.",
-        "en": "Extensive network of design hotels with premium service."
+        "ua": "Проживання в мережі готелів",
+        "en": "Accommodation in the hotel network"
       },
       "description": {
         "ua": "Ribas Hotels керує понад 30 готелями та апартаментами в Україні. Для тіммейтів UPSTARS діє фіксована знижка на проживання.",
@@ -896,14 +888,8 @@
         }
       },
       "terms": {
-        "ua": [
-          "Пропозиція діє на прямі бронювання через сайт.",
-          "Промокод потрібно ввести під час оформлення."
-        ],
-        "en": [
-          "Offer applies to direct bookings through the website.",
-          "Promo code must be entered during checkout."
-        ]
+        "ua": ["Промокод на сайті, за телефоном, в інстаграм UPSTARS10%"],
+        "en": ["Promo code on the website, by phone, on Instagram UPSTARS10%"]
       },
       "tags": {
         "ua": [],
@@ -914,9 +900,9 @@
       "id": "captain-kyiv",
       "slug": "captain-kyiv",
       "image": "@/assets/images/partners/kapitan-kyiv.webp",
-      "promoCode": "UPSTARS30",
+      "promoCode": "UPSTARS",
       "contact": {
-        "website": "https://captain.kyiv",
+        "website": "https://captain.kiev.ua/rozklad",
         "phone": "+380 67 987 65 43"
       },
       "socials": [
@@ -933,13 +919,17 @@
         "ua": "UA/Київ",
         "en": "UA/Kyiv"
       },
+      "address": {
+        "ua": "Україна, Київ",
+        "en": "Ukraine, Kyiv"
+      },
       "name": {
         "ua": "Captain Kyiv",
         "en": "Captain Kyiv"
       },
       "summary": {
-        "ua": "Авторські екскурсії Києвом з елементами сторітелінгу та квесту.",
-        "en": "Author's tours of Kyiv with storytelling and quest elements."
+        "ua": "Екскурсії по Києву",
+        "en": "Excursions in Kyiv"
       },
       "description": {
         "ua": "Команда Captain Kyiv проводить екскурсії по нестандартних маршрутах столиці. Вибирайте прогулянки вихідного дня або вечірні тури з дегустаціями.",
@@ -956,14 +946,8 @@
         }
       },
       "terms": {
-        "ua": [
-          "Знижка діє на групові екскурсії до 15 осіб.",
-          "Промокод необхідно вказати при бронюванні на сайті."
-        ],
-        "en": [
-          "Discount applies to group tours of up to 15 people.",
-          "Promo code must be specified when booking on the website."
-        ]
+        "ua": ["30 грн на кожну екскурсію"],
+        "en": ["30 UAH for each excursion"]
       },
       "tags": {
         "ua": [],
@@ -974,9 +958,9 @@
       "id": "eurotrips",
       "slug": "eurotrips",
       "image": "@/assets/images/partners/eurotrips.webp",
-      "promoCode": "UPSTARS20",
+      "promoCode": "UPSTARS",
       "contact": {
-        "website": "https://eurotrips.com.ua",
+        "website": "https://www.buli-tour.com.ua/",
         "email": "hello@eurotrips.com"
       },
       "socials": [
@@ -993,13 +977,17 @@
         "ua": "UA",
         "en": "UA"
       },
+      "address": {
+        "ua": "Україна/закордон",
+        "en": "Ukraine/abroad"
+      },
       "name": {
         "ua": "Eurotrips",
         "en": "Eurotrips"
       },
       "summary": {
-        "ua": "Міжнародні тури з молодіжною атмосферою.",
-        "en": "International tours with a youthful atmosphere."
+        "ua": "Джипінг, Мистичні скали, Рафтинг-тур",
+        "en": "Jeeping, Mystical rocks, Rafting tour"
       },
       "description": {
         "ua": "Eurotrips організовує подорожі Європою та світом з гідом, активностями та новими знайомствами. Для тіммейтів доступна знижка на будь-який тур.",
@@ -1007,8 +995,8 @@
       },
       "discount": {
         "label": {
-          "ua": "-20 EURO знижки",
-          "en": "-20 EUR discount"
+          "ua": "-300 грн знижки",
+          "en": "-300 UAH discount"
         },
         "description": {
           "ua": "",
@@ -1016,14 +1004,8 @@
         }
       },
       "terms": {
-        "ua": [
-          "Промокод діє на базову вартість туру.",
-          "Не поширюється на додаткові опції та страховку."
-        ],
-        "en": [
-          "Promo code applies to the base tour price.",
-          "Does not apply to additional options and insurance."
-        ]
+        "ua": ["-300 грн на будь-який тур на одного"],
+        "en": ["-300 UAH for any tour for one person"]
       },
       "tags": {
         "ua": [],
@@ -1034,9 +1016,9 @@
       "id": "travel-one",
       "slug": "travel-one",
       "image": "@/assets/images/partners/1-travel.webp",
-      "promoCode": "UPSTARS5",
+      "promoCode": "UPSTARS",
       "contact": {
-        "website": "https://1travel.lv",
+        "website": "https://www.1travel.lv/ru",
         "phone": "+371 678 45 321"
       },
       "socials": [
@@ -1058,8 +1040,8 @@
         "en": "1Travel"
       },
       "summary": {
-        "ua": "Латвійський тревел-оператор з турами по Скандинавії.",
-        "en": "Latvian travel operator with tours to Scandinavia."
+        "ua": "Тури Європою",
+        "en": "Tours in Europe"
       },
       "description": {
         "ua": "1Travel спеціалізується на автобусних турах Балтією та Скандинавськими країнами. Знижка доступна для тіммейтів та їх друзів.",
@@ -1081,14 +1063,12 @@
       },
       "terms": {
         "ua": [
-          "5% на тури, екскурсії і чартерні авіабілети.",
-          "Наш менеджер Olga Altuhova +371 67283006.",
-          "Знижка поширюється на всі тури сезону 2025 року."
+          "5% на тури, екскурсії і чартерні авіабілети",
+          "Наш менеджер Olga Altuhova +371 67283006"
         ],
         "en": [
-          "5% on tours, excursions and charter flights.",
-          "Our manager Olga Altuhova +371 67283006.",
-          "Discount applies to all 2025 season tours."
+          "5% on tours, excursions and charter flights",
+          "Our manager Olga Altuhova +371 67283006"
         ]
       },
       "tags": {
@@ -1100,9 +1080,9 @@
       "id": "mandra",
       "slug": "mandra",
       "image": "@/assets/images/partners/mandra.webp",
-      "promoCode": "UPSTARS10",
+      "promoCode": "UPSTARS10%",
       "contact": {
-        "website": "https://mandra.ua",
+        "website": "https://mandra.com.ua/?fbclid=PAAaY1pD4oNBT4JL5z9PiaXxHPVNtpoZhNSwHbNDL4sfV2LMHaNJA-4U8F44M",
         "email": "relax@mandra.ua"
       },
       "socials": [
@@ -1119,13 +1099,17 @@
         "ua": "UA",
         "en": "UA"
       },
+      "address": {
+        "ua": "Україна",
+        "en": "Ukraine"
+      },
       "name": {
         "ua": "Mandra",
         "en": "Mandra"
       },
       "summary": {
-        "ua": "Кемпінгові подорожі та відпочинок на природі.",
-        "en": "Camping trips and nature relaxation."
+        "ua": "Відпочинок та релакс на природі",
+        "en": "Rest and relaxation in nature"
       },
       "description": {
         "ua": "Mandra організовує кемпінги, глемпінг та активні тури територією України. Знижка діє на бронювання наметів та пакети відпочинку.",
@@ -1142,14 +1126,8 @@
         }
       },
       "terms": {
-        "ua": [
-          "Знижка діє на базові пакети та не сумується з іншими акціями.",
-          "Промокод потрібно ввести під час бронювання на сайті."
-        ],
-        "en": [
-          "Discount applies to basic packages and cannot be combined with other promotions.",
-          "Promo code must be entered when booking on the website."
-        ]
+        "ua": ["Промокод на сайті, за телефоном, в інстаграм UPSTARS10%"],
+        "en": ["Promo code on the website, by phone, on Instagram UPSTARS10%"]
       },
       "tags": {
         "ua": [],
@@ -1225,6 +1203,419 @@
       "tags": {
         "ua": ["фітнес", "пілатес", "йога"],
         "en": ["fitness", "pilates", "yoga"]
+      }
+    },
+    "integral-warsaw": {
+      "id": "integral-warsaw",
+      "slug": "integral-warsaw",
+      "image": "@/assets/images/partners/integral.webp",
+      "promoCode": "UPSTARS15",
+      "contact": {
+        "website": "https://app.fitssey.com/Integral/frontoffice"
+      },
+      "socials": [
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/integral.kyiv/"
+        }
+      ],
+      "category": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness club"
+      },
+      "location": {
+        "ua": "PL/Варшава",
+        "en": "PL/Warsaw"
+      },
+      "name": {
+        "ua": "Integral",
+        "en": "Integral"
+      },
+      "summary": {
+        "ua": "Хот Пілатес, Баре, Йога & more",
+        "en": "Hot Pilates, Barre, Yoga & more"
+      },
+      "description": {
+        "ua": "Integral пропонує студійні тренування у Варшаві: хот пілатес, баре, йога, функціональні та силові заняття. Команда UPSTARS отримує знижку на всі види тренувань, а промокод можна використовувати як офлайн, так і онлайн.",
+        "en": "Integral offers studio training in Warsaw: hot pilates, barre, yoga, functional and strength classes. The UPSTARS team gets a discount on all types of training, and the promo code can be used both offline and online."
+      },
+      "discount": {
+        "label": {
+          "ua": "15% знижки",
+          "en": "15% discount"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Варшава, Польща",
+        "en": "Warsaw, Poland"
+      },
+      "terms": {
+        "ua": [
+          "Промокод UPSTARS15 дійсний як офлайн, так і онлайн",
+          "Цей код багаторазового використання, кожна людина з команди зможе безлімітно використовувати його в терміні його активності",
+          "Код не діятиме на абонементи: Welcome Pack, Morning Unlimited, Special Self-Care. З кодом також не можна буде придбати подарункові картки",
+          "Термін дії до 31.12.2025 року",
+          "Величезне прохання не передавати його стороннім, третім особам"
+        ],
+        "en": [
+          "Promo code UPSTARS15 is valid both offline and online",
+          "This code is for multiple uses; each team member can use it unlimited times during its active period",
+          "The code will not apply to memberships: Welcome Pack, Morning Unlimited, Special Self-Care. Gift cards also cannot be purchased with this code",
+          "Valid until 31.12.2025",
+          "A huge request not to transfer it to third parties"
+        ]
+      },
+      "tags": {
+        "ua": ["фітнес", "пілатес", "йога"],
+        "en": ["fitness", "pilates", "yoga"]
+      }
+    },
+    "arsenal-fitness-space": {
+      "id": "arsenal-fitness-space",
+      "slug": "arsenal-fitness-space",
+      "image": "@/assets/images/partners/arsenal-fitness-space.webp",
+      "promoCode": "AFS444",
+      "contact": {
+        "website": "https://arsenal-fitness.space/",
+        "phone": "+380 93 649 45 03"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": "https://www.facebook.com/arsenalfitnessspace"
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/arsenal_fitness_space/"
+        }
+      ],
+      "category": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness club"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Arsenal Fitness Space",
+        "en": "Arsenal Fitness Space"
+      },
+      "summary": {
+        "ua": "Фітнес клуб, групові та індивідуальні тренування",
+        "en": "Fitness club, group and individual training"
+      },
+      "description": {
+        "ua": "Arsenal Fitness Space пропонує групові та індивідуальні тренування в сучасному фітнес-клубі. Для тіммейтів UPSTARS доступна знижка на абонементи та персональні тренування.",
+        "en": "Arsenal Fitness Space offers group and individual training in a modern fitness club. UPSTARS teammates get a discount on memberships and personal training."
+      },
+      "discount": {
+        "label": {
+          "ua": "15% знижки",
+          "en": "15% discount"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, вул. Данила Щербаківського, 45А, Україна (0 Поверх, праве крило)",
+        "en": "Kyiv, Danyla Shcherbakivskoho St, 45A, Ukraine (0 Floor, right wing)"
+      },
+      "terms": {
+        "ua": [
+          "Зайти на сайт або Instagram Arsenal Fitness Space",
+          "Написати або зателефонувати менеджеру, за номером +380 93 649 45 03",
+          "Назвати промокод: AFS444",
+          "15% знижки на абонемент та персональні тренування"
+        ],
+        "en": [
+          "Go to the website or Instagram Arsenal Fitness Space",
+          "Write or call the manager at +380 93 649 45 03",
+          "State the promo code: AFS444",
+          "15% discount on membership and personal training"
+        ]
+      },
+      "tags": {
+        "ua": ["фітнес", "тренування", "абонемент"],
+        "en": ["fitness", "training", "membership"]
+      }
+    },
+    "smartass-sport-club": {
+      "id": "smartass-sport-club",
+      "slug": "smartass-sport-club",
+      "image": "@/assets/images/partners/smartass.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://smartass.club/"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": "https://www.facebook.com/smartasssportclub"
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/smartass_sport_club/"
+        }
+      ],
+      "category": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness club"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Smartass",
+        "en": "Smartass"
+      },
+      "summary": {
+        "ua": "Фітнес клуб, групові та індивідуальні тренування",
+        "en": "Fitness club, group and individual training"
+      },
+      "description": {
+        "ua": "Smartass Sport Club пропонує групові та індивідуальні тренування в 5 клубах у Києві. Для команди UPSTARS доступна ексклюзивна знижка на пакети тренувань.",
+        "en": "Smartass Sport Club offers group and individual training in 5 clubs in Kyiv. UPSTARS team gets an exclusive discount on training packages."
+      },
+      "discount": {
+        "label": {
+          "ua": "15% знижки",
+          "en": "15% discount"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, вул. Драгомирова, 46 (для дівчат); Оболонський проспект, 19 (Smart Plaza); проспект Бажана, 10А; вул. Жилянська, 41а; вул. Короленківська, 4",
+        "en": "Kyiv, Drahomyrova St, 46 (for girls); Obolonskyi Ave, 19 (Smart Plaza); Bazhana Ave, 10A; Zhylianska St, 41a; Korolenkivska St, 4"
+      },
+      "terms": {
+        "ua": [
+          "Для команди UPSTARS діятиме ексклюзивна знижка 15% на пакети тренувань у 5 клубах Smartass у Києві за промокодом UPSTARS на сайті або в застосунку",
+          "Перше тренування для нових учасників безкоштовно, просто потрібно зареєструватися на нашому сайті або в застосунку, щоби почати!",
+          "Промокод можна використати лише один раз на обраний пакет, тому залишаємо додаткові промокоди на наступні покупки: UPSTARS1 ; UPSTARS2 ; UPSTARS3",
+          "Промокод не поєднується з іншими знижками чи пропозиціями",
+          "Строк дії промокодів до 30.09.2025",
+          "Важливо, якщо в акаунті не підв'язана банківська карта, то місця для вводу промокода не буде. Потрібно спочатку окремо підв'язати карту, а потім тільки переходити на сторінку з пакетом"
+        ],
+        "en": [
+          "For the UPSTARS team, an exclusive 15% discount on training packages in 5 Smartass clubs in Kyiv will apply with promo code UPSTARS on the website or in the app",
+          "First training for new participants is free, just need to register on our website or in the app to get started!",
+          "The promo code can be used only once for the selected package, so we provide additional promo codes for subsequent purchases: UPSTARS1 ; UPSTARS2 ; UPSTARS3",
+          "The promo code cannot be combined with other discounts or offers",
+          "Promo codes are valid until 30.09.2025",
+          "Important: if a bank card is not linked to the account, there will be no place to enter the promo code. You need to first separately link the card, and only then go to the package page"
+        ]
+      },
+      "tags": {
+        "ua": ["фітнес", "тренування", "клуб"],
+        "en": ["fitness", "training", "club"]
+      }
+    },
+    "smartass-warsaw": {
+      "id": "smartass-warsaw",
+      "slug": "smartass-warsaw",
+      "image": "@/assets/images/partners/smartass.webp",
+      "promoCode": "SMARTSTARS",
+      "contact": {
+        "website": "https://smartass.club/en"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": "https://www.facebook.com/smartasssportclub"
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/smartass_sport_club/"
+        }
+      ],
+      "category": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness club"
+      },
+      "location": {
+        "ua": "PL/Варшава",
+        "en": "PL/Warsaw"
+      },
+      "name": {
+        "ua": "Smartass",
+        "en": "Smartass"
+      },
+      "summary": {
+        "ua": "Фітнес клуб, групові та індивідуальні тренування",
+        "en": "Fitness club, group and individual training"
+      },
+      "description": {
+        "ua": "Smartass Sport Club у Варшаві пропонує групові та індивідуальні тренування. Для команди UPSTARS доступна знижка на тренування.",
+        "en": "Smartass Sport Club in Warsaw offers group and individual training. UPSTARS team gets a discount on training."
+      },
+      "discount": {
+        "label": {
+          "ua": "15% знижки",
+          "en": "15% discount"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Варшава, Польща",
+        "en": "Warsaw, Poland"
+      },
+      "terms": {
+        "ua": [
+          "-15% на тренування (покупка зі знижкою можлива від 10 тренувань). Знижки не сумуються.",
+          "Придбати тренування можна на рецепції в клубі, назвавши адміністратору промокод SmartStars."
+        ],
+        "en": [
+          "-15% on training (purchase with discount is possible from 10 trainings). Discounts are not cumulative.",
+          "You can purchase training at the reception in the club by telling the administrator the promo code SmartStars."
+        ]
+      },
+      "tags": {
+        "ua": ["фітнес", "тренування", "спорт"],
+        "en": ["fitness", "training", "sport"]
+      }
+    },
+    "sportlife": {
+      "id": "sportlife",
+      "slug": "sportlife",
+      "image": "@/assets/images/partners/sportlife.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://sportlifecorp.com/"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": "https://www.facebook.com/sportlifeukraine"
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/sportlife_ukraine/"
+        }
+      ],
+      "category": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness club"
+      },
+      "location": {
+        "ua": "UA/Вся Україна",
+        "en": "UA/All Ukraine"
+      },
+      "name": {
+        "ua": "SportLife",
+        "en": "SportLife"
+      },
+      "summary": {
+        "ua": "Фітнес клуб, групові та індивідуальні тренування",
+        "en": "Fitness club, group and individual training"
+      },
+      "description": {
+        "ua": "SportLife - імперія фітнес-клубів по всій Україні. Для команди UPSTARS доступна знижка від 25% на мережеві та локальні абонементи терміном на 1 рік.",
+        "en": "SportLife - empire of fitness clubs throughout Ukraine. UPSTARS team gets a discount from 25% on network and local memberships for a period of 1 year."
+      },
+      "discount": {
+        "label": {
+          "ua": "25% знижки",
+          "en": "25% discount"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Вся Україна, де є клуби",
+        "en": "All Ukraine, where there are clubs"
+      },
+      "terms": {
+        "ua": [
+          "Знижка - від 25%, на мережеві та локальні абонементи, терміном на 1 рік.",
+          "Якщо наразі діє знижка в клубі і вона співпадає або перевищує корп. пропозицію до пропозиції клубу може бути додатково+5%",
+          "Оформити клубну картку можливо тільки шляхом попередньої заявки (вказавши в полі назви компанії UPSTARS) за посиланням. Важливо! заявка заповнюється до покупки абонементу."
+        ],
+        "en": [
+          "Discount - from 25%, on network and local memberships, for a period of 1 year.",
+          "If there is currently a discount in the club and it coincides with or exceeds the corporate offer, an additional +5% may be added to the club's offer",
+          "It is possible to obtain a club card only by prior application (indicating the company name UPSTARS) via the link. Important! the application is filled out before purchasing a membership."
+        ]
+      },
+      "tags": {
+        "ua": ["фітнес", "клуб", "абонемент"],
+        "en": ["fitness", "club", "membership"]
+      }
+    },
+    "sportlife-podolskiy": {
+      "id": "sportlife-podolskiy",
+      "slug": "sportlife-podolskiy",
+      "image": "@/assets/images/partners/sportlife.webp",
+      "promoCode": "#UPSTARS",
+      "contact": {
+        "website": "https://podolskiy.ua/"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": "https://www.facebook.com/podolskiyclub"
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/podolskiy_club/"
+        }
+      ],
+      "category": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness club"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "SportLife",
+        "en": "SportLife"
+      },
+      "summary": {
+        "ua": "Фітнес клуб, групові та індивідуальні тренування",
+        "en": "Fitness club, group and individual training"
+      },
+      "description": {
+        "ua": "PODOLSKIY - клуб активного відпочинку у Києві. Для команди UPSTARS доступна знижка 20% на абонементи терміном на 3, 6 та 12 місяців.",
+        "en": "PODOLSKIY - active recreation club in Kyiv. UPSTARS team gets a 20% discount on memberships for 3, 6 and 12 months."
+      },
+      "discount": {
+        "label": {
+          "ua": "20% знижки",
+          "en": "20% discount"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, вул. Ярославска, 56а, Україна",
+        "en": "Kyiv, Yaroslavska St, 56a, Ukraine"
+      },
+      "terms": {
+        "ua": ["20% на абонементи на 3, 6, 12 міс"],
+        "en": ["20% on memberships for 3, 6, 12 months"]
+      },
+      "tags": {
+        "ua": ["фітнес", "клуб", "абонемент"],
+        "en": ["fitness", "club", "membership"]
       }
     }
   }
