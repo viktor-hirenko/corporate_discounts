@@ -164,7 +164,7 @@ onUnmounted(() => {
   <div
     v-if="scrollHeight > clientHeight && parentRef"
     ref="scrollbarRef"
-    class="custom-scrollbar"
+    class="scrollbar"
     :style="{
       height: `${parentRef.clientHeight}px`,
     }"
@@ -172,7 +172,7 @@ onUnmounted(() => {
   >
     <div
       ref="thumbRef"
-      class="custom-scrollbar__thumb"
+      class="scrollbar__thumb"
       :style="{
         height: `${thumbHeight}px`,
         top: `${thumbTop}px`,
@@ -185,7 +185,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 @use '@/assets/scss/utils/functions' as *;
 
-.custom-scrollbar {
+.scrollbar {
   position: absolute;
   top: 0;
   right: 0;

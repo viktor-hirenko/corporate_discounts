@@ -171,9 +171,11 @@ onMounted(async () => {
 <style scoped lang="scss">
 .discounts-catalog {
   width: 100%;
+  min-height: calc(100vh - to-rem(var(--header-height)) - var(--container-padding) * 2);
 
   &__content {
     display: flex;
+    min-height: calc(100vh - to-rem(var(--header-height)) - var(--container-padding) * 2);
     flex-direction: column;
     gap: to-rem(32);
     padding-top: to-rem(32);
@@ -257,6 +259,7 @@ onMounted(async () => {
   &__pagination {
     display: flex;
     width: 100%;
+    margin-top: auto;
   }
 
   &__loading {

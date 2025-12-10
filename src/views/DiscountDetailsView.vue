@@ -510,7 +510,7 @@ $container-max-width: calc(1312px);
     gap: to-rem(24);
     background-color: var(--color-secondary-200, #d9d8ff);
 
-    @include mq(null, 1009px) {
+    @include mq(null, xl) {
       flex-direction: column;
       justify-content: center;
       gap: to-rem(16);
@@ -525,7 +525,7 @@ $container-max-width: calc(1312px);
     display: flex;
     flex-direction: column;
 
-    @include mq(null, 1009px) {
+    @include mq(null, xl) {
       align-items: center;
     }
   }

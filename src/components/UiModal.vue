@@ -2,7 +2,7 @@
 import { computed, ref, onUnmounted, watch, nextTick } from 'vue'
 import { Teleport } from 'vue'
 import CloseIcon from './icons/CloseIcon.vue'
-import CustomScrollbar from './CustomScrollbar.vue'
+import Scrollbar from './Scrollbar.vue'
 
 type ModalPosition = 'mobile' | 'dropdown' | 'center'
 
@@ -138,7 +138,8 @@ watch(
       // Отслеживаем изменение размера окна
       if (!isResizeListenerAttached) {
         window.addEventListener('resize', handleResize)
-        window.addEventListener('scroll', handleResize, true)
+        // Убрали scroll listener - страница заблокирована и не скроллится
+        // а скролл внутри модалки не должен влиять на её высоту
         isResizeListenerAttached = true
       }
     } else if (isOpen && position === 'mobile') {
@@ -160,7 +161,6 @@ watch(
 
       if (isResizeListenerAttached) {
         window.removeEventListener('resize', handleResize)
-        window.removeEventListener('scroll', handleResize, true)
         isResizeListenerAttached = false
       }
       dropdownMaxHeight.value = null
@@ -178,7 +178,6 @@ onUnmounted(() => {
   }
   if (isResizeListenerAttached) {
     window.removeEventListener('resize', handleResize)
-    window.removeEventListener('scroll', handleResize, true)
   }
   if (resizeTimeout) {
     clearTimeout(resizeTimeout)
@@ -236,11 +235,7 @@ onUnmounted(() => {
             <slot />
           </div>
 
-          <CustomScrollbar
-            v-if="customScrollbar"
-            :container-ref="bodyRef"
-            :parent-ref="contentRef"
-          />
+          <Scrollbar v-if="customScrollbar" :container-ref="bodyRef" :parent-ref="bodyRef" />
 
           <div
             v-if="$slots.footer"

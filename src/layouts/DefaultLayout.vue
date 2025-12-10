@@ -13,12 +13,13 @@ import AppHeader from '@/components/AppHeader.vue'
 <style scoped lang="scss">
 :global(:root) {
   --header-height: 59px;
+  --container-padding: 32px;
 }
 
 main {
   width: 100%;
-  min-height: calc(100vh - to-rem(var(--header-height)));
-  margin-top: var(--header-height);
+  min-height: calc(100vh - to-rem(var(--header-height)) - var(--container-padding) * 2);
+  margin-top: calc(var(--header-height));
 }
 
 .header {
