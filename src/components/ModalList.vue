@@ -66,7 +66,7 @@ function handleItemClick(item: ListItem, sectionIndex: number, itemIndex: number
   flex-direction: column;
 
   &__section-header {
-    padding: to-rem(24) to-rem(16) to-rem(8);
+    padding: to-rem(24) 0 to-rem(8) to-rem(16);
   }
 
   &__section-title {

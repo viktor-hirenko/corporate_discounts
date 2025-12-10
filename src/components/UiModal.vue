@@ -68,7 +68,7 @@ function calculateDropdownHeight() {
   // Минимальная высота для dropdown (200px)
   const minHeight = 200
   // Максимальная высота для больших экранов (1000px)
-  const maxHeight = 1000
+  const maxHeight = 1500
 
   // Рассчитываем максимальную высоту, чтобы dropdown не выходил за границы viewport
   const calculatedHeight = Math.max(minHeight, Math.min(availableHeight, maxHeight))
@@ -98,7 +98,7 @@ watch(
   () => [props.isOpen, props.customScrollbar, props.position],
   async ([isOpen, customScrollbar, position]) => {
     if (isOpen && customScrollbar) {
-      // Ждем обновления DOM
+      // Проверяем скролл
       await nextTick()
       checkScroll()
 
@@ -235,7 +235,11 @@ onUnmounted(() => {
             <slot />
           </div>
 
-          <Scrollbar v-if="customScrollbar" :container-ref="bodyRef" :parent-ref="bodyRef" />
+          <Scrollbar
+            v-if="customScrollbar"
+            :container-ref="bodyRef"
+            :parent-ref="bodyRef"
+          />
 
           <div
             v-if="$slots.footer"
@@ -367,6 +371,17 @@ onUnmounted(() => {
     overflow-y: auto;
     min-height: 0;
     flex: 1;
+  }
+
+  // Скрываем нативный скроллбар когда используется кастомный
+  &__content--custom-scroll &__body {
+    -ms-overflow-style: none; // IE/Edge
+    scrollbar-width: none; // Firefox
+
+    // WebKit браузеры (Chrome, Safari)
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   &__footer {
