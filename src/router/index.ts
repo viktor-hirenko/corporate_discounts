@@ -3,6 +3,18 @@ import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    // Если есть сохранённая позиция (браузер "назад"/"вперёд")
+    if (savedPosition) {
+      return savedPosition
+    }
+    // Если переходим на другую страницу
+    if (to.path !== from.path) {
+      return { top: 0 }
+    }
+    // Сохраняем позицию при изменении query params
+    return false
+  },
   routes: [
     {
       path: '/',
@@ -48,6 +60,11 @@ const router = createRouter({
       ],
     },
     {
+      path: '/admin/partners',
+      name: 'partners-admin',
+      component: () => import('../views/PartnersAdminView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: '/login',
     },
@@ -59,7 +76,7 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
   // Публичные маршруты (не требуют авторизации)
-  const publicRoutes = ['/login']
+  const publicRoutes = ['/login', '/admin/partners']
   const isPublicRoute = publicRoutes.includes(to.path)
 
   // Если пользователь не авторизован и пытается попасть на защищенный маршрут

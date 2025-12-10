@@ -8,51 +8,39 @@ import CloseIcon from './icons/CloseIcon.vue'
 const store = useDiscountsStore()
 const { t, tTemplate, filters } = useAppConfig()
 
-const ALL_OPTION = 'Усі'
+const ALL_OPTION = 'all'
 
-// Маппинг локаций для отображения
-const locationLabels = computed(() => {
-  const labels: Record<string, string> = {}
-  Object.entries(filters.locationLabels).forEach(([key, value]) => {
-    labels[key] = t(value)
-  })
-  return labels as Record<PartnerLocation, string>
-})
-
-// Маппинг категорий для отображения
-const categoryLabels = computed(() => {
-  const labels: Record<string, string> = {}
-  Object.entries(filters.categoryLabels).forEach(([key, value]) => {
-    labels[key] = t(value)
-  })
-  return labels as Record<PartnerCategory, string>
-})
-
-// Активные фильтры (исключая "Усі")
+// Активные фильтры (исключая "all")
 const activeFilters = computed(() => {
-  const filters: Array<{
+  const activeFilters: Array<{
     type: 'category' | 'location'
     label: string
-    value: PartnerCategory | PartnerLocation
+    value: PartnerCategory | PartnerLocation | 'ua' | 'europe' | 'online' | 'ua/abroad'
   }> = []
 
+  // Для локации - получаем label напрямую по ключу
   if (store.filters.location && store.filters.location !== ALL_OPTION) {
-    filters.push({
+    const locationFilter =
+      filters.locations[store.filters.location as keyof typeof filters.locations]
+    activeFilters.push({
       type: 'location',
-      label: locationLabels.value[store.filters.location] || store.filters.location,
+      label: locationFilter ? t(locationFilter.label) : store.filters.location,
       value: store.filters.location,
     })
   }
 
+  // Для категории - получаем label напрямую по ключу
   if (store.filters.category && store.filters.category !== ALL_OPTION) {
-    filters.push({
+    const categoryFilter =
+      filters.categories[store.filters.category as keyof typeof filters.categories]
+    activeFilters.push({
       type: 'category',
-      label: categoryLabels.value[store.filters.category] || store.filters.category,
+      label: categoryFilter ? t(categoryFilter.label) : store.filters.category,
       value: store.filters.category,
     })
   }
 
-  return filters
+  return activeFilters
 })
 
 function handleRemoveCategory() {

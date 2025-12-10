@@ -98,7 +98,7 @@ export const useUiStore = defineStore('ui', {
       document.documentElement.lang = htmlLang
     }
     return {
-      theme: DEFAULT_THEME as ThemeName,
+    theme: DEFAULT_THEME as ThemeName,
       locale: initialLocale,
     }
   },

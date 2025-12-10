@@ -1,20 +1,30 @@
 export type PartnerCategory =
-  | 'Подорожі'
-  | 'Воркшоп'
-  | 'Краса'
-  | 'Освіта'
-  | 'Здоровʼя'
-  | 'Техніка'
-  | 'Розваги'
-  | 'Інше'
-  | 'Фітнес-клуб'
-  | 'Онлайн'
-  | 'Салон краси'
-  | 'Магазин'
-  | 'Їжа'
-  | 'Навчання'
+  | 'travel'
+  | 'workshop'
+  | 'beauty'
+  | 'education'
+  | 'health'
+  | 'tech'
+  | 'entertainment'
+  | 'other'
+  | 'fitness'
+  | 'shop'
+  | 'food'
 
-export type PartnerLocation = 'UA' | 'UA/Київ' | 'UA/Львів' | 'LT/Рига' | 'Global'
+export type PartnerLocation =
+  | 'UA'
+  | 'UA/Київ'
+  | 'UA/Львів'
+  | 'UA/Вся Україна'
+  | 'UA/Закордон'
+  | 'UA/Abroad'
+  | 'UA/Онлайн'
+  | 'LT/Рига'
+  | 'LT/Онлайн'
+  | 'PL/Варшава'
+  | 'PL/Онлайн'
+  | 'Europe'
+  | 'Online'
 
 export interface PartnerSocialLink {
   type: 'facebook' | 'instagram' | 'telegram' | 'linkedin' | 'website'
@@ -61,8 +71,8 @@ export interface Partner {
 
 export interface DiscountFilters {
   search: string
-  category: PartnerCategory | 'Усі' | null
-  location: PartnerLocation | 'Усі' | null
+  category: PartnerCategory | 'all' | 'online' | null
+  location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | 'ua/abroad' | null
 }
 
 export interface PaginationState {

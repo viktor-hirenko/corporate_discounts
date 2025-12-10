@@ -342,9 +342,12 @@
       "ua": "Застосувати",
       "en": "Apply"
     },
+    "removeFilter": {
+      "ua": "Видалити фільтр {{label}}",
+      "en": "Remove filter {{label}}"
+    },
     "locations": {
       "all": {
-        "value": "Усі",
         "label": {
           "ua": "Всі локаціі",
           "en": "All locations"
@@ -355,7 +358,6 @@
         }
       },
       "ua": {
-        "value": "UA",
         "label": {
           "ua": "Україна",
           "en": "Ukraine"
@@ -366,7 +368,6 @@
         }
       },
       "europe": {
-        "value": "LT/Рига",
         "label": {
           "ua": "Європа",
           "en": "Europe"
@@ -377,7 +378,6 @@
         }
       },
       "online": {
-        "value": "Global",
         "label": {
           "ua": "Онлайн",
           "en": "Online"
@@ -390,7 +390,6 @@
     },
     "categories": {
       "all": {
-        "value": "Усі",
         "label": {
           "ua": "Всі категорії",
           "en": "All categories"
@@ -401,7 +400,6 @@
         }
       },
       "travel": {
-        "value": "Подорожі",
         "label": {
           "ua": "Подорожі",
           "en": "Travel"
@@ -412,7 +410,6 @@
         }
       },
       "fitness": {
-        "value": "Фітнес-клуб",
         "label": {
           "ua": "Фітнес-клуб",
           "en": "Fitness Club"
@@ -423,7 +420,6 @@
         }
       },
       "online": {
-        "value": "Онлайн",
         "label": {
           "ua": "Онлайн",
           "en": "Online"
@@ -434,7 +430,6 @@
         }
       },
       "beauty": {
-        "value": "Салон краси",
         "label": {
           "ua": "Салон краси",
           "en": "Beauty Salon"
@@ -445,7 +440,6 @@
         }
       },
       "shop": {
-        "value": "Магазин",
         "label": {
           "ua": "Магазин",
           "en": "Shop"
@@ -456,7 +450,6 @@
         }
       },
       "food": {
-        "value": "Їжа",
         "label": {
           "ua": "Їжа",
           "en": "Food"
@@ -467,7 +460,6 @@
         }
       },
       "health": {
-        "value": "Здоровʼя",
         "label": {
           "ua": "Здоровʼя",
           "en": "Health"
@@ -478,7 +470,6 @@
         }
       },
       "education": {
-        "value": "Навчання",
         "label": {
           "ua": "Навчання",
           "en": "Education"
@@ -489,7 +480,6 @@
         }
       },
       "other": {
-        "value": "Інше",
         "label": {
           "ua": "Інше",
           "en": "Other"
@@ -499,90 +489,6 @@
           "en": "Other services and offers"
         }
       }
-    },
-    "locationLabels": {
-      "UA": {
-        "ua": "Україна",
-        "en": "Ukraine"
-      },
-      "UA/Київ": {
-        "ua": "Київ",
-        "en": "Kyiv"
-      },
-      "UA/Львів": {
-        "ua": "Львів",
-        "en": "Lviv"
-      },
-      "LT/Рига": {
-        "ua": "Рига",
-        "en": "Riga"
-      },
-      "Global": {
-        "ua": "Global",
-        "en": "Global"
-      }
-    },
-    "categoryLabels": {
-      "Подорожі": {
-        "ua": "Подорожі",
-        "en": "Travel"
-      },
-      "Воркшоп": {
-        "ua": "Воркшоп",
-        "en": "Workshop"
-      },
-      "Краса": {
-        "ua": "Краса",
-        "en": "Beauty"
-      },
-      "Освіта": {
-        "ua": "Освіта",
-        "en": "Education"
-      },
-      "Здоровʼя": {
-        "ua": "Здоровʼя",
-        "en": "Health"
-      },
-      "Техніка": {
-        "ua": "Техніка",
-        "en": "Technology"
-      },
-      "Розваги": {
-        "ua": "Розваги",
-        "en": "Entertainment"
-      },
-      "Фітнес-клуб": {
-        "ua": "Фітнес-клуб",
-        "en": "Fitness Club"
-      },
-      "Онлайн": {
-        "ua": "Онлайн",
-        "en": "Online"
-      },
-      "Салон краси": {
-        "ua": "Салон краси",
-        "en": "Beauty Salon"
-      },
-      "Магазин": {
-        "ua": "Магазин",
-        "en": "Shop"
-      },
-      "Їжа": {
-        "ua": "Їжа",
-        "en": "Food"
-      },
-      "Навчання": {
-        "ua": "Навчання",
-        "en": "Education"
-      },
-      "Інше": {
-        "ua": "Інше",
-        "en": "Other"
-      }
-    },
-    "removeFilter": {
-      "ua": "Видалити фільтр {{label}}",
-      "en": "Remove filter {{label}}"
     }
   },
   "partners": {
@@ -592,18 +498,18 @@
       "image": "@/assets/images/partners/roslynka.webp",
       "promoCode": "UPSTARS.ROSLYNKA",
       "contact": {
-        "website": "https://www.instagram.com/roslynka_studio/",
-        "email": "hello@roslynka.com",
-        "phone": "+380 67 123 45 67"
+        "website": "https://www.instagram.com/roslynka_studio_?igsh=OXp5MjZtb2FkeTR3",
+        "email": "",
+        "phone": ""
       },
       "socials": [
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/roslynka_studio/"
+          "url": ""
         },
         {
           "type": "facebook",
-          "url": "https://www.facebook.com/roslynka"
+          "url": ""
         }
       ],
       "category": {
@@ -619,8 +525,8 @@
         "en": "Roslynka"
       },
       "summary": {
-        "ua": "Флораріум-студія та рослинні воркшопи для команд.",
-        "en": "Florarium studio and plant workshops for teams."
+        "ua": "Флораріум-студія та рослинні воркшопи для команд",
+        "en": "Florarium studio and plant workshops for teams"
       },
       "description": {
         "ua": "Roslynka проводить творчі воркшопи з флораріумів та живих композицій. Для тіммейтів доступні індивідуальні комплекти з рослинами та матеріалами для домашньої збірки.",
@@ -644,12 +550,14 @@
         "ua": [
           "10% знижки на продукцію власного виробництва ТМ Roslynka:",
           "Майстер-клас \"Садочок у флораріумі\"",
+          "Майстер-клас \"Рамочка з морем\"",
           "Майстер-клас \"Картина зі стабілізованими рослинами\"",
           "Майстер-клас \"Паяння рамочки з гербарієм або флораріума\""
         ],
         "en": [
           "10% discount on TM Roslynka's own production:",
           "Master class \"Garden in a florarium\"",
+          "Master class \"Frame with the sea\"",
           "Master class \"Picture with stabilized plants\"",
           "Master class \"Soldering a frame with herbarium or florarium\""
         ]
@@ -666,16 +574,16 @@
       "promoCode": "UPSTARS100",
       "contact": {
         "website": "https://instagram.com/otoy.event?igshid=MzRIODBINWFIZA==",
-        "phone": "+380 44 456 78 90"
+        "phone": ""
       },
       "socials": [
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/otoy.event/"
+          "url": ""
         },
         {
           "type": "facebook",
-          "url": "https://www.facebook.com/otoyevent"
+          "url": ""
         }
       ],
       "category": {
@@ -700,8 +608,8 @@
       },
       "discount": {
         "label": {
-          "ua": "-100 грн знижки",
-          "en": "-100 UAH discount"
+          "ua": "-100 грн",
+          "en": "-100 UAH"
         },
         "description": {
           "ua": "На участь у командних арт-вечірках",
@@ -728,13 +636,13 @@
       "promoCode": "UPSTARS10",
       "contact": {
         "website": "https://reikartz.com/uk/hotels/",
-        "email": "corporate@reikartz.com",
-        "phone": "+380 800 308 888"
+        "email": "",
+        "phone": ""
       },
       "socials": [
         {
           "type": "facebook",
-          "url": "https://www.facebook.com/reikartz"
+          "url": ""
         }
       ],
       "category": {
@@ -763,17 +671,17 @@
       },
       "discount": {
         "label": {
-          "ua": "10% знижки",
-          "en": "10% discount"
+          "ua": "-10%",
+          "en": "-10%"
         },
         "description": {
-          "ua": "На бронювання номерів мережі",
-          "en": "On network hotel bookings"
+          "ua": "На проживання в мережі готелів Reikartz",
+          "en": "On accommodation in the Reikartz hotel chain"
         }
       },
       "terms": {
-        "ua": ["Знижка 10% на проживання в мережі готелів Reikartz."],
-        "en": ["10% discount on accommodation in Reikartz hotel chain."]
+        "ua": ["Знижка 10% на проживання в мережі готелів Reikartz"],
+        "en": ["10% discount on accommodation in Reikartz hotel chain"]
       },
       "tags": {
         "ua": ["готелі", "подорожі", "комфорт"],
@@ -786,13 +694,13 @@
       "image": "@/assets/images/partners/your-dream-trip.webp",
       "promoCode": "UPSTARS5",
       "contact": {
-        "website": "https://instagram.com/your_dream_trips_?igshid=MzRLODBINWFIZA==",
-        "email": "travel@ydt.com"
+        "website": "https://instagram.com/your_dream_trips_?igshid=MzRlODBiNWFlZA==",
+        "email": ""
       },
       "socials": [
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/yourdreamtrips/"
+          "url": ""
         }
       ],
       "category": {
@@ -821,8 +729,8 @@
       },
       "discount": {
         "label": {
-          "ua": "5% знижки",
-          "en": "5% discount"
+          "ua": "-5%",
+          "en": "-5%"
         },
         "description": {
           "ua": "",
@@ -845,12 +753,12 @@
       "promoCode": "UPSTARS10%",
       "contact": {
         "website": "https://ribas.ua/hotels",
-        "phone": "+380 93 123 45 67"
+        "phone": ""
       },
       "socials": [
         {
           "type": "facebook",
-          "url": "https://www.facebook.com/ribashotels/"
+          "url": ""
         }
       ],
       "category": {
@@ -879,8 +787,8 @@
       },
       "discount": {
         "label": {
-          "ua": "10% знижки",
-          "en": "10% discount"
+          "ua": "-10%",
+          "en": "-10%"
         },
         "description": {
           "ua": "",
@@ -903,12 +811,12 @@
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://captain.kiev.ua/rozklad",
-        "phone": "+380 67 987 65 43"
+        "phone": ""
       },
       "socials": [
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/captain.kyiv/"
+          "url": ""
         }
       ],
       "category": {
@@ -937,12 +845,12 @@
       },
       "discount": {
         "label": {
-          "ua": "-30 грн знижки",
-          "en": "-30 UAH discount"
+          "ua": "-30 грн",
+          "en": "-30 UAH"
         },
         "description": {
-          "ua": "На тематичні екскурсії містом",
-          "en": "On themed city tours"
+          "ua": "На кожну екскурсію містом",
+          "en": "On each city tour"
         }
       },
       "terms": {
@@ -960,13 +868,13 @@
       "image": "@/assets/images/partners/eurotrips.webp",
       "promoCode": "UPSTARS",
       "contact": {
-        "website": "https://www.buli-tour.com.ua/",
-        "email": "hello@eurotrips.com"
+        "website": "https://eurotrips.ua/",
+        "email": ""
       },
       "socials": [
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/eurotripsua/"
+          "url": ""
         }
       ],
       "category": {
@@ -986,8 +894,8 @@
         "en": "Eurotrips"
       },
       "summary": {
-        "ua": "Джипінг, Мистичні скали, Рафтинг-тур",
-        "en": "Jeeping, Mystical rocks, Rafting tour"
+        "ua": "Тури Європою",
+        "en": "Tours in Europe"
       },
       "description": {
         "ua": "Eurotrips організовує подорожі Європою та світом з гідом, активностями та новими знайомствами. Для тіммейтів доступна знижка на будь-який тур.",
@@ -995,17 +903,17 @@
       },
       "discount": {
         "label": {
-          "ua": "-300 грн знижки",
-          "en": "-300 UAH discount"
+          "ua": "-20 EURO",
+          "en": "-20 EURO"
         },
         "description": {
-          "ua": "",
-          "en": ""
+          "ua": "на автобусний тур та 40 на будь-який авіа",
+          "en": "on a bus tour and 40 on any flight"
         }
       },
       "terms": {
-        "ua": ["-300 грн на будь-який тур на одного"],
-        "en": ["-300 UAH for any tour for one person"]
+        "ua": ["20 євро на автобусний тур та 40 на будь-який авіа"],
+        "en": ["-20 EURO for any tour for one person"]
       },
       "tags": {
         "ua": [],
@@ -1019,12 +927,13 @@
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.1travel.lv/ru",
-        "phone": "+371 678 45 321"
+        "phone": "+371 67283006",
+        "contactPerson": "Olga Altuhova"
       },
       "socials": [
         {
           "type": "facebook",
-          "url": "https://www.facebook.com/1travel.lv/"
+          "url": ""
         }
       ],
       "category": {
@@ -1049,12 +958,12 @@
       },
       "discount": {
         "label": {
-          "ua": "5% знижки",
-          "en": "5% discount"
+          "ua": "-5%",
+          "en": "-5%"
         },
         "description": {
-          "ua": "",
-          "en": ""
+          "ua": "на тури, екскурсії і чартерні авіабілети",
+          "en": "on tours, excursions and charter flights"
         }
       },
       "address": {
@@ -1082,13 +991,13 @@
       "image": "@/assets/images/partners/mandra.webp",
       "promoCode": "UPSTARS10%",
       "contact": {
-        "website": "https://mandra.com.ua/?fbclid=PAAaY1pD4oNBT4JL5z9PiaXxHPVNtpoZhNSwHbNDL4sfV2LMHaNJA-4U8F44M",
-        "email": "relax@mandra.ua"
+        "website": "https://mandra.com.ua/?fbclid=PAAaY1pD4oNBT4Jl5z9PiaXxHPVNtpoZhNSwHbNDL4sfV2LMHaNjA-4U8F44M",
+        "email": ""
       },
       "socials": [
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/mandra.ua/"
+          "url": ""
         }
       ],
       "category": {
@@ -1117,8 +1026,8 @@
       },
       "discount": {
         "label": {
-          "ua": "10% знижки",
-          "en": "10% discount"
+          "ua": "-10%",
+          "en": "-10%"
         },
         "description": {
           "ua": "",
@@ -1140,7 +1049,7 @@
       "image": "@/assets/images/partners/integral.webp",
       "promoCode": "UPSTARS",
       "contact": {
-        "website": "https://app.fitssey.com/Integral/frontoffice"
+        "website": "https://www.instagram.com/integral.kyiv/"
       },
       "socials": [
         {
@@ -1149,8 +1058,8 @@
         }
       ],
       "category": {
-        "ua": "Здоровʼя",
-        "en": "Health"
+        "ua": "Фітнес-клуб",
+        "en": "Fitness club"
       },
       "location": {
         "ua": "UA/Київ",
@@ -1161,8 +1070,8 @@
         "en": "Integral"
       },
       "summary": {
-        "ua": "Фітнес-клуб з хот пілатесом, баре, йогою та функціональними тренуваннями.",
-        "en": "Fitness club with hot pilates, barre, yoga and functional training."
+        "ua": "Хот Пілатес, Баре, Йога & more",
+        "en": "Hot Pilates, Barre, Yoga & more"
       },
       "description": {
         "ua": "Integral пропонує студійні тренування у Києві та Варшаві: хот пілатес, баре, йога, функціональні та силові заняття. Команда UPSTARS отримує знижку на всі види тренувань, а промокод можна використовувати як офлайн, так і онлайн.",
@@ -1170,8 +1079,8 @@
       },
       "discount": {
         "label": {
-          "ua": "10% знижки",
-          "en": "10% discount"
+          "ua": "-10%",
+          "en": "-10%"
         },
         "description": {
           "ua": "Діє на всі види тренувань та абонементи Integral.",
@@ -1179,25 +1088,19 @@
         }
       },
       "address": {
-        "ua": "Київ, Іоанна Павла II, 21 / Казимира Малевича, 86П",
-        "en": "Kyiv, Ioanna Pavla II St, 21 / Kazymyra Malevycha St, 86P"
+        "ua": "Київ, Іоанна Павла II, 21, Казимира Малевича, 86П, Україна",
+        "en": "Kyiv, Ioanna Pavla II St, 21, Kazymyra Malevycha St, 86P, Ukraine"
       },
       "terms": {
         "ua": [
-          "Промокод UPSTARS діє як офлайн, так і онлайн.",
-          "Цей код багаторазового використання — кожен тіммейт може використовувати його безлімітно протягом періоду дії.",
-          "Код не діє на абонементи Welcome Pack, Morning Unlimited, Special Self-Care та подарункові сертифікати.",
-          "Всі види тренувань та абонементів доступні із знижкою 10%.",
-          "15% на всі класичні абонементи.",
-          "Термін дії до 31.12.2025 року."
+          "Всі види тренувань та абонементи діє знижка 10%",
+          "Термін дії до 31.12.2025 року",
+          "15% на всі класичні абонементи"
         ],
         "en": [
-          "UPSTARS promo code works both offline and online.",
-          "This is a reusable code — each teammate can use it unlimited times during the validity period.",
-          "Code does not apply to Welcome Pack, Morning Unlimited, Special Self-Care memberships and gift certificates.",
-          "All types of training and memberships are available with a 10% discount.",
-          "15% on all classic memberships.",
-          "Valid until December 31, 2025."
+          "All types of training and memberships are valid with a 10% discount",
+          "Valid until 31.12.2025",
+          "15% on all classic memberships"
         ]
       },
       "tags": {
@@ -1216,7 +1119,7 @@
       "socials": [
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/integral.kyiv/"
+          "url": ""
         }
       ],
       "category": {
@@ -1241,8 +1144,8 @@
       },
       "discount": {
         "label": {
-          "ua": "15% знижки",
-          "en": "15% discount"
+          "ua": "-15%",
+          "en": "-15%"
         },
         "description": {
           "ua": "",
@@ -1281,16 +1184,17 @@
       "promoCode": "AFS444",
       "contact": {
         "website": "https://arsenal-fitness.space/",
+        "email": "",
         "phone": "+380 93 649 45 03"
       },
       "socials": [
         {
           "type": "facebook",
-          "url": "https://www.facebook.com/arsenalfitnessspace"
+          "url": ""
         },
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/arsenal_fitness_space/"
+          "url": ""
         }
       ],
       "category": {
@@ -1315,12 +1219,12 @@
       },
       "discount": {
         "label": {
-          "ua": "15% знижки",
-          "en": "15% discount"
+          "ua": "-15%",
+          "en": "-15%"
         },
         "description": {
-          "ua": "",
-          "en": ""
+          "ua": "Знижки на абонемент та персональні тренування",
+          "en": "Discounts on memberships and personal training"
         }
       },
       "address": {
@@ -1346,9 +1250,9 @@
         "en": ["fitness", "training", "membership"]
       }
     },
-    "smartass-sport-club": {
-      "id": "smartass-sport-club",
-      "slug": "smartass-sport-club",
+    "smartass-sport-kyiv": {
+      "id": "smartass-sport-kyiv",
+      "slug": "smartass-sport-kyiv",
       "image": "@/assets/images/partners/smartass.webp",
       "promoCode": "UPSTARS",
       "contact": {
@@ -1357,11 +1261,11 @@
       "socials": [
         {
           "type": "facebook",
-          "url": "https://www.facebook.com/smartasssportclub"
+          "url": ""
         },
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/smartass_sport_club/"
+          "url": ""
         }
       ],
       "category": {
@@ -1386,8 +1290,8 @@
       },
       "discount": {
         "label": {
-          "ua": "15% знижки",
-          "en": "15% discount"
+          "ua": "-15%",
+          "en": "-15%"
         },
         "description": {
           "ua": "",
@@ -1427,16 +1331,16 @@
       "image": "@/assets/images/partners/smartass.webp",
       "promoCode": "SMARTSTARS",
       "contact": {
-        "website": "https://smartass.club/en"
+        "website": "https://smartass.club/"
       },
       "socials": [
         {
           "type": "facebook",
-          "url": "https://www.facebook.com/smartasssportclub"
+          "url": ""
         },
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/smartass_sport_club/"
+          "url": ""
         }
       ],
       "category": {
@@ -1461,8 +1365,8 @@
       },
       "discount": {
         "label": {
-          "ua": "15% знижки",
-          "en": "15% discount"
+          "ua": "-15%",
+          "en": "-15%"
         },
         "description": {
           "ua": "",
@@ -1494,7 +1398,9 @@
       "image": "@/assets/images/partners/sportlife.webp",
       "promoCode": "UPSTARS",
       "contact": {
-        "website": "https://sportlifecorp.com/"
+        "website": "https://sportlifecorp.com/",
+        "email": "",
+        "phone": ""
       },
       "socials": [
         {
@@ -1528,8 +1434,8 @@
       },
       "discount": {
         "label": {
-          "ua": "25% знижки",
-          "en": "25% discount"
+          "ua": "-25%",
+          "en": "-25%"
         },
         "description": {
           "ua": "",
@@ -1560,19 +1466,21 @@
     "sportlife-podolskiy": {
       "id": "sportlife-podolskiy",
       "slug": "sportlife-podolskiy",
-      "image": "@/assets/images/partners/sportlife.webp",
+      "image": "@/assets/images/partners/podolskiy.webp",
       "promoCode": "#UPSTARS",
       "contact": {
-        "website": "https://podolskiy.ua/"
+        "website": "https://podolskiy.ua/",
+        "email": "",
+        "phone": ""
       },
       "socials": [
         {
           "type": "facebook",
-          "url": "https://www.facebook.com/podolskiyclub"
+          "url": ""
         },
         {
           "type": "instagram",
-          "url": "https://www.instagram.com/podolskiy_club/"
+          "url": ""
         }
       ],
       "category": {
@@ -1597,8 +1505,8 @@
       },
       "discount": {
         "label": {
-          "ua": "20% знижки",
-          "en": "20% discount"
+          "ua": "-20%",
+          "en": "-20%"
         },
         "description": {
           "ua": "",
@@ -1616,6 +1524,2669 @@
       "tags": {
         "ua": ["фітнес", "клуб", "абонемент"],
         "en": ["fitness", "club", "membership"]
+      }
+    },
+    "body-karma-soul": {
+      "id": "body-karma-soul",
+      "slug": "body-karma-soul",
+      "image": "@/assets/images/partners/bks.webp",
+      "promoCode": "EUROPASSAGE KARMA",
+      "contact": {
+        "website": "https://bks.com.ua/"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": "https://www.facebook.com/bodykarmasoul"
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/bodykarmasoul/"
+        }
+      ],
+      "category": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness club"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Body.Karma.Soul.",
+        "en": "Body.Karma.Soul."
+      },
+      "summary": {
+        "ua": "Йога та медитація",
+        "en": "Yoga and meditation"
+      },
+      "description": {
+        "ua": "Body.Karma.Soul. - клуб йоги та медитації у Києві. Для команди UPSTARS доступна ексклюзивна знижка 20% на будь-який вид абонементу.",
+        "en": "Body.Karma.Soul. - yoga and meditation club in Kyiv. UPSTARS team gets an exclusive 20% discount on any type of membership."
+      },
+      "discount": {
+        "label": {
+          "ua": "-20%",
+          "en": "-20%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, вул. Антоновича, 40 («Europassage»), Україна, 6 поверх, м. Олімпійська",
+        "en": "Kyiv, Antonovycha St, 40 (\"Europassage\"), Ukraine, 6th floor, Olimpiyska metro station"
+      },
+      "terms": {
+        "ua": [
+          "Ексклюзивна знижка 20% на будь-який вид абонементу.",
+          "Перше пробне заняття — безкоштовно.",
+          "Кодове слово на рецепції клубу «Europassage Karma»",
+          "Назвати промокод: EUROPASSAGE KARMA.",
+          "Покажіть пропускну картку резидента на рецепції клубу."
+        ],
+        "en": [
+          "Exclusive 20% discount on any type of membership.",
+          "First trial lesson - free of charge.",
+          "Code word at the club's reception \"Europassage Karma\"",
+          "Mention promo code: EUROPASSAGE KARMA.",
+          "Show resident's access card at the club's reception."
+        ]
+      },
+      "tags": {
+        "ua": ["фітнес", "йога", "медитація"],
+        "en": ["fitness", "yoga", "meditation"]
+      }
+    },
+    "winetime": {
+      "id": "winetime",
+      "slug": "winetime",
+      "image": "@/assets/images/partners/winetime-1.webp",
+      "promoCode": "-",
+      "contact": {
+        "website": "https://winetime.ua/"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": "https://www.facebook.com/winetime.ua"
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/winetime.ua/"
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "WineTime",
+        "en": "WineTime"
+      },
+      "summary": {
+        "ua": "Винний бутік + курси про вино, віскі та інше",
+        "en": "Wine boutique + courses on wine, whiskey, and more"
+      },
+      "description": {
+        "ua": "WineTime - винний бутік та школа сомельє. Для команди UPSTARS доступна накопичувальна знижка від 8% до 15%.",
+        "en": "WineTime - wine boutique and sommelier school. UPSTARS team gets an accumulative discount from 8% to 15%."
+      },
+      "discount": {
+        "label": {
+          "ua": "-8-15%",
+          "en": "-8-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Україна",
+        "en": "Ukraine"
+      },
+      "terms": {
+        "ua": [
+          "Накопичувальна на компанію від 8% до 15%, Знижка в мережі не сумується із знижкою Корпоративної карти",
+          "Писати @Tetiana Kurmanova в Slack, вона зареєструє картку та надасть персональний код"
+        ],
+        "en": [
+          "Accumulative for the company from 8% to 15%, Discount in the network is not combined with the Corporate card discount",
+          "Write @Tetiana Kurmanova in Slack, she will register the card and provide a personal code"
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "вино", "курси"],
+        "en": ["shop", "wine", "courses"]
+      }
+    },
+    "pigo": {
+      "id": "pigo",
+      "slug": "pigo",
+      "image": "@/assets/images/partners/pigo.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://www.instagram.com/pigo_ukraine/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Закордон",
+        "en": "UA/Abroad"
+      },
+      "name": {
+        "ua": "Pigo",
+        "en": "Pigo"
+      },
+      "summary": {
+        "ua": "Найзручніші бананки та шопери",
+        "en": "The most convenient fanny packs and shoppers"
+      },
+      "description": {
+        "ua": "Pigo - магазин зручних бананок та шоперів. Для команди UPSTARS доступна знижка 10% на будь-які товари.",
+        "en": "Pigo - shop of convenient fanny packs and shoppers. UPSTARS team gets a 10% discount on any products."
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "10% на будь-які шопери та бананки",
+          "en": "10% off any tote bags and waist bags"
+        }
+      },
+      "address": {
+        "ua": "Україна/закордон",
+        "en": "Ukraine/abroad"
+      },
+      "terms": {
+        "ua": ["10% на будь-які шопери та бананки"],
+        "en": ["10% off any tote bags and waist bags"]
+      },
+      "tags": {
+        "ua": ["магазин", "шопери", "бананки"],
+        "en": ["shop", "shoppers", "fanny packs"]
+      }
+    },
+    "harvest": {
+      "id": "harvest",
+      "slug": "harvest",
+      "image": "@/assets/images/partners/harvest.webp",
+      "promoCode": "UPSTARS7",
+      "contact": {
+        "website": "https://harvest-clothing.com.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Harvest",
+        "en": "Harvest"
+      },
+      "summary": {
+        "ua": "Одяг та аксесуари",
+        "en": "Clothing and accessories"
+      },
+      "description": {
+        "ua": "Harvest - магазин одягу та аксесуарів у Києві та онлайн. Для команди UPSTARS доступна знижка 7% на всі товари.",
+        "en": "Harvest - clothing and accessories store in Kyiv and online. UPSTARS team gets a 7% discount on all products."
+      },
+      "discount": {
+        "label": {
+          "ua": "-7%",
+          "en": "-7%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ/онлайн",
+        "en": "Kyiv/online"
+      },
+      "terms": {
+        "ua": [
+          "UPSTARS7 - промокод можна застосовувати через онлайн-відділ, фізичний та інтернет-магазин"
+        ],
+        "en": [
+          "UPSTARS7 - promo code can be applied through online department, physical and online store"
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "одяг", "аксесуари"],
+        "en": ["shop", "clothing", "accessories"]
+      }
+    },
+    "perla-helsa": {
+      "id": "perla-helsa",
+      "slug": "perla-helsa",
+      "image": "@/assets/images/partners/perla-helsa.webp",
+      "promoCode": "UPSTARS20",
+      "contact": {
+        "website": "https://perlahelsa.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Онлайн",
+        "en": "UA/Online"
+      },
+      "name": {
+        "ua": "Perla",
+        "en": "Perla"
+      },
+      "summary": {
+        "ua": "Український бренд вітамінів та дієтичних добавок",
+        "en": "Ukrainian brand of vitamins and dietary supplements"
+      },
+      "description": {
+        "ua": "Perla Helsa - український бренд вітамінів та дієтичних добавок. Для команди UPSTARS доступна знижка 20% на вітаміни.",
+        "en": "Perla Helsa - Ukrainian brand of vitamins and dietary supplements. UPSTARS team gets a 20% discount on vitamins."
+      },
+      "discount": {
+        "label": {
+          "ua": "-20%",
+          "en": "-20%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Онлайн",
+        "en": "Online"
+      },
+      "terms": {
+        "ua": [
+          "20% на вітаміни до 31.12.2025",
+          "На сайті та в Директі UPSTARS20, не сумується з іншими знижками"
+        ],
+        "en": [
+          "20% on vitamins until 31.12.2025",
+          "On the website and in Direct UPSTARS20, not cumulative with other discounts"
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "вітаміни", "добавки"],
+        "en": ["shop", "vitamins", "supplements"]
+      }
+    },
+    "keep": {
+      "id": "keep",
+      "slug": "keep",
+      "image": "@/assets/images/partners/keep.webp",
+      "promoCode": "UPSTARS#K0325",
+      "contact": {
+        "website": "https://keeppacks.com/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Keep",
+        "en": "Keep"
+      },
+      "summary": {
+        "ua": "Авторські сумки та рюкзаки",
+        "en": "Designer bags and backpacks"
+      },
+      "description": {
+        "ua": "Keep - магазин авторських сумок та рюкзаків у Києві та онлайн. Для команди UPSTARS доступна знижка 20% на всі товари.",
+        "en": "Keep - shop of designer bags and backpacks in Kyiv and online. UPSTARS team gets a 20% discount on all products."
+      },
+      "discount": {
+        "label": {
+          "ua": "-20%",
+          "en": "-20%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ/онлайн",
+        "en": "Kyiv/online"
+      },
+      "terms": {
+        "ua": [
+          "Промокод UPSTARS#K0325 дійсний до 06.10.2025",
+          "Код змінюється кожен місяць",
+          "Вводити на сайті"
+        ],
+        "en": [
+          "Promo code UPSTARS#K0325 valid until 06.10.2025",
+          "Code changes every month",
+          "Enter on the website"
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "сумки", "рюкзаки"],
+        "en": ["shop", "bags", "backpacks"]
+      }
+    },
+    "gorgany": {
+      "id": "gorgany",
+      "slug": "gorgany",
+      "image": "@/assets/images/partners/gorgany.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://www.gorgany.com/"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": "https://www.facebook.com/gorgany"
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/gorgany/"
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Gorgany",
+        "en": "Gorgany"
+      },
+      "summary": {
+        "ua": "Спортивна одяг та інвентар, аксесуари",
+        "en": "Sports clothing and equipment, accessories"
+      },
+      "description": {
+        "ua": "Gorgany - магазин спортивного одягу та інвентарю, аксесуарів у різних містах та онлайн. Для команди UPSTARS доступна знижка 10%.",
+        "en": "Gorgany - shop of sports clothing and equipment, accessories in various cities and online. UPSTARS team gets a 10% discount."
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, в різних містах/онлайн",
+        "en": "Kyiv, in various cities/online"
+      },
+      "terms": {
+        "ua": [
+          "10% до 31.12.2025 у всіх магазинах Gorgany та на сайті",
+          "не сумується з іншими знижками"
+        ],
+        "en": [
+          "10% until 31.12.2025 in all Gorgany stores and on the website",
+          "not cumulative with other discounts"
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "спортивна одяг", "інвентар", "аксесуари"],
+        "en": ["shop", "sports clothing", "equipment", "accessories"]
+      }
+    },
+    "orner": {
+      "id": "orner",
+      "slug": "orner",
+      "image": "@/assets/images/partners/orner.webp",
+      "promoCode": "UPSTARS15",
+      "contact": {
+        "website": "https://orner.com.ua/ua",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Закордон",
+        "en": "UA/Abroad"
+      },
+      "name": {
+        "ua": "Orner",
+        "en": "Orner"
+      },
+      "summary": {
+        "ua": "Настільні ігри, канцелярія, аксесуари та інші подарунки",
+        "en": "Board games, stationery, accessories, and other gifts"
+      },
+      "description": {
+        "ua": "Orner - магазин настільних ігор, канцелярії, аксесуарів та інших подарунків у Києві та онлайн. Для команди UPSTARS доступна знижка 15%.",
+        "en": "Orner - shop of board games, stationery, accessories, and other gifts in Kyiv and online. UPSTARS team gets a 15% discount."
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ/онлайн",
+        "en": "Київ/онлайн"
+      },
+      "terms": {
+        "ua": ["15% до 31.08.2026, не діє на акційні продукти", "UPSTARS15 на сайті"],
+        "en": ["15% until 31.08.2026, not valid on sale items", "UPSTARS15 on the website"]
+      },
+      "tags": {
+        "ua": ["магазин", "ігри", "канцелярія", "подарунки"],
+        "en": ["shop", "games", "stationery", "gifts"]
+      }
+    },
+    "ispace": {
+      "id": "ispace",
+      "slug": "ispace",
+      "image": "@/assets/images/partners/ispace.webp",
+      "promoCode": "-",
+      "contact": {
+        "website": "https://www.ispace.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "iSpace",
+        "en": "iSpace"
+      },
+      "summary": {
+        "ua": "Офіційний партнер Apple ",
+        "en": "Apple equipment store"
+      },
+      "description": {
+        "ua": "iSpace — авторизований реселлер Apple.",
+        "en": "iSpace is an authorized Apple reseller."
+      },
+      "discount": {
+        "label": {
+          "ua": "-1,5-5%",
+          "en": "-1,5-5%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "В різних містах/онлайн/Україна",
+        "en": "Kyiv, Ukraine/online"
+      },
+      "terms": {
+        "ua": [
+          "Офіційний партнер Apple напряму від дистриб'ютора ASBIS",
+          "iPhone -1,5 %",
+          "Mac/iPad/AW -3 %",
+          "ACCY, Service, 3PP -5 %",
+          "Написати, що ви співробітник UPSTARS нашому менеджеру Ярославу у Telegram або Viber за номером: +380673155009"
+        ],
+        "en": [
+          "Official Apple partner directly from the distributor ASBIS",
+          "iPhone -1.5%",
+          "Mac/iPad/AW -3%",
+          "ACCY, Service, 3PP -5%",
+          "Write to our manager Yaroslav on Telegram or Viber at the number: +380673155009 and say that you are an UPSTARS employee"
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "apple", "техніка", "аксесуари"],
+        "en": ["shop", "apple", "equipment", "accessories"]
+      }
+    },
+    "syndicate": {
+      "id": "syndicate",
+      "slug": "syndicate",
+      "image": "@/assets/images/partners/syndicate.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://www.sndct.com/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "Syndicate",
+        "en": "Syndicate"
+      },
+      "summary": {
+        "ua": "Незалежний київський бренд вуличного одягу",
+        "en": "Independent Kyiv streetwear brand"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ/онлайн",
+        "en": "Kyiv/online"
+      },
+      "terms": {
+        "ua": ["Вказати промокод UPSTARS на сайті"],
+        "en": ["Specify promo code UPSTARS on the website"]
+      },
+      "tags": {
+        "ua": ["магазин", "одяг", "вуличний одяг", "бренд"],
+        "en": ["shop", "clothing", "streetwear", "brand"]
+      }
+    },
+    "beko": {
+      "id": "beko",
+      "slug": "beko",
+      "image": "@/assets/images/partners/beko.webp",
+      "promoCode": "-",
+      "contact": {
+        "website": "https://www.beko.com/ua-uk",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "Beko",
+        "en": "Beko"
+      },
+      "summary": {
+        "ua": "Кухонна техніка, холодильники",
+        "en": "Кухонна техніка, холодильники"
+      },
+      "description": {
+        "ua": "Beko — магазин побутової техніки, що пропонує кухонну техніку та холодильники.",
+        "en": "Beko is a home appliance store offering kitchen appliances and refrigerators."
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ/онлайн",
+        "en": "Kyiv/online"
+      },
+      "terms": {
+        "ua": [
+          "Знижка діє на рекомендовану роздрібну ціну.",
+          "Все просто: пишіть на info@beko.ua з темою листа EUROPASSAGE_Resident, далі менеджер оформить для вас суперпропозицію.",
+          "Зручні варіанти доставки: 1. Самовивіз зі складу Berger Cargo м. Квітневе Броварський район) — найшвидший варіант.",
+          "Доставка Новою Поштою (за власний рахунок).",
+          "Не терміново? Доставимо товар в наш офіс Веко і ви заберете замовлення прямо з бізнес парку."
+        ],
+        "en": [
+          "Discount applies to the recommended retail price.",
+          "It's simple: write to info@beko.ua with the subject EUROPASSAGE_Resident, and the manager will arrange a special offer for you.",
+          "Convenient delivery options: 1. Pick-up from Berger Cargo warehouse in Kvitneve, Brovary district (fastest option).",
+          "Delivery by Nova Poshta (at your own expense).",
+          "Not urgent? We will deliver the goods to our Beko office and you can pick up your order directly from the business park."
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "побутова техніка", "кухонна техніка", "холодильники"],
+        "en": ["shop", "home appliances", "kitchen appliances", "refrigerators"]
+      }
+    },
+    "merle": {
+      "id": "merle",
+      "slug": "merle",
+      "image": "@/assets/images/partners/merle.webp",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "https://merle.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "Merle",
+        "en": "Merle"
+      },
+      "summary": {
+        "ua": "Інтернет-магазин виробника анатомічного взуття",
+        "en": "Online store of anatomical footwear manufacturer"
+      },
+      "description": {
+        "ua": "Merle — інтернет-магазин виробника анатомічного взуття. Отримайте 10% знижки на весь асортимент.",
+        "en": "Merle is an online store of anatomical footwear manufacturer. Get a 10% discount on the entire range."
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Україна, Київ/онлайн",
+        "en": "Ukraine, Kyiv/online"
+      },
+      "terms": {
+        "ua": [
+          "Для того, щоб зробити замовлення потрібно: написати в директ інстаграму або ж зробити замовлення на сайті",
+          "Обрати модель на сайті",
+          "Написати в директ інстаграму або зробити замовлення на сайті, вказавши промокод EUROPASSAGE"
+        ],
+        "en": [
+          "To place an order, you need to: write in Instagram direct or place an order on the website",
+          "Choose a model on the website",
+          "Write in Instagram direct or place an order on the website, specifying the promo code EUROPASSAGE"
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "спорт", "одяг", "аксесуари"],
+        "en": ["shop", "sport", "clothing", "accessories"]
+      }
+    },
+    "df-original": {
+      "id": "df-original",
+      "slug": "df-original",
+      "image": "@/assets/images/partners/df-original.webp",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "https://dforiginal.ua/uk/catalog",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "DF.ORIGINAL",
+        "en": "DF.ORIGINAL"
+      },
+      "summary": {
+        "ua": "Магазин спортивного одягу та аксесуарів",
+        "en": "Sports clothing and accessories store"
+      },
+      "description": {
+        "ua": "DF.ORIGINAL — магазин спортивного одягу та аксесуарів.",
+        "en": "DF.ORIGINAL is a store offering a wide range of sports clothing and accessories."
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Україна, Київ/онлайн",
+        "en": "Ukraine, Kyiv/online"
+      },
+      "terms": {
+        "ua": [
+          "Система лояльності — за промокодом «EUROPASS15» ви отримуєте 15% знижки на замовлення.",
+          "Як скористатися знижкою? Зробіть замовлення на сайті: вказавши промокод EUROPASS15 в примітці до замовлення.",
+          "Написати в директ інстаграму або зробити замовлення на сайті, вказавши промокод EUROPASSAGE."
+        ],
+        "en": [
+          "Loyalty system: with promo code «EUROPASS15», you get a 15% discount on your order.",
+          "How to use the discount? Place an order on the website: specify promo code EUROPASS15 in the order notes.",
+          "Write in Instagram direct or place an order on the website, specifying promo code EUROPASSAGE."
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "спорт", "одяг", "аксесуари"],
+        "en": ["shop", "sport", "clothing", "accessories"]
+      }
+    },
+    "behelsi": {
+      "id": "behelsi",
+      "slug": "behelsi",
+      "image": "@/assets/images/partners/behelsi.webp",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "https://behelsi.com/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Behelsi",
+        "en": "Behelsi"
+      },
+      "summary": {
+        "ua": "Магазин  вітамінів та дієтичних добавок",
+        "en": "Store of vitamins and dietary supplements"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-30%",
+          "en": "-30%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Україна, Київ/онлайн",
+        "en": "Ukraine, Kyiv/online"
+      },
+      "terms": {
+        "ua": [
+          "Завітайте на сайт Behelsi;",
+          "Перегляньте каталог і оберіть необхідні товари;",
+          "Перегляньте каталог і оберіть необхідні товари;",
+          "Написати в директ інстаграму або зробити замовлення на сайті, вказавши промокод EUROPASSAG"
+        ],
+        "en": [
+          "Visit the Behelsi website;",
+          "Browse the catalog and choose the products you need;",
+          "Browse the catalog and choose the products you need;",
+          "Message us on Instagram Direct or place an order on the website using the promo code EUROPASSAG"
+        ]
+      },
+      "tags": {
+        "ua": ["магазин", "здоровʼя"],
+        "en": ["shop", "health"]
+      }
+    },
+    "magnum": {
+      "id": "magnum",
+      "slug": "magnum",
+      "image": "@/assets/images/partners/magnum.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://tornador-magnum.com.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "instagram",
+          "url": ""
+        },
+        {
+          "type": "facebook",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Сервіс",
+        "en": "Service"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Tornador Magnum",
+        "en": "Tornador Magnum"
+      },
+      "summary": {
+        "ua": "Великий вибір автохімії, товарів і аксесуарів для детейлінгу та обладнання для автомийок",
+        "en": "Wide range of auto-chemistry, products and accessories for detailing and equipment for car washes"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-5%",
+          "en": "-5%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Україна, Київ/онлайн",
+        "en": "Ukraine, Kyiv/online"
+      },
+      "terms": {
+        "ua": ["5% на всі товари та послуги"],
+        "en": ["5% on all products and services"]
+      },
+      "tags": {
+        "ua": ["магазин"],
+        "en": ["shop"]
+      }
+    },
+    "smartass": {
+      "id": "smartass",
+      "slug": "smartass",
+      "image": "@/assets/images/partners/smartass.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://smartass.club/en",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "instagram",
+          "url": ""
+        },
+        {
+          "type": "facebook",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness Club"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness Club"
+      },
+      "summary": {
+        "ua": "Фітнес-клуб",
+        "en": "Fitness Club"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-10-20%",
+          "en": "-10-20%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, вул. Жилянська, 41а, вул. Короленківська 4, Україна",
+        "en": "Kyiv, Zhylianska St, 41a, Korolenkivska St 4, Ukraine"
+      },
+      "terms": {
+        "ua": [
+          "1-4 масажі – 10% знижки 5-10 масажів – 15%  11-15 масажів – 20%",
+          "Поповнюй баланс у Beauty Pro на рецепції зі знижкою та назви промокод “UPSTARS” (назву своєї компанії)",
+          "Запис на процедури: Онлайн через додаток Linktre",
+          "Через рецепцію клубу Smartass Gym&Soul +38 095 186 15 51",
+          "Або рецепцію Smartass Beauty +38 096 716 79 15"
+        ],
+        "en": [
+          "1–4 massages – 10% discount, 5–10 massages – 15%, 11–15 massages – 20%",
+          "Top up your balance at the Beauty Pro reception with a discount and mention the promo code “UPSTARS” (your company name)",
+          "Booking for procedures: Online via the Linktree app",
+          "Through the Smartass Gym & Soul reception: +38 095 186 15 51",
+          "Or through the Smartass Beauty reception: +38 096 716 79 15"
+        ]
+      },
+      "tags": {
+        "ua": ["фітнес", "масаж", "салон краси"],
+        "en": ["fitness", "massage", "beauty salon"]
+      }
+    },
+    "omassage": {
+      "id": "omassage",
+      "slug": "omassage",
+      "image": "@/assets/images/partners/omassage.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://www.instagram.com/o.massage.warsaw/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Салон краси",
+        "en": "Beauty Salon"
+      },
+      "location": {
+        "ua": "PL/Варшава",
+        "en": "PL/Warsaw"
+      },
+      "name": {
+        "ua": "O.massage",
+        "en": "O.massage "
+      },
+      "summary": {
+        "ua": "Студія масажу",
+        "en": "Massage studio"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-Спеціальна ціна",
+          "en": "-Спеціальна ціна"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Варшава, Польша",
+        "en": "Warsaw, Poland"
+      },
+      "terms": {
+        "ua": [
+          "Спеціальна пропозиція на масаж тіла та масаж обличчя:\n60 хв. – 200 злотих \n90 хв - 250 злотих, \n120 хв. - 300 злотих, \nМасаж обличчя 60 хв. – 285 злотих.",
+          "Поповнюй баланс у Beauty Pro на рецепції зі знижкою та назви промокод “UPSTARS” (назву своєї компанії)"
+        ],
+        "en": [
+          "Special offer on body massage and facial massage:\n60 min – 200 PLN \n90 min – 250 PLN, \n120 min – 300 PLN, \nFacial massage 60 min – 285 PLN.",
+          "Top up your balance at the Beauty Pro reception with a discount and mention the promo code “UPSTARS” (your company name)"
+        ]
+      },
+      "tags": {
+        "ua": ["фітнес", "масаж", "салон краси"],
+        "en": ["fitness", "massage", "beauty salon"]
+      }
+    },
+    "dari-jwrly": {
+      "id": "dari-jwrly",
+      "slug": "dari-jwrly",
+      "image": "@/assets/images/partners/dari-jwrly.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://www.instagram.com/darijewelry/?igshid=MzRlODBiNWFlZA%3D%3D",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Dari Jewelry",
+        "en": "Dari Jewelry"
+      },
+      "summary": {
+        "ua": "Авторські прикраси, золото та срібло, ювелірна майстерня",
+        "en": "Author’s jewelry, gold and silver, jewelry workshop"
+      },
+      "description": {
+        "ua": "Авторські прикраси, золото та срібло, ювелірна майстерня",
+        "en": "Author’s jewelry, gold and silver, jewelry workshop"
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, Україна",
+        "en": "Kyiv, Ukraine"
+      },
+      "terms": {
+        "ua": ["10% до 31.12.2025", "Промокод в дірект та на сайті UPSTARS10%"],
+        "en": ["10% until 31.12.2025", "Promo code in direct and on the site UPSTARS10%"]
+      },
+      "tags": {
+        "ua": ["магазин", "ювелірні вироби"],
+        "en": ["shop", "jewelry"]
+      }
+    },
+    "044barbershop": {
+      "id": "044barbershop",
+      "slug": "044barbershop",
+      "image": "@/assets/images/partners/044barbershop.webp",
+      "promoCode": "europ20",
+      "contact": {
+        "website": "https://044barbershop.kyiv.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "instagram",
+          "url": ""
+        },
+        {
+          "type": "facebook",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Салон краси",
+        "en": "Beauty Salon"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "044 Barbershop",
+        "en": "044 Barbershop"
+      },
+      "summary": {
+        "ua": "Салон краси",
+        "en": "Beauty Salon"
+      },
+      "description": {
+        "ua": "Стрижка, стрижка бороди, стрижка машинкою, гоління",
+        "en": "Haircut, beard trim, hair cut with a machine, shaving"
+      },
+      "discount": {
+        "label": {
+          "ua": "-20%",
+          "en": "-20%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, вул. Саксаганського 44, Україна",
+        "en": "Kyiv, Saxahanskoho St, 44, Ukraine"
+      },
+      "terms": {
+        "ua": [
+          "Знижка 20% на послугу або преміальне миття голови.",
+          "Щоб отримати знижку уточніть промокод europ20 при записі.",
+          "Знижка діє в барбершопі за адресою вул. Саксаганського, 44"
+        ],
+        "en": [
+          "20% discount on the service or premium hair wash.",
+          "To get a discount, specify the promo code europ20 when booking.",
+          "The discount is valid in the barbershop at the address Saxahanskoho St, 44"
+        ]
+      },
+      "tags": {
+        "ua": ["барбершоп", "стрижка"],
+        "en": ["barbershop", "haircut"]
+      }
+    },
+    "chop-chop": {
+      "id": "chop-chop",
+      "slug": "chop-chop",
+      "image": "@/assets/images/partners/chop-chop.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://www.chopchop.com.ua/",
+        "email": "",
+        "phone": "+380934874705"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Онлайн",
+        "en": "UA/Online"
+      },
+      "name": {
+        "ua": "Chop-Chop",
+        "en": "Chop-Chop"
+      },
+      "summary": {
+        "ua": "Одяг (худи, футболки, шкарпетки)",
+        "en": "Clothing (hoodies, T-shirts, socks)"
+      },
+      "description": {
+        "ua": "Одяг (худи, футболки, шкарпетки)",
+        "en": "Clothing (hoodies, T-shirts, socks)"
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Онлайн",
+        "en": "Online"
+      },
+      "terms": {
+        "ua": [
+          "Промокод UPSTARS на сайті та в Директі",
+          "Написати, що ви співробітник UPSTARS менеджер +380934874705​ Богдан"
+        ],
+        "en": [
+          "Promo code UPSTARS on the website and in Direct",
+          "Write that you are an UPSTARS employee. Manager: +380934874705 — Bohdan"
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "kulik-system": {
+      "id": "kulik-system",
+      "slug": "kulik-system",
+      "image": "@/assets/images/partners/kulik.webp",
+      "promoCode": "-",
+      "contact": {
+        "website": "https://kulik-system.com/ua/ua/shopping/chairs/?utm_source=google_ads&utm_medium=cpc&utm_campaign=brand_kulik_system&utm_content=142591851733_630562217968_g_&utm_term=kulik%20system",
+        "email": "",
+        "phone": "+380934874705​ Богдан"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Kulik System",
+        "en": "Kulik System"
+      },
+      "summary": {
+        "ua": "Меблі для роботи: столи, крісла",
+        "en": "Furniture for work: desks, chairs"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-6%",
+          "en": "-6%"
+        },
+        "description": {
+          "ua": "6% на крісла і електро столи з регулюванням по висоті",
+          "en": "6% off chairs and electric height-adjustable desks"
+        }
+      },
+      "address": {
+        "ua": "",
+        "en": "6% off chairs and electric height-adjustable desks"
+      },
+      "terms": {
+        "ua": [
+          "6% на крісла і електро столи з регулюванням по висоті",
+          "Написати, що ви співробітник UPSTARS менеджер +380934874705​ Богдан"
+        ],
+        "en": [
+          "6% off chairs and electric height-adjustable desks",
+          "Write that you are an UPSTARS employee. Manager: +380934874705 — Bohdan"
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "big-wines": {
+      "id": "big-wines",
+      "slug": "big-wines",
+      "image": "@/assets/images/partners/big-wines.webp",
+      "promoCode": "EUROPASSAGE25",
+      "contact": {
+        "website": "https://bigwines.com.ua/uk",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Big Wines",
+        "en": "Big Wines"
+      },
+      "summary": {
+        "ua": "Винний бутік",
+        "en": "Wine boutique"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-25%",
+          "en": "-25%"
+        },
+        "description": {
+          "ua": "25% знижки",
+          "en": "25% discount"
+        }
+      },
+      "address": {
+        "ua": "м. Київ, вул. Ігорівська, 1/8, Україна або онлайн",
+        "en": "Kyiv, Ihorivska St, 1/8, Ukraine or online"
+      },
+      "terms": {
+        "ua": [
+          "Завітайте на сайт Big Wines - Цінуймо українське! ",
+          "Перегляньте каталог і оберіть необхідні товари; 3. Додайте вибране до кошика; 4. У полі «Коментар» введіть EUROPASSAGE25 та натисніть «Замовлення підтверджую» НЕ сплачуючи попередньо за товар."
+        ],
+        "en": [
+          "Visit the Big Wines website — Appreciate Ukrainian products!",
+          "Browse the catalog and choose the items you need. Add the selected products to your cart. In the “Comment” field, enter EUROPASSAGE25 and click “Confirm order” WITHOUT paying for the order in advance."
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "amospring": {
+      "id": "amospring",
+      "slug": "amospring",
+      "image": "@/assets/images/partners/amospring.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://instagram.com/amospring?igshid=YzcxN2Q2NzY0OA==",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Салон краси",
+        "en": "Beauty salon"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "Amospring",
+        "en": "Amospring"
+      },
+      "summary": {
+        "ua": "Інноваційний центр енергетичного відновлення ",
+        "en": "Innovative Energy Recovery Center"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-7%",
+          "en": "-7%"
+        },
+        "description": {
+          "ua": "7% на капсулу здоров’я, медитативний масаж, антистрес терапію",
+          "en": "7% off the health capsule, meditative massage, and anti-stress therapy"
+        }
+      },
+      "address": {
+        "ua": "Київ, Полтавська 10,  Україна",
+        "en": "Kyiv, Poltavska 10, Ukraine"
+      },
+      "terms": {
+        "ua": [
+          "7% на капсулу здоров’я, медитативний масаж, антистрес терапію",
+          "Промокод в дірект або на рецепції UPSTARS"
+        ],
+        "en": [
+          "7% off the health capsule, meditative massage, and anti-stress therapy",
+          "Promo code in Direct or at the UPSTARS reception"
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "mihailo-pustovoit-massage-room": {
+      "id": "mihailo-pustovoit-massage-room",
+      "slug": "mihailo-pustovoit-massage-room",
+      "image": "@/assets/images/partners/mykhailo-pustovoit-massage-room.webp",
+      "promoCode": "UPSTARS20",
+      "contact": {
+        "website": "https://www.instagram.com/mihey_masaj",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/mihey_masaj"
+        }
+      ],
+      "category": {
+        "ua": "Здоровʼя",
+        "en": "Health"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Масажний кабінет Михайла Пустовойта",
+        "en": "Mykhailo Pustovoit Massage Room"
+      },
+      "summary": {
+        "ua": "Масажист, тета практик, чайна людина",
+        "en": "Masseur, theta practitioner, tea master"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-20%",
+          "en": "-20%"
+        },
+        "description": {
+          "ua": "20% на сеанс масажу",
+          "en": "20% off a massage session"
+        }
+      },
+      "address": {
+        "ua": "Київ, Голосіївский проспект 70 1й корпус",
+        "en": "Kyiv, Holosiivskyi Avenue 70, Building 1"
+      },
+      "terms": {
+        "ua": ["20% на сеанс масажу", "Промокод в дірект в інстраграмі UPSTARS20"],
+        "en": ["20% off a massage session", "Promo code in Instagram Direct: UPSTARS20"]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "art-music-space-1990": {
+      "id": "art-music-space-1990",
+      "slug": "art-music-space-1990",
+      "image": "@/assets/images/partners/art-music-space-1990.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://instagram.com/1990domusickyiv?igshid=MzRlODBiNWFlZA==",
+        "email": "",
+        "phone": "+380939795198"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Інше",
+        "en": "Other"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "ART MUSIC SPACE 19/90",
+        "en": "ART MUSIC SPACE 19/90"
+      },
+      "summary": {
+        "ua": "Майстерня музичного мистецтва",
+        "en": "Workshop of musical art"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-20%",
+          "en": "-20%"
+        },
+        "description": {
+          "ua": "20% на заняття: вокал, гітара, бас, фоно та сольфеджіо, барабани або ритміка",
+          "en": "20% off lessons in: vocals, guitar, bass, piano and solfeggio, drums or rhythmics"
+        }
+      },
+      "address": {
+        "ua": "Київ, Україна та онлайн",
+        "en": "Kyiv, Ukraine and online"
+      },
+      "terms": {
+        "ua": [
+          "20% на заняття: вокал, гітара, бас, фоно та сольфеджіо, барабани або ритміка",
+          "Промокод UPSTARS у дірект або телеграм +380939795198 Ксюша"
+        ],
+        "en": [
+          "20% off lessons in: vocals, guitar, bass, piano and solfeggio, drums or rhythmics",
+          "Promo code UPSTARS in Direct or via Telegram: +380939795198 (Ksiusha)"
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "sa-pase": {
+      "id": "sa-pase",
+      "slug": "sa-pase",
+      "image": "@/assets/images/partners/sa-pase.webp",
+      "promoCode": "UPSTARS10",
+      "contact": {
+        "website": "https://sa-pase.com/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Онлайн",
+        "en": "UA/Online"
+      },
+      "name": {
+        "ua": "Sa Pase",
+        "en": "Sa Pase"
+      },
+      "summary": {
+        "ua": "Авторські прикраси",
+        "en": "Author’s jewelry"
+      },
+      "description": {
+        "ua": "Авторські прикраси",
+        "en": "Author’s jewelry"
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "15% знижки (не буде додаватись до вже існуючих акцій) та 5% на період діючих знижок",
+          "en": "15% discount (cannot be combined with existing promotions) and 5% during active discount periods"
+        }
+      },
+      "address": {
+        "ua": "Київ, Україна/онлайн",
+        "en": "Kyiv, Ukraine/online"
+      },
+      "terms": {
+        "ua": [
+          "15% знижки (не буде додаватись до вже існуючих акцій) та 5% на період діючих знижок",
+          "Промокод в дірект та на сайті UPSTARS10"
+        ],
+        "en": [
+          "15% discount (will not be added to existing promotions) and 5% during active discount periods.",
+          "Promo code in Direct and on the website: UPSTARS10"
+        ]
+      },
+      "tags": {
+        "ua": [],
+        "en": []
+      }
+    },
+    "giorno-medical": {
+      "id": "giorno-medical",
+      "slug": "giorno-medical",
+      "image": "@/assets/images/partners/giorno-dentale.webp",
+      "promoCode": "UPSTARS",
+      "contact": {
+        "website": "https://giorno-medical.com/ru",
+        "email": "",
+        "phone": "+ 38 067 520 41 41"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Здоровʼя",
+        "en": "Helth"
+      },
+      "location": {
+        "ua": "UA/Львів",
+        "en": "UA/Lviv"
+      },
+      "name": {
+        "ua": "Giorno-medical",
+        "en": "Giorno-medical"
+      },
+      "summary": {
+        "ua": "Медичний центр - це мережа сучасних багатопрофільних мед центрів та сімейних стоматологій",
+        "en": "A medical center is a network of modern multidisciplinary medical centers and family dental clinics."
+      },
+      "description": {
+        "ua": "Медичний центр - це мережа сучасних багатопрофільних мед центрів та сімейних стоматологій",
+        "en": "A medical center is a network of modern multidisciplinary medical centers and family dental clinics."
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Україна, Львів",
+        "en": "Ukraine, Lviv"
+      },
+      "terms": {
+        "ua": ["Подзвонити + 38 067 520 41 41 для запису, озвучити колл-центру промокод UPSTARS"],
+        "en": [
+          "Call +38 067 520 41 41 to make an appointment and provide the promo code UPSTARS to the call center."
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "box-catering": {
+      "id": "box-catering",
+      "slug": "box-catering",
+      "image": "@/assets/images/partners/box-catering.webp",
+      "promoCode": "#ILoveUpstars",
+      "contact": {
+        "website": "https://box-catering.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Їжа",
+        "en": "Food"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Box catering",
+        "en": "Box catering"
+      },
+      "summary": {
+        "ua": "Кейтеринг",
+        "en": "Catering"
+      },
+      "description": {
+        "ua": "Кейтеринг",
+        "en": "Catering"
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, Україна",
+        "en": "Kyiv, Ukraine"
+      },
+      "terms": {
+        "ua": ["Вказати промокод на сайті #ILoveUpstars"],
+        "en": ["Enter the promo code #ILoveUpstars on the website"]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "si": {
+      "id": "si",
+      "slug": "si",
+      "image": "@/assets/images/partners/si.webp",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "https://sikyiv.choiceqr.com/section:snidanki/soloni",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Їжа",
+        "en": "Food"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Si",
+        "en": "Si"
+      },
+      "summary": {
+        "ua": "Ресторан",
+        "en": "Restaurant"
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "Ексклюзивна знижка 15% на доставку за промокодом EUROPASSAGE",
+          "en": "Exclusive 15% discount on delivery with the promo code EUROPASSAGE"
+        }
+      },
+      "address": {
+        "ua": "Київ, вулиця Прорізна, 20",
+        "en": "Kyiv, Prorizna Street, 20"
+      },
+      "terms": {
+        "ua": [
+          "Перейдіть на сайт; Оберіть страви та додайте їх у кошик;  У полі «Маєте промо-код?» введіть EUROPASSAGE;  Натисніть «Далі» та завершіть замовлення",
+          "ВАЖЛИВО: Доставка доступна через таксі або самовивіз. Знижка НЕ діє на алкоголь. Знижка діє лише для доставки чи самовивіз з ресторану."
+        ],
+        "en": [
+          "ВАЖЛИВО: Доставка доступна через таксі або самовивіз. Знижка НЕ діє на алкоголь. Знижка діє лише для доставки чи самовивіз з ресторану.",
+          "IMPORTANT: Delivery is available via taxi or pickup. The discount does NOT apply to alcohol. The discount applies only to delivery or pickup from the restaurant."
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "zustrich": {
+      "id": "zustrich",
+      "slug": "zustrich",
+      "image": "@/assets/images/partners/zustrich.webp",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Їжа",
+        "en": "Food"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Зустріч",
+        "en": "Zustrich"
+      },
+      "summary": {
+        "ua": "Кафе",
+        "en": "Cafe"
+      },
+      "description": {
+        "ua": "Кафе",
+        "en": "Cafe"
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "вулиця Велика Васильківська, 1-3, Київ, Україна",
+        "en": "1–3 Velyka Vasylkivska Street, Kyiv, Ukraine"
+      },
+      "terms": {
+        "ua": [
+          "Перейдіть на сайт; Оберіть страви та додайте їх у кошик;  У полі «Маєте промо-код?» введіть EUROPASSAGE; Натисніть «Далі» та завершіть замовлення",
+          "ВАЖЛИВО: Доставка доступна через таксі або самовивіз. Знижка НЕ діє на алкоголь. Знижка діє лише для доставки чи самовивіз з ресторану."
+        ],
+        "en": [
+          "Go to the website; Select the dishes and add them to your cart; In the “Have a promo code?” field, enter EUROPASSAGE; Click “Next” and complete your order",
+          "IMPORTANT: Delivery is available via taxi or pickup. The discount does NOT apply to alcohol. The discount applies only to delivery or pickup from the restaurant"
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "chayka": {
+      "id": "chayka",
+      "slug": "chayka",
+      "image": "@/assets/images/partners/chayka.webp",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "https://chayka.choiceqr.com/section:snidanki/snidanki",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Їжа",
+        "en": "Food"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Чайка",
+        "en": "Chaika"
+      },
+      "summary": {
+        "ua": "Кафе",
+        "en": "Cafe"
+      },
+      "description": {
+        "ua": "Кафе",
+        "en": "Cafe"
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "вулиця Басейна, 5Б, Київ, Україна",
+        "en": "5B Baseina Street, Kyiv, Ukraine"
+      },
+      "terms": {
+        "ua": [
+          "Перейдіть на сайт; Оберіть страви та додайте їх у кошик;  У полі «Маєте промо-код?» введіть EUROPASSAGE; Натисніть «Далі» та завершіть замовлення",
+          "ВАЖЛИВО: Доставка доступна через таксі або самовивіз. Знижка НЕ діє на алкоголь. Знижка діє лише для доставки чи самовивіз з ресторану"
+        ],
+        "en": [
+          "ВАЖЛИВО: Доставка доступна через таксі або самовивіз. Знижка НЕ діє на алкоголь. Знижка діє лише для доставки чи самовивіз з ресторану",
+          "IMPORTANT: Delivery is available via taxi or pickup. The discount does NOT apply to alcohol. The discount applies only to delivery or pickup from the restaurant"
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "four-seasons": {
+      "id": "four-seasons",
+      "slug": "four-seasons",
+      "image": "@/assets/images/partners/four-seasons.webp",
+      "promoCode": "-",
+      "contact": {
+        "website": "https://four-seasons.com.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Інше",
+        "en": "Other"
+      },
+      "location": {
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
+      },
+      "name": {
+        "ua": "Four Seasons",
+        "en": "Four Seasons"
+      },
+      "summary": {
+        "ua": "Флористика, доставка букетів, озеленення",
+        "en": "Floristry, bouquet delivery, landscaping"
+      },
+      "description": {
+        "ua": "Флористика, доставка букетів, озеленення",
+        "en": "Floristry, bouquet delivery, landscaping"
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, Україна",
+        "en": "Kyiv, Ukraine"
+      },
+      "terms": {
+        "ua": [
+          "Єдина, фіксована ціна на доставку у офіс — 200 грн.",
+          "Готівковий та безготівковий розрахунок на рахунок ФОП"
+        ],
+        "en": [
+          "A single fixed delivery price to the office — 200 UAH",
+          "Cash and non-cash payments to the sole proprietor’s account are available"
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "flo-lux": {
+      "id": "flo-lux",
+      "slug": "flo-lux",
+      "image": "@/assets/images/partners/flolux.webp",
+      "promoCode": "UPSTARS15",
+      "contact": {
+        "website": "https://instagram.com/flo.lux?igshid=MzRlODBiNWFlZA==",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": "https://instagram.com/flo.lux?igshid=MzRlODBiNWFlZA=="
+        }
+      ],
+      "category": {
+        "ua": "Інше",
+        "en": "Other"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "Flo lux",
+        "en": "Flo lux"
+      },
+      "summary": {
+        "ua": "Флористика, доставка букетів",
+        "en": "Floristry, bouquet delivery"
+      },
+      "description": {
+        "ua": "Флористика, доставка букетів",
+        "en": "Floristry, bouquet delivery"
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, Рівне, Львів, Ів-Франківськ, Україна",
+        "en": "Kyiv, Rivne, Lviv, Ivano-Frankivsk, Ukraine"
+      },
+      "terms": {
+        "ua": [
+          "Промокод в дірект або в магазині UPSTARS15",
+          "Готівковий та безготівковий розрахунок на рахунок ФОП"
+        ],
+        "en": [
+          "Promo code in Direct or in the store: UPSTARS15",
+          "Cash and non-cash payments to the sole proprietor’s account are available."
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "englishdom": {
+      "id": "englishdom",
+      "slug": "englishdom",
+      "image": "@/assets/images/partners/eng-dom.webp",
+      "promoCode": "-",
+      "contact": {
+        "website": "https://www.englishdom.com/ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Інше",
+        "en": "Other"
+      },
+      "location": {
+        "ua": "UA/Закордон",
+        "en": "UA/Abroad"
+      },
+      "name": {
+        "ua": "Englishdom",
+        "en": "Englishdom"
+      },
+      "summary": {
+        "ua": "Курси англійської мови",
+        "en": "English language courses"
+      },
+      "description": {
+        "ua": "Курси англійської мови",
+        "en": "English language courses"
+      },
+      "discount": {
+        "label": {
+          "ua": "-5%",
+          "en": "-5%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Україна/Київ/Закордон",
+        "en": "Ukraine/Kyiv/Abroad"
+      },
+      "terms": {
+        "ua": ["Для співробітників та їх родичів. https://www.englishdom.com/ua/corporate/upstars"],
+        "en": ["For employees and their relatives. https://www.englishdom.com/ua/corporate/upstars"]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "spot-school": {
+      "id": "spot-school",
+      "slug": "spot-school",
+      "image": "@/assets/images/partners/spot-school.webp",
+      "promoCode": "upstars-spot ",
+      "contact": {
+        "website": "https://www.spot.school/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Інше",
+        "en": "Other"
+      },
+      "location": {
+        "ua": "UA/Закордон",
+        "en": "UA/Abroad"
+      },
+      "name": {
+        "ua": "Spot-school",
+        "en": "Spot-school"
+      },
+      "summary": {
+        "ua": "Курси англійської мови",
+        "en": "English language courses"
+      },
+      "description": {
+        "ua": "Курси англійської мови",
+        "en": "English language courses"
+      },
+      "discount": {
+        "label": {
+          "ua": "-від 500 грн",
+          "en": "-from 500 UAH"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "",
+        "en": ""
+      },
+      "terms": {
+        "ua": [
+          "Знижка 500грн на заняття у групі, або 10% знижки на будь-який пакет інд занять. Також буде враховуватись програма лояльності «Приведи друга»",
+          "Промокод \"upstars-spot\" в діректі або при спілкуванні з менеджером"
+        ],
+        "en": [
+          "500 UAH discount on group classes, or 10% off any package of individual lessons. The “Refer a Friend” loyalty program also applies.",
+          "Promo code “upstars-spot” in Direct or when communicating with the manager."
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "english-prime-": {
+      "id": "english-prime",
+      "slug": "english-prime",
+      "image": "@/assets/images/partners/eng-prime.webp",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "https://lp.englishprime.ua/",
+        "email": "english.prime.sh@gmail.com",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Інше",
+        "en": "Other"
+      },
+      "location": {
+        "ua": "UA/Закордон",
+        "en": "UA/Abroad"
+      },
+      "name": {
+        "ua": "English Prime ",
+        "en": "English Prime "
+      },
+      "summary": {
+        "ua": "Курси англійської мови",
+        "en": "English language courses"
+      },
+      "description": {
+        "ua": "Курси англійської мови",
+        "en": "English language courses"
+      },
+      "discount": {
+        "label": {
+          "ua": "-від 500 грн",
+          "en": "-from 500 UAH"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Україна/Київ/Закордон",
+        "en": "Ukraine/Kyiv/Abroad"
+      },
+      "terms": {
+        "ua": [
+          "Cистема лояльності — знижка 15% за промокодом",
+          "Надіслати запит на пошту english.prime.sh@gmail.com зі свого робочого домену.Темою листа вказати «EUROPASSAGE»",
+          "Вказати ПІБ та номер телефону",
+          "Зачекати на дзвінок менеджера школи для організації навчання"
+        ],
+        "en": [
+          "Send a request to english.prime.sh@gmail.com from your corporate email domain",
+          "Send a request to english.prime.sh@gmail.com from your corporate email domain. Specify “EUROPASSAGE” as the email subject",
+          "Include your full name and phone number",
+          "Wait for a call from the school’s manager to arrange your lessons"
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "futurium": {
+      "id": "futurium",
+      "slug": "futurium",
+      "image": "@/assets/images/partners/futurim.webp",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "https://www.instagram.com/futurium.english/?utm_source=Telegram&utm_medium=post&utm_campaign=partners",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/futurium.english/?utm_source=Telegram&utm_medium=post&utm_campaign=partners"
+        }
+      ],
+      "category": {
+        "ua": "Інше",
+        "en": "Another"
+      },
+      "location": {
+        "ua": "UA/Закордон",
+        "en": "UA/Abroad"
+      },
+      "name": {
+        "ua": "Futurium",
+        "en": "Futurium"
+      },
+      "summary": {
+        "ua": "Курси англійської мови",
+        "en": "English language courses"
+      },
+      "description": {
+        "ua": "Курси англійської мови",
+        "en": "English language courses"
+      },
+      "discount": {
+        "label": {
+          "ua": "-10-15%",
+          "en": "-10-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Україна/Київ/Закордон",
+        "en": "Ukraine/Kyiv/Abroad"
+      },
+      "terms": {
+        "ua": [
+          "Cистема лояльності — знижка від 10% до 15% за промокодом EUROPASSAGE. Для резидентів бізнес парку: — 10% на індивідуальне навчання; -15% на парне та групове навчання",
+          "Напиши на сторінку @futurium_english",
+          "Запишись на чек рівня",
+          "Вкажи промокод: EUROPASSAGE"
+        ],
+        "en": [
+          "Loyalty program — a discount from 10% to 15% with the promo code EUROPASSAGE. For business park residents: — 10% off individual lessons; — 15% off paired and group lessons",
+          "Message the page @futurium_english",
+          "Sign up for a level check",
+          "Provide the promo code: EUROPASSAGE"
+        ]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "arthuss": {
+      "id": "arthuss",
+      "slug": "arthuss",
+      "image": "@/assets/images/partners/art-huss.webp",
+      "promoCode": "upstars",
+      "contact": {
+        "website": "https://www.arthuss.com.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Магазин",
+        "en": "Shop"
+      },
+      "location": {
+        "ua": "UA/Онлайн",
+        "en": "UA/Online"
+      },
+      "name": {
+        "ua": "Arthuss",
+        "en": "Arthuss"
+      },
+      "summary": {
+        "ua": "Книгарня",
+        "en": "Bookstore"
+      },
+      "description": {
+        "ua": "Книгарня",
+        "en": "Bookstore"
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ/онлайн/Україна",
+        "en": "Ukraine/Kyiv/Abroad"
+      },
+      "terms": {
+        "ua": ["15% upstars на сайті"],
+        "en": ["15% UPSTARS on the website"]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
+      }
+    },
+    "shar-lux": {
+      "id": "shar-lux",
+      "slug": "shar-lux",
+      "image": "@/assets/images/partners/shar-lux.webp",
+      "promoCode": "upstars15",
+      "contact": {
+        "website": "https://instagram.com/shar.lux?igshid=MzRlODBiNWFlZA==",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Інше",
+        "en": "Other"
+      },
+      "location": {
+        "ua": "UA",
+        "en": "UA"
+      },
+      "name": {
+        "ua": "Shar lux",
+        "en": "Shar lux"
+      },
+      "summary": {
+        "ua": "Майстерня кульок, квітів, декору квіти",
+        "en": "Balloon, flower, and decor workshop"
+      },
+      "description": {
+        "ua": "Майстерня кульок, квітів, декору квіти",
+        "en": "Balloon, flower, and decor workshop"
+      },
+      "discount": {
+        "label": {
+          "ua": "-15%",
+          "en": "-15%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, Рівне, Львів, Івано-Франківськ, Україна",
+        "en": "Kyiv, Rivne, Lviv, Ivano-Frankivsk, Ukraine"
+      },
+      "terms": {
+        "ua": ["Промокод в дірект або в магазині UPSTARS15"],
+        "en": ["Promo code in Direct or in the store: UPSTARS15"]
+      },
+      "tags": {
+        "ua": [""],
+        "en": [""]
       }
     }
   }

@@ -31,8 +31,8 @@ const emit = defineEmits<{
   close: []
   'reset-filters': []
   'apply-filters': [
-    location: PartnerLocation | 'Усі' | null,
-    category: PartnerCategory | 'Усі' | null,
+    location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | 'ua/abroad' | null,
+    category: PartnerCategory | 'all' | 'online' | null,
   ]
 }>()
 
@@ -47,8 +47,10 @@ const modalPosition = computed(() => (isMobile.value ? 'mobile' : 'dropdown'))
 const showBackdrop = computed(() => isMobile.value)
 
 // Временное состояние фильтров (не применяется до нажатия "Применить")
-const pendingLocation = ref<PartnerLocation | 'Усі' | null>(store.filters.location)
-const pendingCategory = ref<PartnerCategory | 'Усі' | null>(store.filters.category)
+const pendingLocation = ref<
+  PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | 'ua/abroad' | null
+>(store.filters.location)
+const pendingCategory = ref<PartnerCategory | 'all' | 'online' | null>(store.filters.category)
 
 // Сбрасываем временное состояние при открытии модалки
 watch(
@@ -64,83 +66,21 @@ watch(
 )
 
 const locationOptions = computed(() => {
-  return [
-    {
-      value: filters.locations.all.value,
-      label: t(filters.locations.all.label),
-      description: t(filters.locations.all.description),
-    },
-    {
-      value: filters.locations.ua.value,
-      label: t(filters.locations.ua.label),
-      description: t(filters.locations.ua.description),
-    },
-    {
-      value: filters.locations.europe.value,
-      label: t(filters.locations.europe.label),
-      description: t(filters.locations.europe.description),
-    },
-    {
-      value: filters.locations.online.value,
-      label: t(filters.locations.online.label),
-      description: t(filters.locations.online.description),
-    },
-  ]
+  // Генерируем опции из ключей объекта filters.locations
+  return Object.entries(filters.locations).map(([key, config]) => ({
+    value: key,
+    label: t(config.label),
+    description: t(config.description),
+  }))
 })
 
 const categoryOptions = computed(() => {
-  return [
-    {
-      value: filters.categories.all.value,
-      label: t(filters.categories.all.label),
-      description: t(filters.categories.all.description),
-    },
-    {
-      value: filters.categories.travel.value,
-      label: t(filters.categories.travel.label),
-      description: t(filters.categories.travel.description),
-    },
-    {
-      value: filters.categories.fitness.value,
-      label: t(filters.categories.fitness.label),
-      description: t(filters.categories.fitness.description),
-    },
-    {
-      value: filters.categories.online.value,
-      label: t(filters.categories.online.label),
-      description: t(filters.categories.online.description),
-    },
-    {
-      value: filters.categories.beauty.value,
-      label: t(filters.categories.beauty.label),
-      description: t(filters.categories.beauty.description),
-    },
-    {
-      value: filters.categories.shop.value,
-      label: t(filters.categories.shop.label),
-      description: t(filters.categories.shop.description),
-    },
-    {
-      value: filters.categories.food.value,
-      label: t(filters.categories.food.label),
-      description: t(filters.categories.food.description),
-    },
-    {
-      value: filters.categories.health.value,
-      label: t(filters.categories.health.label),
-      description: t(filters.categories.health.description),
-    },
-    {
-      value: filters.categories.education.value,
-      label: t(filters.categories.education.label),
-      description: t(filters.categories.education.description),
-    },
-    {
-      value: filters.categories.other.value,
-      label: t(filters.categories.other.label),
-      description: t(filters.categories.other.description),
-    },
-  ]
+  // Генерируем опции из ключей объекта filters.categories
+  return Object.entries(filters.categories).map(([key, config]) => ({
+    value: key,
+    label: t(config.label),
+    description: t(config.description),
+  }))
 })
 
 // Используем временное состояние для отображения активных элементов
@@ -175,10 +115,17 @@ function handleItemClick(
   void itemIndex // Не используется, но передается из ModalList
   if (sectionIndex === 0) {
     // Location section - обновляем только временное состояние
-    pendingLocation.value = item.value as PartnerLocation | 'Усі' | null
+    pendingLocation.value = item.value as
+      | PartnerLocation
+      | 'all'
+      | 'ua'
+      | 'europe'
+      | 'online'
+      | 'ua/abroad'
+      | null
   } else if (sectionIndex === 1) {
     // Category section - обновляем только временное состояние
-    pendingCategory.value = item.value as PartnerCategory | 'Усі' | null
+    pendingCategory.value = item.value as PartnerCategory | 'all' | 'online' | null
   }
   // НЕ применяем фильтры сразу и НЕ закрываем модалку
 }
@@ -192,8 +139,8 @@ function handleApplyFilters() {
 
 function handleResetFilters() {
   // Сбрасываем временное состояние к значениям по умолчанию
-  pendingLocation.value = 'Усі'
-  pendingCategory.value = 'Усі'
+  pendingLocation.value = 'all'
+  pendingCategory.value = 'all' as PartnerCategory | 'all' | 'online'
   // НЕ применяем фильтры и НЕ закрываем модалку
 }
 

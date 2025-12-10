@@ -12,7 +12,7 @@ import type {
 type LoadingStatus = 'idle' | 'loading' | 'success' | 'error'
 
 const DEFAULT_PAGE_SIZE = 9
-const ALL_OPTION = 'Усі'
+const ALL_OPTION = 'all'
 
 const DEFAULT_FILTERS: DiscountFilters = {
   search: '',
@@ -37,16 +37,6 @@ export const useDiscountsStore = defineStore('discounts', {
   }),
 
   getters: {
-    categories(state): (PartnerCategory | typeof ALL_OPTION)[] {
-      const base: Set<PartnerCategory | typeof ALL_OPTION> = new Set([ALL_OPTION])
-      state.items.forEach((partner) => base.add(partner.category))
-      return Array.from(base)
-    },
-    locations(state): (PartnerLocation | typeof ALL_OPTION)[] {
-      const base: Set<PartnerLocation | typeof ALL_OPTION> = new Set([ALL_OPTION])
-      state.items.forEach((partner) => base.add(partner.location))
-      return Array.from(base)
-    },
     filteredPartners(state): Partner[] {
       const search = normalize(state.filters.search.trim())
 
@@ -67,17 +57,54 @@ export const useDiscountsStore = defineStore('discounts', {
       }
 
       return state.items.filter((partner) => {
-        const matchCategory =
-          !state.filters.category ||
-          state.filters.category === ALL_OPTION ||
-          partner.category === state.filters.category
+        const matchCategory = (() => {
+          if (!state.filters.category || state.filters.category === ALL_OPTION) {
+            return true
+          }
 
-        const matchLocation =
-          !state.filters.location ||
-          state.filters.location === ALL_OPTION ||
-          partner.location === state.filters.location
+          // Специальная обработка для псевдо-категории "online"
+          // (показываем всех партнеров с онлайн локацией независимо от категории)
+          if (state.filters.category === 'online') {
+            return partner.location === 'Online' || partner.location.includes('Онлайн')
+          }
 
-        return matchesSearch(partner) && matchCategory && matchLocation
+          // Обычное сравнение категорий
+          return partner.category === state.filters.category
+        })()
+
+        const matchLocation = (() => {
+          if (!state.filters.location || state.filters.location === ALL_OPTION) {
+            return true
+          }
+
+          const filterLocation = state.filters.location
+          const partnerLocation = partner.location
+
+          // Фильтр "ua" - украинские + глобальные онлайн (UA, UA/Київ, UA/Онлайн, Online)
+          if (filterLocation === 'ua') {
+            return partnerLocation.startsWith('UA')
+          }
+
+          // Фильтр "europe" - европейские + украинские за кордоном (PL/, LT/, UA/Закордон)
+          if (filterLocation === 'europe') {
+            return (
+              partnerLocation.startsWith('PL/') ||
+              partnerLocation.startsWith('LT/') ||
+              partnerLocation === 'UA/Закордон'
+            )
+          }
+
+          // Фильтр "online" - все онлайн партнеры (Online, UA/Онлайн, PL/Онлайн и т.д.)
+          if (filterLocation === 'online') {
+            return partnerLocation === 'Online' || partnerLocation.includes('Онлайн')
+          }
+
+          // Точное совпадение для остальных случаев
+          return partnerLocation === filterLocation
+        })()
+
+        const finalMatch = matchesSearch(partner) && matchCategory && matchLocation
+        return finalMatch
       })
     },
     totalFiltered(): number {
@@ -126,12 +153,29 @@ export const useDiscountsStore = defineStore('discounts', {
         const partners: Partner[] = Object.values(partnersConfig).map((partnerConfig) => {
           const imagePath = partnerConfig.image
 
+          // Находим категорию по украинскому тексту в filters.categories
+          const ukrainianCategory =
+            typeof partnerConfig.category === 'string'
+              ? partnerConfig.category
+              : partnerConfig.category.ua
+
+          // Ищем ключ категории в filters.categories по совпадению с label.ua
+          const categoryKey = Object.entries(config.filters.categories).find(
+            ([_, categoryConfig]) => categoryConfig.label.ua === ukrainianCategory,
+          )?.[0]
+
+          const categoryValue = (categoryKey || ukrainianCategory) as PartnerCategory
+
+          // Локацию оставляем украинской (т.к. это физические адреса)
+          const locationValue = (partnerConfig.location.ua ||
+            partnerConfig.location) as PartnerLocation
+
           return {
             id: partnerConfig.id,
             slug: partnerConfig.slug,
             name: t(partnerConfig.name),
-            category: t(partnerConfig.category) as PartnerCategory,
-            location: t(partnerConfig.location) as PartnerLocation,
+            category: categoryValue,
+            location: locationValue,
             discount: {
               label: t(partnerConfig.discount.label),
               description: partnerConfig.discount.description

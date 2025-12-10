@@ -22,6 +22,7 @@ const {
   locale,
   images: imagesConfig,
   getImage,
+  config,
 } = useAppConfig()
 
 // Ensure images is reactive
@@ -86,8 +87,10 @@ const partnerTerms = computed(() => {
 
 const partnerCategory = computed(() => {
   if (!partner.value) return ''
-  const category = filters.categoryLabels[partner.value.category]
-  return category ? t(category) : partner.value.category
+  // Получаем категорию напрямую по ключу
+  const categoryFilter =
+    filters.categories[partner.value.category as keyof typeof filters.categories]
+  return categoryFilter ? t(categoryFilter.label) : partner.value.category
 })
 
 const partnerAddress = computed(() => {
@@ -96,6 +99,20 @@ const partnerAddress = computed(() => {
     return t(localizedData.value.address)
   }
   return partner.value.contact.address || ''
+})
+
+// Фильтруем только заполненные соцсети
+const filledSocials = computed(() => {
+  if (!partner.value?.socials) return []
+  return partner.value.socials.filter((social) => social.url && social.url.trim() !== '')
+})
+
+// Проверяем, есть ли изображение у партнёра
+const hasPartnerImage = computed(() => {
+  if (!partner.value) return false
+  const slug = partner.value.slug
+  const partnerConfig = config.value.partners[slug]
+  return partnerConfig?.image && partnerConfig.image.trim() !== ''
 })
 
 // Функция для загрузки данных и проверки партнера
@@ -175,7 +192,26 @@ function getSocialLabel(type: string): string {
     <!-- Main discount card -->
     <div class="discount-details__main-card">
       <div class="discount-details__logo-wrapper">
-        <img :src="partnerImage" :alt="partnerName" class="discount-details__logo" />
+        <img
+          v-if="hasPartnerImage"
+          :src="partnerImage"
+          :alt="partnerName"
+          class="discount-details__logo"
+        />
+        <div v-else class="discount-details__logo-placeholder">
+          <svg
+            width="80"
+            height="80"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
       </div>
 
       <div class="discount-details__info">
@@ -243,9 +279,9 @@ function getSocialLabel(type: string): string {
               {{ partner.contact.website.replace(/^https?:\/\//, '') }}
             </a>
           </div>
-          <div v-if="partner.socials.length > 0" class="discount-details__socials">
+          <div v-if="filledSocials.length > 0" class="discount-details__socials">
             <a
-              v-for="social in partner.socials"
+              v-for="social in filledSocials"
               :key="social.type"
               :href="social.url"
               target="_blank"
@@ -372,6 +408,16 @@ $container-max-width: calc(1312px);
     object-fit: cover;
   }
 
+  &__logo-placeholder {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-secondary-200, #d9d8ff);
+    color: var(--color-secondary-400, #5535be);
+  }
+
   &__info {
     display: flex;
     min-width: 0;
@@ -471,8 +517,8 @@ $container-max-width: calc(1312px);
     }
 
     @include mq(null, lg) {
-  padding: to-rem(24);
-}
+      padding: to-rem(24);
+    }
   }
 
   &__promo-code-wrapper {
@@ -635,6 +681,7 @@ $container-max-width: calc(1312px);
     position: relative;
     font-size: max(to-cqw(24, $container-max-width), to-rem(18));
     padding-left: to-rem(20);
+    white-space: pre-line;
 
     @include line-height(relaxed);
     @include font-weight(regular);

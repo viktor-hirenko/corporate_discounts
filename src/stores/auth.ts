@@ -42,14 +42,6 @@ export const useAuthStore = defineStore('auth', {
           this.user = parsed.user ?? null
           this.token = parsed.token ?? null
 
-          console.log('[auth-store] State restored:', {
-            isAuthenticated: this.isAuthenticated,
-            user: this.user,
-            hasPicture: !!this.user?.picture,
-            picture: this.user?.picture,
-            rawStored: parsed,
-          })
-
           // Проверяем, что picture не потерялся при восстановлении
           if (this.user && !this.user.picture && parsed.user?.picture) {
             console.warn('[auth-store] Picture was lost during restore, fixing...')
@@ -73,13 +65,6 @@ export const useAuthStore = defineStore('auth', {
         // Декодируем JWT токен от Google
         const payload = JSON.parse(atob(credential.split('.')[1]))
 
-        console.log('[auth-store] Google login payload:', {
-          email: payload.email,
-          name: payload.name,
-          picture: payload.picture,
-          fullPayload: payload,
-        })
-
         // Google JWT может содержать picture в разных полях
         // Проверяем несколько возможных вариантов
         const pictureUrl = payload.picture || payload.avatar_url || payload.photo || null
@@ -92,25 +77,8 @@ export const useAuthStore = defineStore('auth', {
         this.token = credential
         this.isAuthenticated = true
 
-        console.log('[auth-store] User data set:', {
-          email: this.user.email,
-          name: this.user.name,
-          picture: this.user.picture,
-        })
-
         // Сохраняем в localStorage
         this.saveToStorage()
-
-        // Проверяем, что данные сохранились
-        const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved) {
-          const savedData = JSON.parse(saved)
-          console.log('[auth-store] Data saved to localStorage:', {
-            hasUser: !!savedData.user,
-            hasPicture: !!savedData.user?.picture,
-            picture: savedData.user?.picture,
-          })
-        }
 
         // Обновляем данные последнего пользователя
         if (this.user) {
@@ -120,7 +88,6 @@ export const useAuthStore = defineStore('auth', {
             picture: this.user.picture,
           }
           localStorage.setItem(LAST_USER_KEY, JSON.stringify(lastUserData))
-          console.log('[auth-store] Last user data saved:', lastUserData)
         }
       } catch (error) {
         console.error('[auth-store] failed to login with Google', error)
@@ -141,14 +108,13 @@ export const useAuthStore = defineStore('auth', {
 
       this.saveToStorage()
 
-      // Обновляем данные последнего пользователя (сохраняем picture, если он был)
+      // Обновляем данные последнего пользователя
       const lastUserData = {
         name: this.user.name,
         email: this.user.email,
-        picture: this.user.picture, // Сохраняем picture, даже если он null (но стараемся сохранить из lastUser)
+        picture: this.user.picture,
       }
       localStorage.setItem(LAST_USER_KEY, JSON.stringify(lastUserData))
-      console.log('[auth-store] Last user data saved after email login:', lastUserData)
     },
 
     logout(): void {
@@ -159,15 +125,7 @@ export const useAuthStore = defineStore('auth', {
           email: this.user.email,
           picture: this.user.picture,
         }
-        console.log('[auth-store] Saving last user data on logout:', lastUserData)
         localStorage.setItem(LAST_USER_KEY, JSON.stringify(lastUserData))
-
-        // Проверяем, что данные сохранились
-        const saved = localStorage.getItem(LAST_USER_KEY)
-        if (saved) {
-          const savedData = JSON.parse(saved)
-          console.log('[auth-store] Last user data saved successfully:', savedData)
-        }
       }
 
       this.isAuthenticated = false

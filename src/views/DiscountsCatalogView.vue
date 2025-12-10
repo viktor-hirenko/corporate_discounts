@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import Filter from '@/components/Filter.vue'
 import FilterChips from '@/components/FilterChips.vue'
 import PartnerCard from '@/components/PartnerCard.vue'
@@ -10,6 +11,8 @@ import { useMediaQuery } from '@/composables/useMediaQuery'
 import { useAppConfig } from '@/composables/useAppConfig'
 
 const store = useDiscountsStore()
+const router = useRouter()
+const route = useRoute()
 const { t, tTemplate, pages } = useAppConfig()
 
 const isLoading = computed(() => store.status === 'loading')
@@ -25,10 +28,37 @@ const displayedRange = computed(() => store.displayedRange)
 
 const isMobile = useMediaQuery('(max-width: 767px)')
 
-// Сбрасываем страницу на первую при изменении фильтров
-watch(filteredPartners, () => {
-  store.resetPage()
-})
+// Обновляем URL при изменении состояния store
+watch(
+  [
+    () => store.pagination.page,
+    () => store.filters.category,
+    () => store.filters.location,
+    () => store.filters.search,
+  ],
+  ([page, category, location, search]) => {
+    const query: Record<string, string> = {}
+
+    // Добавляем только ненулевые значения
+    if (page > 1) query.page = String(page)
+    if (category && category !== 'all') query.category = category
+    if (location && location !== 'all') query.location = location
+    if (search) query.search = search
+
+    // Обновляем URL без перезагрузки страницы
+    router.replace({ query })
+  },
+)
+
+// Сбрасываем страницу на первую при изменении фильтров (но не при первой загрузке)
+watch(
+  [() => store.filters.category, () => store.filters.location, () => store.filters.search],
+  () => {
+    if (store.status !== 'loading') {
+      store.resetPage()
+    }
+  },
+)
 
 function handlePageChange(page: number) {
   store.goToPage(page)
@@ -36,8 +66,29 @@ function handlePageChange(page: number) {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-onMounted(() => {
-  store.loadPartners()
+onMounted(async () => {
+  // Сначала загружаем партнёров
+  await store.loadPartners()
+
+  // Затем восстанавливаем состояние из URL
+  const pageFromUrl = route.query.page ? Number(route.query.page) : 1
+  const categoryFromUrl = route.query.category as string | undefined
+  const locationFromUrl = route.query.location as string | undefined
+  const searchFromUrl = route.query.search as string | undefined
+
+  // Устанавливаем фильтры из URL (с type assertion для корректных значений)
+  if (categoryFromUrl) {
+    store.setCategory(categoryFromUrl as typeof store.filters.category)
+  }
+  if (locationFromUrl) {
+    store.setLocation(locationFromUrl as typeof store.filters.location)
+  }
+  if (searchFromUrl) {
+    store.setSearch(searchFromUrl)
+  }
+
+  // Устанавливаем страницу из URL (после фильтров!)
+  if (pageFromUrl > 1) store.goToPage(pageFromUrl)
 })
 </script>
 

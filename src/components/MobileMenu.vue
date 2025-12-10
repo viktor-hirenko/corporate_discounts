@@ -31,8 +31,8 @@ function handleClose() {
         variant="mobile"
         class="mobile-menu__navigation"
         :on-nav-click="handleClose"
-      />
-      <LanguageSelector variant="mobile" />
+        />
+        <LanguageSelector variant="mobile" />
     </div>
   </UiModal>
 </template>

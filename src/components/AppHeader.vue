@@ -83,7 +83,7 @@ watch(
         >
           <CloseIcon v-if="isMobileMenuOpen" />
           <BarsIcon v-else :size="24" />
-        </button>
+      </button>
       </div>
 
       <MobileMenu :is-open="isMobileMenuOpen" @close="handleCloseMenu" />
@@ -124,7 +124,7 @@ watch(
     pointer-events: none;
     content: '';
 
-    @include mq(null, lg) {
+  @include mq(null, lg) {
       top: to-rem(-24);
       height: to-rem(24);
     }

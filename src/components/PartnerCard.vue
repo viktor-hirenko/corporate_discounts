@@ -10,7 +10,14 @@ interface Props {
 
 const props = defineProps<Props>()
 const router = useRouter()
-const { t, getPartnerLocalizedData, filters, images: imagesConfig, getImage } = useAppConfig()
+const {
+  t,
+  getPartnerLocalizedData,
+  filters,
+  images: imagesConfig,
+  getImage,
+  config,
+} = useAppConfig()
 
 // Ensure images is reactive
 const images = computed(() => imagesConfig)
@@ -26,6 +33,12 @@ const partnerImage = computed(() => {
   return getImage(imagePath)
 })
 
+// Проверяем, есть ли изображение у партнёра
+const hasImage = computed(() => {
+  const partnerConfig = config.value.partners[props.partner.slug]
+  return partnerConfig?.image && partnerConfig.image.trim() !== ''
+})
+
 const partnerName = computed(() => {
   return localizedData.value ? t(localizedData.value.name) : props.partner.name
 })
@@ -35,13 +48,19 @@ const discountLabel = computed(() => {
 })
 
 const categoryLabel = computed(() => {
-  const category = filters.categoryLabels[props.partner.category]
-  return category ? t(category) : props.partner.category
+  // Получаем категорию напрямую по ключу
+  const categoryFilter =
+    filters.categories[props.partner.category as keyof typeof filters.categories]
+  return categoryFilter ? t(categoryFilter.label) : props.partner.category
 })
 
 const locationLabel = computed(() => {
-  const location = filters.locationLabels[props.partner.location]
-  return location ? t(location) : props.partner.location
+  // Берем оригинальную локацию из конфига и локализуем напрямую
+  const partnerConfig = config.value.partners[props.partner.slug]
+  if (partnerConfig && partnerConfig.location) {
+    return t(partnerConfig.location)
+  }
+  return props.partner.location
 })
 
 function handleClick() {
@@ -59,7 +78,21 @@ function handleClick() {
     </div>
     <div class="partner-card__content">
       <div class="partner-card__image-wrapper">
-        <img :src="partnerImage" :alt="partnerName" class="partner-card__image" />
+        <img v-if="hasImage" :src="partnerImage" :alt="partnerName" class="partner-card__image" />
+        <div v-else class="partner-card__image-placeholder">
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
       </div>
 
       <div class="partner-card__info">
@@ -91,6 +124,7 @@ function handleClick() {
   &__content {
     position: relative;
     display: flex;
+    height: 100%;
     padding: to-rem(16);
     flex-direction: column;
     gap: to-rem(16);
@@ -115,6 +149,16 @@ function handleClick() {
     height: 100%;
     object-fit: cover;
     object-position: center;
+  }
+
+  &__image-placeholder {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-secondary-200, #d9d8ff);
+    color: var(--color-secondary-400, #5535be);
   }
 
   &__badge {
@@ -164,7 +208,7 @@ function handleClick() {
   }
 
   &__title {
-    height: to-rem(36);
+    // height: to-rem(36);
     color: var(--color-secondary-600, #01001f);
     font-size: to-rem(24);
 

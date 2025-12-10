@@ -96,13 +96,11 @@ export interface Navigation {
 }
 
 export interface FilterLocation {
-  value: string
   label: LocalizedText
   description: LocalizedText
 }
 
 export interface FilterCategory {
-  value: string
   label: LocalizedText
   description: LocalizedText
 }
@@ -128,8 +126,6 @@ export interface Filters {
     education: FilterCategory
     other: FilterCategory
   }
-  locationLabels: Record<string, LocalizedText>
-  categoryLabels: Record<string, LocalizedText>
   removeFilter: LocalizedText
 }
 

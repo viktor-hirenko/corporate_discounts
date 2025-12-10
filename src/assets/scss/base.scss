@@ -45,6 +45,11 @@ body {
   padding: to-rem(32);
   flex-direction: column;
 
+  // Remove #app padding when auth-layout is a direct child
+  &:has(> .auth-layout) {
+    padding: 0 !important;
+  }
+
   @include mq(null, lg) {
     padding: to-rem(24);
   }

@@ -34,8 +34,8 @@ function handleCloseFilters() {
 }
 
 function handleApplyFilters(
-  location: PartnerLocation | 'Усі' | null,
-  category: PartnerCategory | 'Усі' | null,
+  location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | 'ua/abroad' | null,
+  category: PartnerCategory | 'all' | 'online' | null,
 ) {
   // Применяем фильтры только при нажатии "Применить"
   store.setLocation(location)
