@@ -149,9 +149,6 @@ export interface Images {
   tagline: string
   loginBackground: string
   bot: string
-  avatar: {
-    placeholder: string
-  }
 }
 
 export interface FaqCategory {

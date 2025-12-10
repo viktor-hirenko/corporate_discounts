@@ -26,10 +26,7 @@
     },
     "tagline": "@/assets/images/corporate-discounts-text.svg",
     "loginBackground": "@/assets/images/login-background.svg",
-    "bot": "@/assets/images/bot-img.svg",
-    "avatar": {
-      "placeholder": "@/assets/images/avatar/avarar-placeholder.webp"
-    }
+    "bot": "@/assets/images/bot-img.svg"
   },
   "pages": {
     "discounts": {
@@ -632,7 +629,7 @@
     "reikartz": {
       "id": "reikartz",
       "slug": "reikartz",
-      "image": "@/assets/images/partners/reikarts-1.webp",
+      "image": "@/assets/images/partners/reikartz.webp",
       "promoCode": "UPSTARS10",
       "contact": {
         "website": "https://reikartz.com/uk/hotels/",
@@ -691,7 +688,7 @@
     "your-dream-trips": {
       "id": "your-dream-trips",
       "slug": "your-dream-trips",
-      "image": "@/assets/images/partners/your-dream-trip.webp",
+      "image": "@/assets/images/partners/your-dream-trips.webp",
       "promoCode": "UPSTARS5",
       "contact": {
         "website": "https://instagram.com/your_dream_trips_?igshid=MzRlODBiNWFlZA==",
@@ -807,7 +804,7 @@
     "captain-kyiv": {
       "id": "captain-kyiv",
       "slug": "captain-kyiv",
-      "image": "@/assets/images/partners/kapitan-kyiv.webp",
+      "image": "@/assets/images/partners/captain-kyiv.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://captain.kiev.ua/rozklad",
@@ -923,7 +920,7 @@
     "travel-one": {
       "id": "travel-one",
       "slug": "travel-one",
-      "image": "@/assets/images/partners/1-travel.webp",
+      "image": "@/assets/images/partners/travel-one.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.1travel.lv/ru",
@@ -1111,7 +1108,7 @@
     "integral-warsaw": {
       "id": "integral-warsaw",
       "slug": "integral-warsaw",
-      "image": "@/assets/images/partners/integral.webp",
+      "image": "@/assets/images/partners/integral-warsaw.webp",
       "promoCode": "UPSTARS15",
       "contact": {
         "website": "https://app.fitssey.com/Integral/frontoffice"
@@ -1253,7 +1250,7 @@
     "smartass-sport-kyiv": {
       "id": "smartass-sport-kyiv",
       "slug": "smartass-sport-kyiv",
-      "image": "@/assets/images/partners/smartass.webp",
+      "image": "@/assets/images/partners/smartass-sport-kyiv.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://smartass.club/"
@@ -1328,7 +1325,7 @@
     "smartass-warsaw": {
       "id": "smartass-warsaw",
       "slug": "smartass-warsaw",
-      "image": "@/assets/images/partners/smartass.webp",
+      "image": "@/assets/images/partners/smartass-warsaw.webp",
       "promoCode": "SMARTSTARS",
       "contact": {
         "website": "https://smartass.club/"
@@ -1466,7 +1463,7 @@
     "sportlife-podolskiy": {
       "id": "sportlife-podolskiy",
       "slug": "sportlife-podolskiy",
-      "image": "@/assets/images/partners/podolskiy.webp",
+      "image": "@/assets/images/partners/sportlife-podolskiy.webp",
       "promoCode": "#UPSTARS",
       "contact": {
         "website": "https://podolskiy.ua/",
@@ -1529,7 +1526,7 @@
     "body-karma-soul": {
       "id": "body-karma-soul",
       "slug": "body-karma-soul",
-      "image": "@/assets/images/partners/bks.webp",
+      "image": "@/assets/images/partners/body-karma-soul.webp",
       "promoCode": "EUROPASSAGE KARMA",
       "contact": {
         "website": "https://bks.com.ua/"
@@ -1602,7 +1599,7 @@
     "winetime": {
       "id": "winetime",
       "slug": "winetime",
-      "image": "@/assets/images/partners/winetime-1.webp",
+      "image": "@/assets/images/partners/winetime.webp",
       "promoCode": "-",
       "contact": {
         "website": "https://winetime.ua/"
@@ -2907,7 +2904,7 @@
     "kulik-system": {
       "id": "kulik-system",
       "slug": "kulik-system",
-      "image": "@/assets/images/partners/kulik.webp",
+      "image": "@/assets/images/partners/kulik-system.webp",
       "promoCode": "-",
       "contact": {
         "website": "https://kulik-system.com/ua/ua/shopping/chairs/?utm_source=google_ads&utm_medium=cpc&utm_campaign=brand_kulik_system&utm_content=142591851733_630562217968_g_&utm_term=kulik%20system",
@@ -3114,7 +3111,7 @@
     "mihailo-pustovoit-massage-room": {
       "id": "mihailo-pustovoit-massage-room",
       "slug": "mihailo-pustovoit-massage-room",
-      "image": "@/assets/images/partners/mykhailo-pustovoit-massage-room.webp",
+      "image": "@/assets/images/partners/mihailo-pustovoit-massage-room.webp",
       "promoCode": "UPSTARS20",
       "contact": {
         "website": "https://www.instagram.com/mihey_masaj",
@@ -3315,7 +3312,7 @@
     "giorno-medical": {
       "id": "giorno-medical",
       "slug": "giorno-medical",
-      "image": "@/assets/images/partners/giorno-dentale.webp",
+      "image": "@/assets/images/partners/giorno-medical.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://giorno-medical.com/ru",
@@ -3719,7 +3716,7 @@
     "flo-lux": {
       "id": "flo-lux",
       "slug": "flo-lux",
-      "image": "@/assets/images/partners/flolux.webp",
+      "image": "@/assets/images/partners/flo-lux.webp",
       "promoCode": "UPSTARS15",
       "contact": {
         "website": "https://instagram.com/flo.lux?igshid=MzRlODBiNWFlZA==",
@@ -3788,7 +3785,7 @@
     "englishdom": {
       "id": "englishdom",
       "slug": "englishdom",
-      "image": "@/assets/images/partners/eng-dom.webp",
+      "image": "@/assets/images/partners/englishdom.webp",
       "promoCode": "-",
       "contact": {
         "website": "https://www.englishdom.com/ua/",
@@ -3920,7 +3917,7 @@
     "english-prime-": {
       "id": "english-prime",
       "slug": "english-prime",
-      "image": "@/assets/images/partners/eng-prime.webp",
+      "image": "@/assets/images/partners/english-prime-.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://lp.englishprime.ua/",
@@ -3993,7 +3990,7 @@
     "futurium": {
       "id": "futurium",
       "slug": "futurium",
-      "image": "@/assets/images/partners/futurim.webp",
+      "image": "@/assets/images/partners/futurium.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://www.instagram.com/futurium.english/?utm_source=Telegram&utm_medium=post&utm_campaign=partners",
@@ -4066,7 +4063,7 @@
     "arthuss": {
       "id": "arthuss",
       "slug": "arthuss",
-      "image": "@/assets/images/partners/art-huss.webp",
+      "image": "@/assets/images/partners/arthuss.webp",
       "promoCode": "upstars",
       "contact": {
         "website": "https://www.arthuss.com.ua/",

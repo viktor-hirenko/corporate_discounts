@@ -18,7 +18,7 @@ const faqItems = computed(() =>
 )
 
 function handleStartChat() {
-  // TODO: Implement chat functionality
+  window.open('https://go-upstars.slack.com/archives/D0A2MUNC9S9', '_blank', 'noopener,noreferrer')
 }
 </script>
 
@@ -209,10 +209,10 @@ function handleStartChat() {
     color: var(--color-secondary-600, #01001f);
 
     @include mq(null, lg) {
-  padding: to-rem(24);
+      padding: to-rem(24);
       gap: to-rem(8);
     }
-}
+  }
 
   &__notice-title {
     font-size: to-rem(18);
