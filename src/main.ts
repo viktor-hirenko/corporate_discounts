@@ -8,7 +8,6 @@ import App from './App.vue'
 import router from './router'
 import { useAuthStore } from './stores/auth'
 import { useDiscountsStore } from './stores/discounts'
-import { useUiStore } from './stores/ui'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -20,9 +19,6 @@ const authStore = useAuthStore(pinia)
 authStore.init()
 
 app.use(router)
-
-const uiStore = useUiStore(pinia)
-uiStore.initTheme()
 
 const discountsStore = useDiscountsStore(pinia)
 

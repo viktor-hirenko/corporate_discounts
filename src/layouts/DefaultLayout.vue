@@ -5,7 +5,7 @@ import AppHeader from '@/components/AppHeader.vue'
 
 <template>
   <AppHeader class="container" />
-  <main class="container scroll-visible">
+  <main class="container">
     <RouterView />
   </main>
 </template>
