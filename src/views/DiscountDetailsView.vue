@@ -177,8 +177,6 @@ function getSocialLabel(type: string): string {
   const labels: Record<string, string> = {
     facebook: t(socialLabels.facebook),
     instagram: t(socialLabels.instagram),
-    telegram: t(socialLabels.telegram),
-    linkedin: t(socialLabels.linkedin),
   }
   return labels[type] || type
 }

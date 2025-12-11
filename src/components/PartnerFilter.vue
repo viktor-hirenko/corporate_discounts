@@ -29,7 +29,7 @@ function handleCloseFilters() {
 }
 
 function handleApplyFilters(
-  location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | 'ua/abroad' | null,
+  location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | null,
   category: PartnerCategory | 'all' | 'online' | null,
 ) {
   // Применяем фильтры только при нажатии "Применить"

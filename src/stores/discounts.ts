@@ -85,12 +85,12 @@ export const useDiscountsStore = defineStore('discounts', {
             return partnerLocation.startsWith('UA')
           }
 
-          // Фильтр "europe" - европейские + украинские за кордоном (PL/, LT/, UA/Закордон)
+          // Фильтр "europe" - все страны кроме UA и Online (любая европейская страна)
           if (filterLocation === 'europe') {
             return (
-              partnerLocation.startsWith('PL/') ||
-              partnerLocation.startsWith('LT/') ||
-              partnerLocation === 'UA/Закордон'
+              !partnerLocation.startsWith('UA') &&
+              partnerLocation !== 'Online' &&
+              !partnerLocation.includes('Онлайн')
             )
           }
 

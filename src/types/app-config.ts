@@ -53,8 +53,6 @@ export interface PageDiscountDetails {
     socials: {
       facebook: LocalizedText
       instagram: LocalizedText
-      telegram: LocalizedText
-      linkedin: LocalizedText
     }
   }
   terms: {

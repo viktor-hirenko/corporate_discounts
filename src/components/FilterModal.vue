@@ -30,7 +30,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   close: []
   'apply-filters': [
-    location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | 'ua/abroad' | null,
+    location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | null,
     category: PartnerCategory | 'all' | 'online' | null,
   ]
 }>()
@@ -46,9 +46,9 @@ const modalPosition = computed(() => (isMobile.value ? 'mobile' : 'dropdown'))
 const showBackdrop = computed(() => isMobile.value)
 
 // Временное состояние фильтров (не применяется до нажатия "Применить")
-const pendingLocation = ref<
-  PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | 'ua/abroad' | null
->(store.filters.location)
+const pendingLocation = ref<PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | null>(
+  store.filters.location,
+)
 const pendingCategory = ref<PartnerCategory | 'all' | 'online' | null>(store.filters.category)
 
 // Сбрасываем временное состояние при открытии модалки
@@ -120,7 +120,6 @@ function handleItemClick(
       | 'ua'
       | 'europe'
       | 'online'
-      | 'ua/abroad'
       | null
   } else if (sectionIndex === 1) {
     // Category section - обновляем только временное состояние

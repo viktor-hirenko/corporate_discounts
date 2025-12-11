@@ -27,7 +27,7 @@ export type PartnerLocation =
   | 'Online'
 
 export interface PartnerSocialLink {
-  type: 'facebook' | 'instagram' | 'telegram' | 'linkedin' | 'website'
+  type: 'facebook' | 'instagram' | 'website'
   url: string
   label?: string
 }
@@ -72,7 +72,7 @@ export interface Partner {
 export interface DiscountFilters {
   search: string
   category: PartnerCategory | 'all' | 'online' | null
-  location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | 'ua/abroad' | null
+  location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | null
 }
 
 export interface PaginationState {

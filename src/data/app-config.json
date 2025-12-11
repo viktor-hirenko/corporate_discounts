@@ -105,14 +105,6 @@
           "instagram": {
             "ua": "Instagram",
             "en": "Instagram"
-          },
-          "telegram": {
-            "ua": "Telegram",
-            "en": "Telegram"
-          },
-          "linkedin": {
-            "ua": "LinkedIn",
-            "en": "LinkedIn"
           }
         }
       },
