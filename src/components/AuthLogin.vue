@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import UiButton from '@/components/UiButton.vue'
@@ -20,6 +20,9 @@ const userFullName = ref('Імʼя Прізвище')
 const userEmail = ref('')
 const isLoading = ref(false)
 const googleButtonRef = ref<HTMLDivElement | null>(null)
+
+// Флаг для отслеживания монтирования компонента (предотвращает утечки памяти)
+let isMounted = true
 
 // Получаем данные последнего пользователя (для отображения после выхода)
 const lastUser = ref<{ name: string; email: string; picture: string | null } | null>(null)
@@ -197,13 +200,15 @@ function loadGoogleSDKWithLocale(locale: string): Promise<void> {
       const checkInterval = setInterval(() => {
         if (window.google?.accounts?.id) {
           clearInterval(checkInterval)
-          resolve()
+          if (isMounted) {
+            resolve()
+          }
         }
       }, 100)
 
       setTimeout(() => {
         clearInterval(checkInterval)
-        if (!window.google?.accounts?.id) {
+        if (!window.google?.accounts?.id && isMounted) {
           reject(new Error('Google SDK failed to initialize'))
         }
       }, 10000)
@@ -483,6 +488,11 @@ onMounted(() => {
   if (shouldShowGoogleButton.value) {
     waitForGoogleSDK()
   }
+})
+
+// Предотвращение утечек памяти при размонтировании компонента
+onUnmounted(() => {
+  isMounted = false
 })
 </script>
 

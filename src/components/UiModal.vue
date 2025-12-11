@@ -195,7 +195,7 @@ onUnmounted(() => {
 
 <template>
   <component :is="useTeleport ? Teleport : 'div'" :to="useTeleport ? 'body' : undefined">
-    <Transition :name="`modal-${position}`" :duration="200">
+    <Transition :name="`modal-${position}`" :duration="300">
       <div
         v-if="isOpen"
         class="ui-modal"
@@ -267,7 +267,7 @@ onUnmounted(() => {
   }
 
   &--mobile {
-    align-items: flex-end;
+    align-items: flex-start;
   }
 
   &--dropdown {
@@ -404,46 +404,66 @@ onUnmounted(() => {
   }
 }
 
-// Transitions для mobile
+// Transitions для mobile (slide-down from top)
 .modal-mobile-enter-active,
 .modal-mobile-leave-active {
+  transition: background-color 0.3s ease;
+
   .ui-modal__content {
-    transition: transform 0.2s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
 .modal-mobile-enter-from,
 .modal-mobile-leave-to {
+  background-color: rgb(0 0 0 / 0%) !important;
+
   .ui-modal__content {
-    transform: translateY(100%);
+    transform: translateY(-100%);
   }
 }
 
 // Transitions для dropdown
 .modal-dropdown-enter-active,
 .modal-dropdown-leave-active {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+  transition: background-color 0.3s ease;
+
+  .ui-modal__content {
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
 .modal-dropdown-enter-from,
 .modal-dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(to-rem(-8));
+  background-color: rgb(0 0 0 / 0%) !important;
+
+  .ui-modal__content {
+    opacity: 0;
+    transform: translateY(to-rem(-8));
+  }
 }
 
 // Transitions для center
 .modal-center-enter-active,
 .modal-center-leave-active {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+  transition: background-color 0.3s ease;
+
+  .ui-modal__content {
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
 .modal-center-enter-from,
 .modal-center-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
+  background-color: rgb(0 0 0 / 0%) !important;
+
+  .ui-modal__content {
+    opacity: 0;
+    transform: scale(0.95);
+  }
 }
 </style>

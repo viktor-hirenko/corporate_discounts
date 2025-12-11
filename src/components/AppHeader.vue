@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import LanguageSelector from './LanguageSelector.vue'
 import MobileMenu from './MobileMenu.vue'
 import NavigationLinks from './NavigationLinks.vue'
@@ -57,6 +57,14 @@ watch(
   },
   { immediate: false },
 )
+
+// Очистка таймера при размонтировании компонента
+onUnmounted(() => {
+  if (shadowTimeoutId) {
+    clearTimeout(shadowTimeoutId)
+    shadowTimeoutId = null
+  }
+})
 </script>
 
 <template>
@@ -83,7 +91,7 @@ watch(
         >
           <CloseIcon v-if="isMobileMenuOpen" />
           <BarsIcon v-else :size="24" />
-      </button>
+        </button>
       </div>
 
       <MobileMenu :is-open="isMobileMenuOpen" @close="handleCloseMenu" />
@@ -124,7 +132,7 @@ watch(
     pointer-events: none;
     content: '';
 
-  @include mq(null, lg) {
+    @include mq(null, lg) {
       top: to-rem(-24);
       height: to-rem(24);
     }

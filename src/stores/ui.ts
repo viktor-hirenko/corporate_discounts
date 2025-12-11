@@ -3,7 +3,6 @@ import type { Locale } from '@/types/app-config'
 import appConfigData from '@/data/app-config.json'
 
 const LOCALE_STORAGE_KEY = 'corporate-discounts:locale'
-
 const DEFAULT_LOCALE: Locale = (appConfigData as { defaultLocale: Locale }).defaultLocale || 'ua'
 
 function readLocaleFromStorage(): Locale | null {

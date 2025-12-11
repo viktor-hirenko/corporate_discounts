@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
@@ -29,6 +29,7 @@ const {
 const images = computed(() => imagesConfig)
 
 const isCopied = ref(false)
+let copyTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Получаем партнера по slug из props
 const partner = computed(() => {
@@ -150,8 +151,15 @@ async function handleCopyPromoCode() {
   try {
     await navigator.clipboard.writeText(partner.value.discount.promoCode)
     isCopied.value = true
-    setTimeout(() => {
+
+    // Очищаем предыдущий таймер, если он есть
+    if (copyTimeout) {
+      clearTimeout(copyTimeout)
+    }
+
+    copyTimeout = setTimeout(() => {
       isCopied.value = false
+      copyTimeout = null
     }, 2000)
   } catch (error) {
     console.error('Failed to copy promo code:', error)
@@ -174,6 +182,14 @@ function getSocialLabel(type: string): string {
   }
   return labels[type] || type
 }
+
+// Очистка таймера при размонтировании компонента
+onUnmounted(() => {
+  if (copyTimeout) {
+    clearTimeout(copyTimeout)
+    copyTimeout = null
+  }
+})
 </script>
 
 <template>

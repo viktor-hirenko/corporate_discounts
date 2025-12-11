@@ -64,30 +64,36 @@ onUnmounted(() => {
         :src="avatarUrl"
         :alt="user?.name || 'User avatar'"
         class="user-dropdown__avatar"
+        referrerpolicy="no-referrer"
+        crossorigin="anonymous"
       />
     </button>
 
-    <div v-if="isOpen" class="user-dropdown__menu">
-      <div class="user-dropdown__user-info">
-        <img
-          v-if="avatarUrl"
-          :src="avatarUrl"
-          :alt="user?.name || 'User avatar'"
-          class="user-dropdown__menu-avatar"
-        />
-        <div class="user-dropdown__user-details">
-          <div class="user-dropdown__user-name">{{ user?.name || 'Користувач' }}</div>
-          <div class="user-dropdown__user-email">{{ user?.email || '' }}</div>
+    <Transition name="dropdown-menu" :duration="300">
+      <div v-if="isOpen" class="user-dropdown__menu">
+        <div class="user-dropdown__user-info">
+          <img
+            v-if="avatarUrl"
+            :src="avatarUrl"
+            :alt="user?.name || 'User avatar'"
+            class="user-dropdown__menu-avatar"
+            referrerpolicy="no-referrer"
+            crossorigin="anonymous"
+          />
+          <div class="user-dropdown__user-details">
+            <div class="user-dropdown__user-name">{{ user?.name || 'Користувач' }}</div>
+            <div class="user-dropdown__user-email">{{ user?.email || '' }}</div>
+          </div>
         </div>
+
+        <div class="user-dropdown__divider" />
+
+        <button class="user-dropdown__logout" type="button" @click="handleLogout">
+          <LogoutIcon :size="18" class="user-dropdown__logout-icon" />
+          <span>{{ t(auth.logout) }}</span>
+        </button>
       </div>
-
-      <div class="user-dropdown__divider" />
-
-      <button class="user-dropdown__logout" type="button" @click="handleLogout">
-        <LogoutIcon :size="18" class="user-dropdown__logout-icon" />
-        <span>{{ t(auth.logout) }}</span>
-      </button>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -210,5 +216,19 @@ onUnmounted(() => {
     color: inherit;
     transition: color 0.2s ease;
   }
+}
+
+// Transitions для dropdown menu
+.dropdown-menu-enter-active,
+.dropdown-menu-leave-active {
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-menu-enter-from,
+.dropdown-menu-leave-to {
+  opacity: 0;
+  transform: translateY(to-rem(-8));
 }
 </style>
