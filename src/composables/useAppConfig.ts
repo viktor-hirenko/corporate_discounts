@@ -1,29 +1,18 @@
 import { computed } from 'vue'
 import appConfigData from '@/data/app-config.json'
-import type {
-  AppConfig,
-  Locale,
-  LocalizedText,
-  Language,
-  Pages,
-  Navigation,
-  Filters,
-  Pagination,
-  Images,
-  PartnerLocalizedData,
-} from '@/types/app-config'
+import type { AppConfig, LocalizedText, PartnerLocalizedData } from '@/types/app-config'
 import { useUiStore } from '@/stores/ui'
 
 const config = appConfigData as AppConfig
 
 /**
- * Composable for accessing app configuration with locale support
+ * Composable для доступа к конфигурации приложения с поддержкой локализации
  */
 export function useAppConfig() {
   const uiStore = useUiStore()
 
   /**
-   * Get localized text based on current locale
+   * Получить локализованный текст на основе текущей локали
    */
   function t(text: LocalizedText | string): string {
     if (typeof text === 'string') {
@@ -33,7 +22,7 @@ export function useAppConfig() {
   }
 
   /**
-   * Get localized text with template variables
+   * Получить локализованный текст с подстановкой переменных
    */
   function tTemplate(text: LocalizedText | string, vars: Record<string, string | number>): string {
     let result = t(text)
@@ -44,55 +33,48 @@ export function useAppConfig() {
   }
 
   /**
-   * Get image path for dynamic imports in Vite
-   * Converts paths from app-config.json to valid Vite asset URLs
+   * Получить путь к изображению для динамических импортов в Vite
+   * Преобразует пути из app-config.json в валидные URL ресурсов Vite
    */
   function getImage(path: string): string {
     if (!path) {
-      console.warn('getImage: path is empty')
+      console.warn('getImage: путь пуст')
       return ''
     }
 
-    // Handle @/ alias paths (e.g., @/assets/images/partners/roslynka.webp)
+    // Обработка путей с алиасом @/ (например, @/assets/images/partners/roslynka.webp)
     if (path.startsWith('@/')) {
-      // Remove @/ prefix and create relative path from composables
-      // From src/composables/ to src/assets/ = ../assets/
+      // Убираем префикс @/ и создаем относительный путь от composables
+      // Из src/composables/ в src/assets/ = ../assets/
       const relativePath = path.replace('@/', '../')
       try {
         const url = new URL(relativePath, import.meta.url).href
         return url
       } catch (error) {
-        console.error('getImage: Error creating URL', { path, relativePath, error })
+        console.error('getImage: Ошибка создания URL', { path, relativePath, error })
         return path
       }
     }
 
-    // Handle src/ paths (e.g., src/assets/images/bot-img.svg)
+    // Обработка путей с префиксом src/ (например, src/assets/images/bot-img.svg)
     if (path.startsWith('src/')) {
-      // From src/composables/ to src/ = ../
+      // Из src/composables/ в src/ = ../
       const relativePath = path.replace('src/', '../')
       try {
         const url = new URL(relativePath, import.meta.url).href
         return url
       } catch (error) {
-        console.error('getImage: Error creating URL', { path, relativePath, error })
+        console.error('getImage: Ошибка создания URL', { path, relativePath, error })
         return path
       }
     }
 
-    // Return as-is for absolute URLs or other paths
+    // Возвращаем без изменений для абсолютных URL или других путей
     return path
   }
 
   /**
-   * Get partner config by partner ID
-   */
-  function getPartnerConfig(partnerId: string) {
-    return config.partners[partnerId] || null
-  }
-
-  /**
-   * Get localized partner data by partner ID (deprecated, use getPartnerConfig)
+   * Получить локализованные данные партнера по ID
    */
   function getPartnerLocalizedData(partnerId: string): PartnerLocalizedData | null {
     const partnerConfig = config.partners[partnerId]
@@ -110,30 +92,9 @@ export function useAppConfig() {
     }
   }
 
-  /**
-   * Get localized partner field
-   */
-  function getPartnerField(
-    partnerId: string,
-    field: keyof PartnerLocalizedData,
-  ): string | string[] | null {
-    const data = getPartnerLocalizedData(partnerId)
-    if (!data) return null
-
-    const value = data[field]
-    if (field === 'terms' || field === 'tags') {
-      return (value as { ua: string[]; en: string[] })[uiStore.locale] || []
-    }
-    if (field === 'discount') {
-      return null // Handle discount separately
-    }
-    return t(value as LocalizedText)
-  }
-
   return {
     config: computed(() => config),
     locale: computed(() => uiStore.locale),
-    defaultLocale: computed(() => config.defaultLocale),
     languages: computed(() => config.languages),
     pages: config.pages,
     auth: config.auth,
@@ -141,11 +102,9 @@ export function useAppConfig() {
     filters: config.filters,
     pagination: config.pagination,
     images: config.images,
-    partners: config.partners,
     t,
     tTemplate,
     getImage,
     getPartnerLocalizedData,
-    getPartnerField,
   }
 }

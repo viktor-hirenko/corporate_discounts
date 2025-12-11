@@ -745,7 +745,7 @@
     },
     "ribas": {
       "id": "ribas",
-      "slug": "ribas-hotels",
+      "slug": "ribas",
       "image": "@/assets/images/partners/ribas.webp",
       "promoCode": "UPSTARS10%",
       "contact": {
@@ -3914,10 +3914,10 @@
         "en": [""]
       }
     },
-    "english-prime-": {
+    "english-prime": {
       "id": "english-prime",
       "slug": "english-prime",
-      "image": "@/assets/images/partners/english-prime-.webp",
+      "image": "@/assets/images/partners/english-prime.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://lp.englishprime.ua/",

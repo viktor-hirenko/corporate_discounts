@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import UiButton from '@/components/UiButton.vue'
@@ -154,7 +154,7 @@ function initializeGoogleSignIn(): void {
       size: 'large',
       text: 'signin_with',
       shape: 'rectangular',
-      width: '100%',
+      width: '400',
       locale: googleLocale,
     })
 
@@ -262,7 +262,7 @@ async function handleContinue(): Promise<void> {
     // Сохраняем redirect до логина, чтобы использовать после
     const redirect = (route.query.redirect as string) || '/discounts'
 
-    const name = displayFullName.value || email.split('@')[0]
+    const name = displayFullName.value || email.split('@')[0] || 'User'
     await authStore.loginWithEmail(email, name)
 
     // Обновляем данные последнего пользователя
@@ -484,10 +484,6 @@ onMounted(() => {
     waitForGoogleSDK()
   }
 })
-
-onUnmounted(() => {
-  // Очистка при размонтировании не требуется для Google SDK
-})
 </script>
 
 <template>
@@ -512,7 +508,7 @@ onUnmounted(() => {
           name="user-email"
           type="email"
           autocomplete="email"
-          placeholder="Email@upstars.com"
+          placeholder="email@upstars.com"
         />
 
         <PrimaryButton

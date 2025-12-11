@@ -7,7 +7,7 @@ const { variant = 'default' } = defineProps<{
   variant?: 'default' | 'mobile'
 }>()
 
-const { languages: configLanguages, locale, t } = useAppConfig()
+const { languages: configLanguages, t } = useAppConfig()
 const uiStore = useUiStore()
 
 const currentLanguage = computed({
@@ -41,7 +41,7 @@ function handleLanguageChange(lang: 'ua' | 'en') {
         type="button"
         @click="handleLanguageChange(lang.code)"
       >
-          {{ lang.shortLabel }}
+        {{ lang.shortLabel }}
       </button>
     </template>
   </div>

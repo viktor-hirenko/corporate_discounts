@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import Filter from '@/components/Filter.vue'
+import PartnerFilter from '@/components/PartnerFilter.vue'
 import FilterChips from '@/components/FilterChips.vue'
 import PartnerCard from '@/components/PartnerCard.vue'
 import PagesPagination from '@/components/PagesPagination.vue'
@@ -106,7 +106,7 @@ onMounted(async () => {
         </div>
 
         <div class="discounts-catalog__filter">
-          <Filter />
+          <PartnerFilter />
         </div>
 
         <!--Позиция FilterChips для мобильной версии -->

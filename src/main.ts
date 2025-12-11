@@ -1,5 +1,5 @@
 import '@/design/tokens.css'
-import '@/assets/scss/main.scss'
+import '@/styles/main.scss'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'

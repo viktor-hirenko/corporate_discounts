@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppConfig } from '@/composables/useAppConfig'
 import type { Partner } from '@/types/partner'
@@ -10,34 +10,29 @@ interface Props {
 
 const props = defineProps<Props>()
 const router = useRouter()
-const {
-  t,
-  getPartnerLocalizedData,
-  filters,
-  images: imagesConfig,
-  getImage,
-  config,
-} = useAppConfig()
+const { t, getPartnerLocalizedData, filters, getImage, config } = useAppConfig()
 
-// Ensure images is reactive
-const images = computed(() => imagesConfig)
+const imageLoadError = ref(false)
 
 const localizedData = computed(() => getPartnerLocalizedData(props.partner.id))
 
 const partnerImage = computed(() => {
-  const partnerId = props.partner.id
-  if (!images.value?.partners || !images.value.partners[partnerId]) {
+  const partnerConfig = config.value.partners[props.partner.slug]
+  if (!partnerConfig?.image) {
     return props.partner.images.thumbnail
   }
-  const imagePath = images.value.partners[partnerId]
-  return getImage(imagePath)
+  return getImage(partnerConfig.image)
 })
 
-// Проверяем, есть ли изображение у партнёра
+// Проверяем, есть ли изображение у партнёра (и не было ли ошибки загрузки)
 const hasImage = computed(() => {
   const partnerConfig = config.value.partners[props.partner.slug]
-  return partnerConfig?.image && partnerConfig.image.trim() !== ''
+  return partnerConfig?.image && partnerConfig.image.trim() !== '' && !imageLoadError.value
 })
+
+function handleImageError() {
+  imageLoadError.value = true
+}
 
 const partnerName = computed(() => {
   return localizedData.value ? t(localizedData.value.name) : props.partner.name
@@ -78,7 +73,13 @@ function handleClick() {
     </div>
     <div class="partner-card__content">
       <div class="partner-card__image-wrapper">
-        <img v-if="hasImage" :src="partnerImage" :alt="partnerName" class="partner-card__image" />
+        <img
+          v-if="hasImage"
+          :src="partnerImage"
+          :alt="partnerName"
+          class="partner-card__image"
+          @error="handleImageError"
+        />
         <div v-else class="partner-card__image-placeholder">
           <svg
             width="48"
@@ -107,8 +108,6 @@ function handleClick() {
 </template>
 
 <style scoped lang="scss">
-@use '@/assets/scss/utils/mixins' as *;
-
 .partner-card {
   position: relative;
   width: 100%;
@@ -208,7 +207,6 @@ function handleClick() {
   }
 
   &__title {
-    // height: to-rem(36);
     color: var(--color-secondary-600, #01001f);
     font-size: to-rem(24);
 

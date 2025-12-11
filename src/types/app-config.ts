@@ -23,13 +23,6 @@ export interface PageDiscounts {
   }
 }
 
-export interface FaqItem {
-  id: string
-  category: string
-  question: LocalizedText
-  answer: LocalizedText
-}
-
 export interface PageFaq {
   title: LocalizedText
   description: LocalizedText

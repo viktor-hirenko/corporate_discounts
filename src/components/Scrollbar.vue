@@ -183,7 +183,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-@use '@/assets/scss/utils/functions' as *;
+@use '@/styles/utils/functions' as *;
 
 .scrollbar {
   position: absolute;

@@ -8,7 +8,7 @@ const { t, pages, images, getImage } = useAppConfig()
 
 const botImgUrl = computed(() => getImage(images.bot))
 
-const openIndex = ref<number | null>(0)
+const openIndex = ref<number | null>(null)
 
 const faqItems = computed(() =>
   pages.faq.items.map((item) => ({

@@ -29,7 +29,6 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   close: []
-  'reset-filters': []
   'apply-filters': [
     location: PartnerLocation | 'all' | 'ua' | 'europe' | 'online' | 'ua/abroad' | null,
     category: PartnerCategory | 'all' | 'online' | null,
@@ -135,13 +134,6 @@ function handleApplyFilters() {
   emit('apply-filters', pendingLocation.value, pendingCategory.value)
   // Закрываем модалку
   emit('close')
-}
-
-function handleResetFilters() {
-  // Сбрасываем временное состояние к значениям по умолчанию
-  pendingLocation.value = 'all'
-  pendingCategory.value = 'all' as PartnerCategory | 'all' | 'online'
-  // НЕ применяем фильтры и НЕ закрываем модалку
 }
 
 function handleClose() {

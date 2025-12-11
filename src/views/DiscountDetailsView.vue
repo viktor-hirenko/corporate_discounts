@@ -70,14 +70,11 @@ const discountDescription = computed(() => {
 
 const partnerImage = computed(() => {
   if (!partner.value) return ''
-  if (!images.value.partners || !images.value.partners[partner.value.id]) {
-    return partner.value.images.hero || partner.value.images.thumbnail
+  const partnerConfig = config.value.partners[partner.value.slug]
+  if (!partnerConfig?.image) {
+    return ''
   }
-  const imagePath = images.value.partners[partner.value.id]
-  if (!imagePath) {
-    return partner.value.images.hero || partner.value.images.thumbnail
-  }
-  return getImage(imagePath)
+  return getImage(partnerConfig.image)
 })
 
 const partnerTerms = computed(() => {

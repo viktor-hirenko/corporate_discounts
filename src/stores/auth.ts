@@ -62,7 +62,11 @@ export const useAuthStore = defineStore('auth', {
     async loginWithGoogle(credential: string): Promise<void> {
       try {
         // Декодируем JWT токен от Google
-        const payload = JSON.parse(atob(credential.split('.')[1]))
+        const parts = credential.split('.')
+        if (parts.length < 2 || !parts[1]) {
+          throw new Error('Invalid credential format')
+        }
+        const payload = JSON.parse(atob(parts[1]))
 
         // Google JWT может содержать picture в разных полях
         // Проверяем несколько возможных вариантов

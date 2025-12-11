@@ -23,11 +23,6 @@ function handleToggleFilters() {
   }
 }
 
-function handleOpenFilters() {
-  isFilterModalOpen.value = true
-  document.body.classList.add(BODY_CLASS)
-}
-
 function handleCloseFilters() {
   isFilterModalOpen.value = false
   document.body.classList.remove(BODY_CLASS)
@@ -42,28 +37,22 @@ function handleApplyFilters(
   store.setCategory(category)
   handleCloseFilters()
 }
-
-function handleResetFilters() {
-  // Сбрасываем фильтры в модалке (временное состояние)
-  // Реальная логика сброса находится в FilterModal
-}
 </script>
 
 <template>
-  <div class="filter">
+  <div class="partner-filter">
     <FilterButton :is-open="isFilterModalOpen" @click="handleToggleFilters" />
 
     <FilterModal
       :is-open="isFilterModalOpen"
       @close="handleCloseFilters"
-      @reset-filters="handleResetFilters"
       @apply-filters="handleApplyFilters"
     />
   </div>
 </template>
 
 <style scoped lang="scss">
-.filter {
+.partner-filter {
   position: relative;
 
   @include mq(null, md) {

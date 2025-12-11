@@ -36,9 +36,6 @@ function handleClick(event: MouseEvent) {
 </template>
 
 <style scoped lang="scss">
-@use '@/assets/scss/utils/mixins' as *;
-@use '@/assets/scss/utils/functions' as *;
-
 .modal-list-item {
   display: flex;
   width: 100%;

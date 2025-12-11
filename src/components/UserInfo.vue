@@ -2,10 +2,10 @@
 import UiInput from '@/components/UiInput.vue'
 import { useAppConfig } from '@/composables/useAppConfig'
 
-const { auth, t, tTemplate } = useAppConfig()
+const { auth, tTemplate } = useAppConfig()
 
 interface Props {
-  imageSrc: string
+  imageSrc: string | null
   fullName: string
   imageAlt?: string
   modelValue?: string
@@ -14,7 +14,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   imageAlt: 'User avatar',
-  inputPlaceholder: 'Email@upstars.com',
+  inputPlaceholder: 'email@upstars.com',
 })
 
 const emit = defineEmits<{

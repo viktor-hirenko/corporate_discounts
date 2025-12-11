@@ -77,9 +77,6 @@ function handleRemoveFilter(type: 'category' | 'location') {
 </template>
 
 <style scoped lang="scss">
-@use '@/assets/scss/utils/mixins' as *;
-@use '@/assets/scss/utils/functions' as *;
-
 .filter-chips {
   display: flex;
   flex-wrap: wrap;

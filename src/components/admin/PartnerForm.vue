@@ -355,7 +355,7 @@ const isValid = computed(() => {
           <div class="form-group">
             <label>Facebook</label>
             <input
-              v-model="formData.socials[0].url"
+              v-model="formData.socials[0]!.url"
               type="url"
               placeholder="https://facebook.com/..."
             />
