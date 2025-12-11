@@ -2,7 +2,7 @@
 import { computed, ref, onUnmounted, watch, nextTick } from 'vue'
 import { Teleport } from 'vue'
 import CloseIcon from './icons/CloseIcon.vue'
-import Scrollbar from './Scrollbar.vue'
+import CustomScrollbar from './CustomScrollbar.vue'
 
 type ModalPosition = 'mobile' | 'dropdown' | 'center'
 
@@ -235,11 +235,7 @@ onUnmounted(() => {
             <slot />
           </div>
 
-          <Scrollbar
-            v-if="customScrollbar"
-            :container-ref="bodyRef"
-            :parent-ref="bodyRef"
-          />
+          <CustomScrollbar v-if="customScrollbar" :container-ref="bodyRef" :parent-ref="bodyRef" />
 
           <div
             v-if="$slots.footer"

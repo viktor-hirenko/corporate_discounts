@@ -183,9 +183,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-@use '@/styles/utils/functions' as *;
-
 .scrollbar {
+  $scrollbar-thumb-color: #0927f2;
+  $scrollbar-thumb-color-active: #0719c4;
+
   position: absolute;
   top: 0;
   right: 0;
@@ -199,12 +200,12 @@ onUnmounted(() => {
     left: 0;
     width: 100%;
     border-radius: to-rem(4);
-    background-color: #0927f2;
+    background-color: $scrollbar-thumb-color;
     transition: background-color 0.2s ease;
     cursor: grab;
 
     &:active {
-      background-color: #0719c4;
+      background-color: $scrollbar-thumb-color-active;
       cursor: grabbing;
     }
   }
