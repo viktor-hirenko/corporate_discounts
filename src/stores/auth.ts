@@ -44,7 +44,6 @@ export const useAuthStore = defineStore('auth', {
 
           // Проверяем, что picture не потерялся при восстановлении
           if (this.user && !this.user.picture && parsed.user?.picture) {
-            console.warn('[auth-store] Picture was lost during restore, fixing...')
             this.user.picture = parsed.user.picture
             this.saveToStorage()
           }

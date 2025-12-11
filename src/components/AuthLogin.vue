@@ -14,7 +14,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const uiStore = useUiStore()
 
-const { images, getImage, auth, t, tTemplate } = useAppConfig()
+const { auth, t } = useAppConfig()
 
 const userFullName = ref('Імʼя Прізвище')
 const userEmail = ref('')
@@ -41,16 +41,13 @@ const hasUserData = computed(() => {
 const avatarUrl = computed(() => {
   // Сначала проверяем авторизованного пользователя
   if (authStore.user?.picture) {
-    console.log('[auth-login] Using avatar from authStore.user:', authStore.user.picture)
     return authStore.user.picture
   }
   // Потом проверяем последнего пользователя
   if (lastUser.value?.picture) {
-    console.log('[auth-login] Using avatar from lastUser:', lastUser.value.picture)
     return lastUser.value.picture
   }
   // Если нет picture, возвращаем null (не показываем placeholder)
-  console.warn('[auth-login] No avatar available, returning null')
   return null
 })
 
@@ -118,11 +115,6 @@ async function handleGoogleSignIn(response: { credential: string }): Promise<voi
 
 function initializeGoogleSignIn(): void {
   if (!window.google?.accounts?.id || !googleButtonRef.value) {
-    console.warn('[auth-login] Google accounts.id not available', {
-      hasGoogle: !!window.google,
-      hasAccounts: !!window.google?.accounts,
-      hasId: !!window.google?.accounts?.id,
-    })
     return
   }
 
@@ -190,7 +182,7 @@ function loadGoogleSDKWithLocale(locale: string): Promise<void> {
       if (existingScript) {
         existingScript.remove()
         // Очищаем window.google для перезагрузки
-        delete (window as any).google
+        delete window.google
       }
     }
 
@@ -205,7 +197,6 @@ function loadGoogleSDKWithLocale(locale: string): Promise<void> {
       const checkInterval = setInterval(() => {
         if (window.google?.accounts?.id) {
           clearInterval(checkInterval)
-          console.log('[auth-login] Google SDK loaded with locale:', locale)
           resolve()
         }
       }, 100)
@@ -314,7 +305,6 @@ async function handleSwitchAccount(event: Event): Promise<void> {
   // После очистки Google кнопка появится автоматически (shouldShowGoogleButton станет true)
   // Инициализируем Google SDK с правильной локалью
   if (shouldShowGoogleButton.value && googleButtonRef.value) {
-    console.log('[auth-login] Re-initializing Google SDK after switch account')
     const googleLocale = uiStore.locale === 'en' ? 'en' : 'uk'
     const existingScript = document.querySelector(
       `script[src*="accounts.google.com/gsi/client"]`,
@@ -324,9 +314,8 @@ async function handleSwitchAccount(event: Event): Promise<void> {
     if (window.google?.accounts?.id) {
       // Если локаль не совпадает, перезагружаем SDK
       if (!existingScript?.src.includes(`hl=${googleLocale}`)) {
-        console.log('[auth-login] Google SDK locale mismatch after switch account, reloading')
         existingScript?.remove()
-        delete (window as any).google
+        delete window.google
         await nextTick()
         try {
           await loadGoogleSDKWithLocale(googleLocale)
@@ -366,12 +355,8 @@ watch(
         if (window.google?.accounts?.id) {
           // Если локаль не совпадает или скрипт не найден, перезагружаем SDK
           if (!existingScript || !existingScript.src.includes(`hl=${googleLocale}`)) {
-            console.log(
-              '[auth-login] Google SDK locale mismatch, reloading with correct locale:',
-              googleLocale,
-            )
             existingScript?.remove()
-            delete (window as any).google
+            delete window.google
             await nextTick()
             try {
               await loadGoogleSDKWithLocale(googleLocale)
@@ -442,7 +427,7 @@ watch(
     ) as HTMLScriptElement | null
     if (existingScript) {
       existingScript.remove()
-      delete (window as any).google
+      delete window.google
     }
 
     // Очищаем контейнер кнопки
@@ -459,7 +444,6 @@ watch(
       // Ждем еще один тик после загрузки SDK
       await nextTick()
       initializeGoogleSignIn()
-      console.log('[auth-login] Google button re-rendered with new locale:', googleLocale)
     } catch (error) {
       console.error('[auth-login] Failed to reload Google SDK with new locale:', error)
     }
@@ -486,7 +470,6 @@ onMounted(() => {
 
   // Загружаем данные последнего пользователя для отображения
   const savedLastUser = authStore.getLastUser()
-  console.log('[auth-login] Loading last user data', savedLastUser)
   if (savedLastUser) {
     lastUser.value = savedLastUser
     userEmail.value = savedLastUser.email
@@ -494,36 +477,11 @@ onMounted(() => {
     if (savedLastUser.name && savedLastUser.name.trim()) {
       userFullName.value = savedLastUser.name
     }
-    console.log('[auth-login] Last user loaded', {
-      name: savedLastUser.name,
-      email: savedLastUser.email,
-      picture: savedLastUser.picture,
-      hasPicture: !!savedLastUser.picture,
-      displayFullName: displayFullName.value,
-      avatarUrl: avatarUrl.value,
-    })
   }
 
   // Инициализируем Google Sign In если нужно показать кнопку
-  // Кнопка показывается всегда когда пользователь не авторизован
-  console.log('[auth-login] Checking Google button visibility', {
-    hasGoogleClientId: hasGoogleClientId.value,
-    isLoggedIn: authStore.isLoggedIn,
-    hasUserData: hasUserData.value,
-    shouldShowGoogleButton: shouldShowGoogleButton.value,
-  })
-
   if (shouldShowGoogleButton.value) {
-    console.log('[auth-login] Initializing Google Sign In - button should be visible')
     waitForGoogleSDK()
-  } else {
-    console.warn('[auth-login] Skipping Google Sign In initialization', {
-      reason: !hasGoogleClientId.value
-        ? 'No Google Client ID'
-        : authStore.isLoggedIn
-          ? 'User is logged in'
-          : 'Unknown reason',
-    })
   }
 })
 

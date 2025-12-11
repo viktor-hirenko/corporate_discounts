@@ -32,8 +32,6 @@ const logoUrl = computed(() => getImage(images.logo.light))
 
 <style scoped lang="scss">
 .footer-cta {
-  --footer-height: 240px;
-
   position: relative;
   display: flex;
   width: 100%;
