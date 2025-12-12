@@ -150,7 +150,7 @@ const handleSave = () => {
 // Copy JSON
 const copyJSON = () => {
   navigator.clipboard.writeText(jsonOutput.value)
-  alert('JSON скопирован в буфер обмена!')
+  alert('JSON скопійовано до буфера обміну!')
 }
 
 // Validation
@@ -168,7 +168,7 @@ const isValid = computed(() => {
 <template>
   <div class="partner-form">
     <div class="form-header">
-      <h2>{{ partner ? 'Редактировать партнера' : 'Создать нового партнера' }}</h2>
+      <h2>{{ partner ? 'Редагувати партнера' : 'Створити нового партнера' }}</h2>
       <button class="btn-close" @click="emit('close')">
         <i class="fas fa-times"></i>
       </button>
@@ -177,13 +177,13 @@ const isValid = computed(() => {
     <form class="form" @submit.prevent="handleSave">
       <!-- Image Upload -->
       <div class="form-section">
-        <h3>Изображение</h3>
+        <h3>Зображення</h3>
         <div class="image-upload">
           <div v-if="imagePreview" class="image-preview">
             <img :src="imagePreview" alt="Preview" />
           </div>
           <label class="upload-btn">
-            <i class="fas fa-upload"></i> Загрузить изображение
+            <i class="fas fa-upload"></i> Завантажити зображення
             <input type="file" accept="image/*" @change="handleImageUpload" />
           </label>
         </div>
@@ -191,7 +191,7 @@ const isValid = computed(() => {
 
       <!-- ID, Slug, PromoCode -->
       <div class="form-section">
-        <h3>ID и промокод</h3>
+        <h3>ID та промокод</h3>
         <div class="form-grid">
           <div class="form-group">
             <label>Slug</label>
@@ -206,14 +206,14 @@ const isValid = computed(() => {
 
       <!-- Name -->
       <div class="form-section">
-        <h3>Название</h3>
+        <h3>Назва</h3>
         <div class="form-grid-2col">
           <div class="form-group">
-            <label>Название (UA) *</label>
+            <label>Назва (UA) *</label>
             <input v-model="formData.name.ua" type="text" required />
           </div>
           <div class="form-group">
-            <label>Название (EN) *</label>
+            <label>Назва (EN) *</label>
             <input v-model="formData.name.en" type="text" required />
           </div>
         </div>
@@ -221,19 +221,19 @@ const isValid = computed(() => {
 
       <!-- Category -->
       <div class="form-section">
-        <h3>Категория</h3>
+        <h3>Категорія</h3>
         <div class="form-grid-2col">
           <div class="form-group">
-            <label>Категория (UA) *</label>
+            <label>Категорія (UA) *</label>
             <select v-model="formData.category.ua" required>
-              <option value="">Выберите категорию</option>
+              <option value="">Оберіть категорію</option>
               <option v-for="cat in categoryOptions" :key="cat.value" :value="cat.value">
                 {{ cat.value }}
               </option>
             </select>
           </div>
           <div class="form-group">
-            <label>Категория (EN) *</label>
+            <label>Категорія (EN) *</label>
             <select v-model="formData.category.en" required>
               <option value="">Select category</option>
               <option v-for="cat in categoryOptions" :key="cat.en" :value="cat.en">
@@ -246,19 +246,19 @@ const isValid = computed(() => {
 
       <!-- Location -->
       <div class="form-section">
-        <h3>Локация</h3>
+        <h3>Локація</h3>
         <div class="form-grid-2col">
           <div class="form-group">
-            <label>Локация (UA) *</label>
+            <label>Локація (UA) *</label>
             <select v-model="formData.location.ua" required>
-              <option value="">Выберите локацию</option>
+              <option value="">Оберіть локацію</option>
               <option v-for="loc in locationOptions" :key="loc.value" :value="loc.value">
                 {{ loc.value }}
               </option>
             </select>
           </div>
           <div class="form-group">
-            <label>Локация (EN) *</label>
+            <label>Локація (EN) *</label>
             <select v-model="formData.location.en" required>
               <option value="">Select location</option>
               <option v-for="loc in locationOptions" :key="loc.en" :value="loc.en">
@@ -271,14 +271,14 @@ const isValid = computed(() => {
 
       <!-- Summary -->
       <div class="form-section">
-        <h3>Краткое описание</h3>
+        <h3>Короткий опис</h3>
         <div class="form-grid-2col">
           <div class="form-group">
-            <label>Краткое описание (UA)</label>
+            <label>Короткий опис (UA)</label>
             <textarea v-model="formData.summary.ua" rows="3"></textarea>
           </div>
           <div class="form-group">
-            <label>Краткое описание (EN)</label>
+            <label>Короткий опис (EN)</label>
             <textarea v-model="formData.summary.en" rows="3"></textarea>
           </div>
         </div>
@@ -286,14 +286,14 @@ const isValid = computed(() => {
 
       <!-- Description -->
       <div class="form-section">
-        <h3>Полное описание</h3>
+        <h3>Повний опис</h3>
         <div class="form-grid-2col">
           <div class="form-group">
-            <label>Описание (UA)</label>
+            <label>Опис (UA)</label>
             <textarea v-model="formData.description.ua" rows="5"></textarea>
           </div>
           <div class="form-group">
-            <label>Описание (EN)</label>
+            <label>Опис (EN)</label>
             <textarea v-model="formData.description.en" rows="5"></textarea>
           </div>
         </div>
@@ -301,14 +301,14 @@ const isValid = computed(() => {
 
       <!-- Discount Label -->
       <div class="form-section">
-        <h3>Скидка</h3>
+        <h3>Знижка</h3>
         <div class="form-grid-2col">
           <div class="form-group">
-            <label>Размер скидки (UA)</label>
+            <label>Розмір знижки (UA)</label>
             <input v-model="formData.discount.label.ua" type="text" />
           </div>
           <div class="form-group">
-            <label>Размер скидки (EN)</label>
+            <label>Розмір знижки (EN)</label>
             <input v-model="formData.discount.label.en" type="text" />
           </div>
         </div>
@@ -316,14 +316,14 @@ const isValid = computed(() => {
 
       <!-- Discount Description -->
       <div class="form-section">
-        <h3>Описание скидки</h3>
+        <h3>Опис знижки</h3>
         <div class="form-grid-2col">
           <div class="form-group">
-            <label>Описание скидки (UA)</label>
+            <label>Опис знижки (UA)</label>
             <textarea v-model="formData.discount.description.ua" rows="3"></textarea>
           </div>
           <div class="form-group">
-            <label>Описание скидки (EN)</label>
+            <label>Опис знижки (EN)</label>
             <textarea v-model="formData.discount.description.en" rows="3"></textarea>
           </div>
         </div>
@@ -331,7 +331,7 @@ const isValid = computed(() => {
 
       <!-- Contact Info -->
       <div class="form-section">
-        <h3>Контактная информация</h3>
+        <h3>Контактна інформація</h3>
         <div class="form-grid">
           <div class="form-group full-width">
             <label>Вебсайт</label>
@@ -350,7 +350,7 @@ const isValid = computed(() => {
 
       <!-- Socials -->
       <div class="form-section">
-        <h3>Социальные сети</h3>
+        <h3>Соціальні мережі</h3>
         <div class="form-grid">
           <div class="form-group">
             <label>Facebook</label>
@@ -374,14 +374,14 @@ const isValid = computed(() => {
 
       <!-- Address -->
       <div class="form-section">
-        <h3>Адрес</h3>
+        <h3>Адреса</h3>
         <div class="form-grid-2col">
           <div class="form-group">
-            <label>Адрес (UA)</label>
+            <label>Адреса (UA)</label>
             <input v-model="formData.address.ua" type="text" />
           </div>
           <div class="form-group">
-            <label>Адрес (EN)</label>
+            <label>Адреса (EN)</label>
             <input v-model="formData.address.en" type="text" />
           </div>
         </div>
@@ -389,27 +389,27 @@ const isValid = computed(() => {
 
       <!-- Terms -->
       <div class="form-section">
-        <h3>Условия использования</h3>
+        <h3>Умови використання</h3>
         <div class="form-grid-2col">
           <!-- Terms UA -->
           <div>
-            <h4>Условия (UA)</h4>
+            <h4>Умови (UA)</h4>
             <div class="terms-list">
               <div v-for="(term, index) in formData.terms.ua" :key="index" class="term-item">
-                <input v-model="formData.terms.ua[index]" type="text" placeholder="Условие" />
+                <input v-model="formData.terms.ua[index]" type="text" placeholder="Умова" />
                 <button type="button" class="btn-remove" @click="removeTerm('ua', index)">
                   <i class="fas fa-times"></i>
                 </button>
               </div>
               <button type="button" class="btn-add" @click="addTerm('ua')">
-                <i class="fas fa-plus"></i> Добавить условие
+                <i class="fas fa-plus"></i> Додати умову
               </button>
             </div>
           </div>
 
           <!-- Terms EN -->
           <div>
-            <h4>Условия (EN)</h4>
+            <h4>Умови (EN)</h4>
             <div class="terms-list">
               <div v-for="(term, index) in formData.terms.en" :key="index" class="term-item">
                 <input v-model="formData.terms.en[index]" type="text" placeholder="Term" />
@@ -440,7 +440,7 @@ const isValid = computed(() => {
                 </button>
               </div>
               <button type="button" class="btn-add" @click="addTag('ua')">
-                <i class="fas fa-plus"></i> Добавить тег
+                <i class="fas fa-plus"></i> Додати тег
               </button>
             </div>
           </div>
@@ -465,9 +465,9 @@ const isValid = computed(() => {
 
       <!-- Actions -->
       <div class="form-actions">
-        <button type="button" class="btn-cancel" @click="emit('close')">Отмена</button>
+        <button type="button" class="btn-cancel" @click="emit('close')">Скасувати</button>
         <button type="submit" class="btn-save" :disabled="!isValid">
-          <i class="fas fa-save"></i> Сохранить JSON
+          <i class="fas fa-save"></i> Зберегти JSON
         </button>
       </div>
     </form>
@@ -475,8 +475,8 @@ const isValid = computed(() => {
     <!-- JSON Output -->
     <div v-if="showJSON" class="json-output">
       <div class="json-header">
-        <h3>JSON для копирования в app-config.json</h3>
-        <button class="btn-copy" @click="copyJSON"><i class="fas fa-copy"></i> Копировать</button>
+        <h3>JSON для копіювання в app-config.json</h3>
+        <button class="btn-copy" @click="copyJSON"><i class="fas fa-copy"></i> Копіювати</button>
       </div>
       <pre class="json-content">{{ jsonOutput }}</pre>
     </div>

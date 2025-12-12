@@ -157,7 +157,6 @@ function initializeGoogleSignIn(): void {
       size: 'large',
       text: 'signin_with',
       shape: 'rectangular',
-      width: '400',
       locale: googleLocale,
     })
 
@@ -583,18 +582,15 @@ onUnmounted(() => {
   }
 
   &__google-button {
-    width: 100%;
-    min-height: to-rem(40);
     display: flex;
     justify-content: center;
     align-items: center;
-
-    // Google SDK сам управляет размерами кнопки через iframe
-    // Не переопределяем размеры, только базовые стили
+    min-height: to-rem(40);
+    // Не задаём width, не делаем overflow!
     :deep(iframe) {
-      width: 100% !important;
       border: none !important;
       display: block !important;
+      min-width: 160px;
     }
   }
 

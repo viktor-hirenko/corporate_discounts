@@ -21,12 +21,12 @@
   ],
   "images": {
     "logo": {
-      "dark": "@/assets/images/upstars-logo-dark.svg",
-      "light": "@/assets/images/upstars-logo-light.svg"
+      "dark": "/images/upstars-logo-dark.svg",
+      "light": "/images/upstars-logo-light.svg"
     },
-    "tagline": "@/assets/images/corporate-discounts-text.svg",
-    "loginBackground": "@/assets/images/login-background.svg",
-    "bot": "@/assets/images/bot-img.svg"
+    "tagline": "/images/corporate-discounts-text.svg",
+    "loginBackground": "/images/login-background.svg",
+    "bot": "/images/bot-img.svg"
   },
   "pages": {
     "discounts": {
@@ -484,7 +484,7 @@
     "roslynka": {
       "id": "roslynka",
       "slug": "roslynka",
-      "image": "@/assets/images/partners/roslynka.webp",
+      "image": "/images/partners/roslynka.webp",
       "promoCode": "UPSTARS.ROSLYNKA",
       "contact": {
         "website": "https://www.instagram.com/roslynka_studio_?igsh=OXp5MjZtb2FkeTR3",
@@ -559,7 +559,7 @@
     "otoy": {
       "id": "otoy",
       "slug": "otoy",
-      "image": "@/assets/images/partners/otoy.webp",
+      "image": "/images/partners/otoy.webp",
       "promoCode": "UPSTARS100",
       "contact": {
         "website": "https://instagram.com/otoy.event?igshid=MzRIODBINWFIZA==",
@@ -621,7 +621,7 @@
     "reikartz": {
       "id": "reikartz",
       "slug": "reikartz",
-      "image": "@/assets/images/partners/reikartz.webp",
+      "image": "/images/partners/reikartz.webp",
       "promoCode": "UPSTARS10",
       "contact": {
         "website": "https://reikartz.com/uk/hotels/",
@@ -680,7 +680,7 @@
     "your-dream-trips": {
       "id": "your-dream-trips",
       "slug": "your-dream-trips",
-      "image": "@/assets/images/partners/your-dream-trips.webp",
+      "image": "/images/partners/your-dream-trips.webp",
       "promoCode": "UPSTARS5",
       "contact": {
         "website": "https://instagram.com/your_dream_trips_?igshid=MzRlODBiNWFlZA==",
@@ -738,7 +738,7 @@
     "ribas": {
       "id": "ribas",
       "slug": "ribas",
-      "image": "@/assets/images/partners/ribas.webp",
+      "image": "/images/partners/ribas.webp",
       "promoCode": "UPSTARS10%",
       "contact": {
         "website": "https://ribas.ua/hotels",
@@ -796,7 +796,7 @@
     "captain-kyiv": {
       "id": "captain-kyiv",
       "slug": "captain-kyiv",
-      "image": "@/assets/images/partners/captain-kyiv.webp",
+      "image": "/images/partners/captain-kyiv.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://captain.kiev.ua/rozklad",
@@ -854,7 +854,7 @@
     "eurotrips": {
       "id": "eurotrips",
       "slug": "eurotrips",
-      "image": "@/assets/images/partners/eurotrips.webp",
+      "image": "/images/partners/eurotrips.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://eurotrips.ua/",
@@ -912,7 +912,7 @@
     "travel-one": {
       "id": "travel-one",
       "slug": "travel-one",
-      "image": "@/assets/images/partners/travel-one.webp",
+      "image": "/images/partners/travel-one.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.1travel.lv/ru",
@@ -977,7 +977,7 @@
     "mandra": {
       "id": "mandra",
       "slug": "mandra",
-      "image": "@/assets/images/partners/mandra.webp",
+      "image": "/images/partners/mandra.webp",
       "promoCode": "UPSTARS10%",
       "contact": {
         "website": "https://mandra.com.ua/?fbclid=PAAaY1pD4oNBT4Jl5z9PiaXxHPVNtpoZhNSwHbNDL4sfV2LMHaNjA-4U8F44M",
@@ -1035,7 +1035,7 @@
     "integral": {
       "id": "integral",
       "slug": "integral",
-      "image": "@/assets/images/partners/integral.webp",
+      "image": "/images/partners/integral.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.instagram.com/integral.kyiv/"
@@ -1100,7 +1100,7 @@
     "integral-warsaw": {
       "id": "integral-warsaw",
       "slug": "integral-warsaw",
-      "image": "@/assets/images/partners/integral-warsaw.webp",
+      "image": "/images/partners/integral-warsaw.webp",
       "promoCode": "UPSTARS15",
       "contact": {
         "website": "https://app.fitssey.com/Integral/frontoffice"
@@ -1169,7 +1169,7 @@
     "arsenal-fitness-space": {
       "id": "arsenal-fitness-space",
       "slug": "arsenal-fitness-space",
-      "image": "@/assets/images/partners/arsenal-fitness-space.webp",
+      "image": "/images/partners/arsenal-fitness-space.webp",
       "promoCode": "AFS444",
       "contact": {
         "website": "https://arsenal-fitness.space/",
@@ -1242,7 +1242,7 @@
     "smartass-sport-kyiv": {
       "id": "smartass-sport-kyiv",
       "slug": "smartass-sport-kyiv",
-      "image": "@/assets/images/partners/smartass-sport-kyiv.webp",
+      "image": "/images/partners/smartass-sport-kyiv.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://smartass.club/"
@@ -1317,7 +1317,7 @@
     "smartass-warsaw": {
       "id": "smartass-warsaw",
       "slug": "smartass-warsaw",
-      "image": "@/assets/images/partners/smartass-warsaw.webp",
+      "image": "/images/partners/smartass-warsaw.webp",
       "promoCode": "SMARTSTARS",
       "contact": {
         "website": "https://smartass.club/"
@@ -1384,7 +1384,7 @@
     "sportlife": {
       "id": "sportlife",
       "slug": "sportlife",
-      "image": "@/assets/images/partners/sportlife.webp",
+      "image": "/images/partners/sportlife.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://sportlifecorp.com/",
@@ -1455,7 +1455,7 @@
     "sportlife-podolskiy": {
       "id": "sportlife-podolskiy",
       "slug": "sportlife-podolskiy",
-      "image": "@/assets/images/partners/sportlife-podolskiy.webp",
+      "image": "/images/partners/sportlife-podolskiy.webp",
       "promoCode": "#UPSTARS",
       "contact": {
         "website": "https://podolskiy.ua/",
@@ -1518,7 +1518,7 @@
     "body-karma-soul": {
       "id": "body-karma-soul",
       "slug": "body-karma-soul",
-      "image": "@/assets/images/partners/body-karma-soul.webp",
+      "image": "/images/partners/body-karma-soul.webp",
       "promoCode": "EUROPASSAGE KARMA",
       "contact": {
         "website": "https://bks.com.ua/"
@@ -1591,7 +1591,7 @@
     "winetime": {
       "id": "winetime",
       "slug": "winetime",
-      "image": "@/assets/images/partners/winetime.webp",
+      "image": "/images/partners/winetime.webp",
       "promoCode": "-",
       "contact": {
         "website": "https://winetime.ua/"
@@ -1658,7 +1658,7 @@
     "pigo": {
       "id": "pigo",
       "slug": "pigo",
-      "image": "@/assets/images/partners/pigo.webp",
+      "image": "/images/partners/pigo.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.instagram.com/pigo_ukraine/",
@@ -1721,7 +1721,7 @@
     "harvest": {
       "id": "harvest",
       "slug": "harvest",
-      "image": "@/assets/images/partners/harvest.webp",
+      "image": "/images/partners/harvest.webp",
       "promoCode": "UPSTARS7",
       "contact": {
         "website": "https://harvest-clothing.com.ua/",
@@ -1788,7 +1788,7 @@
     "perla-helsa": {
       "id": "perla-helsa",
       "slug": "perla-helsa",
-      "image": "@/assets/images/partners/perla-helsa.webp",
+      "image": "/images/partners/perla-helsa.webp",
       "promoCode": "UPSTARS20",
       "contact": {
         "website": "https://perlahelsa.ua/",
@@ -1857,7 +1857,7 @@
     "keep": {
       "id": "keep",
       "slug": "keep",
-      "image": "@/assets/images/partners/keep.webp",
+      "image": "/images/partners/keep.webp",
       "promoCode": "UPSTARS#K0325",
       "contact": {
         "website": "https://keeppacks.com/",
@@ -1928,7 +1928,7 @@
     "gorgany": {
       "id": "gorgany",
       "slug": "gorgany",
-      "image": "@/assets/images/partners/gorgany.webp",
+      "image": "/images/partners/gorgany.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.gorgany.com/"
@@ -1995,7 +1995,7 @@
     "orner": {
       "id": "orner",
       "slug": "orner",
-      "image": "@/assets/images/partners/orner.webp",
+      "image": "/images/partners/orner.webp",
       "promoCode": "UPSTARS15",
       "contact": {
         "website": "https://orner.com.ua/ua",
@@ -2058,7 +2058,7 @@
     "ispace": {
       "id": "ispace",
       "slug": "ispace",
-      "image": "@/assets/images/partners/ispace.webp",
+      "image": "/images/partners/ispace.webp",
       "promoCode": "-",
       "contact": {
         "website": "https://www.ispace.ua/",
@@ -2133,7 +2133,7 @@
     "syndicate": {
       "id": "syndicate",
       "slug": "syndicate",
-      "image": "@/assets/images/partners/syndicate.webp",
+      "image": "/images/partners/syndicate.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.sndct.com/",
@@ -2196,7 +2196,7 @@
     "beko": {
       "id": "beko",
       "slug": "beko",
-      "image": "@/assets/images/partners/beko.webp",
+      "image": "/images/partners/beko.webp",
       "promoCode": "-",
       "contact": {
         "website": "https://www.beko.com/ua-uk",
@@ -2271,7 +2271,7 @@
     "merle": {
       "id": "merle",
       "slug": "merle",
-      "image": "@/assets/images/partners/merle.webp",
+      "image": "/images/partners/merle.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://merle.ua/",
@@ -2342,7 +2342,7 @@
     "df-original": {
       "id": "df-original",
       "slug": "df-original",
-      "image": "@/assets/images/partners/df-original.webp",
+      "image": "/images/partners/df-original.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://dforiginal.ua/uk/catalog",
@@ -2413,7 +2413,7 @@
     "behelsi": {
       "id": "behelsi",
       "slug": "behelsi",
-      "image": "@/assets/images/partners/behelsi.webp",
+      "image": "/images/partners/behelsi.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://behelsi.com/",
@@ -2486,7 +2486,7 @@
     "magnum": {
       "id": "magnum",
       "slug": "magnum",
-      "image": "@/assets/images/partners/magnum.webp",
+      "image": "/images/partners/magnum.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://tornador-magnum.com.ua/",
@@ -2549,7 +2549,7 @@
     "smartass": {
       "id": "smartass",
       "slug": "smartass",
-      "image": "@/assets/images/partners/smartass.webp",
+      "image": "/images/partners/smartass.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://smartass.club/en",
@@ -2624,7 +2624,7 @@
     "omassage": {
       "id": "omassage",
       "slug": "omassage",
-      "image": "@/assets/images/partners/omassage.webp",
+      "image": "/images/partners/omassage.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.instagram.com/o.massage.warsaw/",
@@ -2693,7 +2693,7 @@
     "dari-jwrly": {
       "id": "dari-jwrly",
       "slug": "dari-jwrly",
-      "image": "@/assets/images/partners/dari-jwrly.webp",
+      "image": "/images/partners/dari-jwrly.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.instagram.com/darijewelry/?igshid=MzRlODBiNWFlZA%3D%3D",
@@ -2756,7 +2756,7 @@
     "044barbershop": {
       "id": "044barbershop",
       "slug": "044barbershop",
-      "image": "@/assets/images/partners/044barbershop.webp",
+      "image": "/images/partners/044barbershop.webp",
       "promoCode": "europ20",
       "contact": {
         "website": "https://044barbershop.kyiv.ua/",
@@ -2827,7 +2827,7 @@
     "chop-chop": {
       "id": "chop-chop",
       "slug": "chop-chop",
-      "image": "@/assets/images/partners/chop-chop.webp",
+      "image": "/images/partners/chop-chop.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://www.chopchop.com.ua/",
@@ -2896,7 +2896,7 @@
     "kulik-system": {
       "id": "kulik-system",
       "slug": "kulik-system",
-      "image": "@/assets/images/partners/kulik-system.webp",
+      "image": "/images/partners/kulik-system.webp",
       "promoCode": "-",
       "contact": {
         "website": "https://kulik-system.com/ua/ua/shopping/chairs/?utm_source=google_ads&utm_medium=cpc&utm_campaign=brand_kulik_system&utm_content=142591851733_630562217968_g_&utm_term=kulik%20system",
@@ -2965,7 +2965,7 @@
     "big-wines": {
       "id": "big-wines",
       "slug": "big-wines",
-      "image": "@/assets/images/partners/big-wines.webp",
+      "image": "/images/partners/big-wines.webp",
       "promoCode": "EUROPASSAGE25",
       "contact": {
         "website": "https://bigwines.com.ua/uk",
@@ -3034,7 +3034,7 @@
     "amospring": {
       "id": "amospring",
       "slug": "amospring",
-      "image": "@/assets/images/partners/amospring.webp",
+      "image": "/images/partners/amospring.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://instagram.com/amospring?igshid=YzcxN2Q2NzY0OA==",
@@ -3103,7 +3103,7 @@
     "mihailo-pustovoit-massage-room": {
       "id": "mihailo-pustovoit-massage-room",
       "slug": "mihailo-pustovoit-massage-room",
-      "image": "@/assets/images/partners/mihailo-pustovoit-massage-room.webp",
+      "image": "/images/partners/mihailo-pustovoit-massage-room.webp",
       "promoCode": "UPSTARS20",
       "contact": {
         "website": "https://www.instagram.com/mihey_masaj",
@@ -3166,7 +3166,7 @@
     "art-music-space-1990": {
       "id": "art-music-space-1990",
       "slug": "art-music-space-1990",
-      "image": "@/assets/images/partners/art-music-space-1990.webp",
+      "image": "/images/partners/art-music-space-1990.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://instagram.com/1990domusickyiv?igshid=MzRlODBiNWFlZA==",
@@ -3235,7 +3235,7 @@
     "sa-pase": {
       "id": "sa-pase",
       "slug": "sa-pase",
-      "image": "@/assets/images/partners/sa-pase.webp",
+      "image": "/images/partners/sa-pase.webp",
       "promoCode": "UPSTARS10",
       "contact": {
         "website": "https://sa-pase.com/",
@@ -3304,7 +3304,7 @@
     "giorno-medical": {
       "id": "giorno-medical",
       "slug": "giorno-medical",
-      "image": "@/assets/images/partners/giorno-medical.webp",
+      "image": "/images/partners/giorno-medical.webp",
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://giorno-medical.com/ru",
@@ -3369,7 +3369,7 @@
     "box-catering": {
       "id": "box-catering",
       "slug": "box-catering",
-      "image": "@/assets/images/partners/box-catering.webp",
+      "image": "/images/partners/box-catering.webp",
       "promoCode": "#ILoveUpstars",
       "contact": {
         "website": "https://box-catering.ua/",
@@ -3432,7 +3432,7 @@
     "si": {
       "id": "si",
       "slug": "si",
-      "image": "@/assets/images/partners/si.webp",
+      "image": "/images/partners/si.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://sikyiv.choiceqr.com/section:snidanki/soloni",
@@ -3501,7 +3501,7 @@
     "zustrich": {
       "id": "zustrich",
       "slug": "zustrich",
-      "image": "@/assets/images/partners/zustrich.webp",
+      "image": "/images/partners/zustrich.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "",
@@ -3570,7 +3570,7 @@
     "chayka": {
       "id": "chayka",
       "slug": "chayka",
-      "image": "@/assets/images/partners/chayka.webp",
+      "image": "/images/partners/chayka.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://chayka.choiceqr.com/section:snidanki/snidanki",
@@ -3639,7 +3639,7 @@
     "four-seasons": {
       "id": "four-seasons",
       "slug": "four-seasons",
-      "image": "@/assets/images/partners/four-seasons.webp",
+      "image": "/images/partners/four-seasons.webp",
       "promoCode": "-",
       "contact": {
         "website": "https://four-seasons.com.ua/",
@@ -3708,7 +3708,7 @@
     "flo-lux": {
       "id": "flo-lux",
       "slug": "flo-lux",
-      "image": "@/assets/images/partners/flo-lux.webp",
+      "image": "/images/partners/flo-lux.webp",
       "promoCode": "UPSTARS15",
       "contact": {
         "website": "https://instagram.com/flo.lux?igshid=MzRlODBiNWFlZA==",
@@ -3777,7 +3777,7 @@
     "englishdom": {
       "id": "englishdom",
       "slug": "englishdom",
-      "image": "@/assets/images/partners/englishdom.webp",
+      "image": "/images/partners/englishdom.webp",
       "promoCode": "-",
       "contact": {
         "website": "https://www.englishdom.com/ua/",
@@ -3840,7 +3840,7 @@
     "spot-school": {
       "id": "spot-school",
       "slug": "spot-school",
-      "image": "@/assets/images/partners/spot-school.webp",
+      "image": "/images/partners/spot-school.webp",
       "promoCode": "upstars-spot ",
       "contact": {
         "website": "https://www.spot.school/",
@@ -3909,7 +3909,7 @@
     "english-prime": {
       "id": "english-prime",
       "slug": "english-prime",
-      "image": "@/assets/images/partners/english-prime.webp",
+      "image": "/images/partners/english-prime.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://lp.englishprime.ua/",
@@ -3982,7 +3982,7 @@
     "futurium": {
       "id": "futurium",
       "slug": "futurium",
-      "image": "@/assets/images/partners/futurium.webp",
+      "image": "/images/partners/futurium.webp",
       "promoCode": "EUROPASSAGE",
       "contact": {
         "website": "https://www.instagram.com/futurium.english/?utm_source=Telegram&utm_medium=post&utm_campaign=partners",
@@ -4055,7 +4055,7 @@
     "arthuss": {
       "id": "arthuss",
       "slug": "arthuss",
-      "image": "@/assets/images/partners/arthuss.webp",
+      "image": "/images/partners/arthuss.webp",
       "promoCode": "upstars",
       "contact": {
         "website": "https://www.arthuss.com.ua/",
@@ -4118,7 +4118,7 @@
     "shar-lux": {
       "id": "shar-lux",
       "slug": "shar-lux",
-      "image": "@/assets/images/partners/shar-lux.webp",
+      "image": "/images/partners/shar-lux.webp",
       "promoCode": "upstars15",
       "contact": {
         "website": "https://instagram.com/shar.lux?igshid=MzRlODBiNWFlZA==",

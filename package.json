@@ -21,6 +21,7 @@
     "tokens:watch": "tsx scripts/build-tokens.ts && chokidar 'src/design/tokens.json' -c 'tsx scripts/build-tokens.ts'",
     "tokens:docs": "tsx scripts/export-docs.ts",
     "images:webp": "tsx scripts/convert-to-webp.ts",
+    "deploy:r2": "./scripts/deploy-r2.sh",
     "predev": "npm run tokens:build",
     "prebuild": "npm run images:webp && npm run tokens:build"
   },

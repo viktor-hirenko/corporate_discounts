@@ -38,9 +38,9 @@ const handlePartnerSaved = () => {
 <template>
   <div class="admin-app">
     <header class="header">
-      <h1>Partners Admin Panel</h1>
+      <h1>Панель адміністратора партнерів</h1>
       <button class="btn-create" @click="handleCreateNew">
-        <i class="fas fa-plus"></i> Создать нового партнера
+        <i class="fas fa-plus"></i> Створити нового партнера
       </button>
     </header>
 

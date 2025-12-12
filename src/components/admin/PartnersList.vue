@@ -64,7 +64,7 @@ const handleExportAll = () => {
 const copyPartnerJSON = (partner: PartnerConfig) => {
   const json = JSON.stringify({ [partner.slug]: partner }, null, 2)
   navigator.clipboard.writeText(json)
-  alert(`JSON для ${partner.name.ua} скопирован!`)
+  alert(`JSON для ${partner.name.ua} скопійовано!`)
 }
 </script>
 
@@ -75,30 +75,30 @@ const copyPartnerJSON = (partner: PartnerConfig) => {
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Поиск по названию или slug..."
+          placeholder="Пошук за назвою або slug..."
           class="search-input"
         />
         <select v-model="selectedCategory" class="category-select">
-          <option value="all">Все категории</option>
+          <option value="all">Всі категорії</option>
           <option v-for="cat in categories" :key="cat" :value="cat">
             {{ cat }}
           </option>
         </select>
       </div>
       <button class="btn-export" @click="handleExportAll">
-        <i class="fas fa-download"></i> Экспорт всех партнеров
+        <i class="fas fa-download"></i> Експорт всіх партнерів
       </button>
     </div>
 
     <div class="partners-count">
-      Найдено партнеров: <strong>{{ filteredPartners.length }}</strong> из {{ partners.length }}
+      Знайдено партнерів: <strong>{{ filteredPartners.length }}</strong> із {{ partners.length }}
     </div>
 
-    <div v-if="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>
+    <div v-if="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Завантаження...</div>
 
     <div v-else-if="filteredPartners.length === 0" class="empty">
       <i class="fas fa-inbox"></i>
-      <p>Партнеры не найдены</p>
+      <p>Партнери не знайдені</p>
     </div>
 
     <div v-else class="partners-grid">
@@ -140,10 +140,10 @@ const copyPartnerJSON = (partner: PartnerConfig) => {
 
           <div class="card-actions">
             <button class="btn-edit" @click="emit('edit', partner)">
-              <i class="fas fa-edit"></i> Редактировать
+              <i class="fas fa-edit"></i> Редагувати
             </button>
             <button class="btn-copy" @click="copyPartnerJSON(partner)">
-              <i class="fas fa-copy"></i> Копировать JSON
+              <i class="fas fa-copy"></i> Копіювати JSON
             </button>
           </div>
         </div>
