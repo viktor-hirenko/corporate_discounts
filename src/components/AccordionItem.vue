@@ -32,11 +32,11 @@ function toggle() {
         :size="16"
       />
     </button>
-    <Transition name="accordion">
-      <div v-if="props.isOpen" class="accordion-item__content">
+    <div class="accordion-item__content-wrapper">
+      <div class="accordion-item__content">
         <p class="accordion-item__answer">{{ answer }}</p>
       </div>
-    </Transition>
+    </div>
   </div>
 </template>
 
@@ -86,14 +86,28 @@ function toggle() {
     flex-shrink: 0;
     color: var(--color-secondary-600, #01001f);
     transform: rotate(180deg);
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 
     &--down {
       transform: rotate(270deg);
     }
   }
 
+  &__content-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: grid-template-rows;
+  }
+
+  &--open &__content-wrapper {
+    grid-template-rows: 1fr;
+  }
+
   &__content {
+    min-height: 0;
     overflow: hidden;
   }
 
@@ -110,25 +124,5 @@ function toggle() {
       font-size: to-rem(14);
     }
   }
-}
-
-.accordion-enter-active,
-.accordion-leave-active {
-  overflow: hidden;
-  transition:
-    max-height 0.3s ease,
-    opacity 0.3s ease;
-}
-
-.accordion-enter-from,
-.accordion-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
-
-.accordion-enter-to,
-.accordion-leave-from {
-  max-height: 1000px;
-  opacity: 1;
 }
 </style>
