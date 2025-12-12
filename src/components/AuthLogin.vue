@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import UiButton from '@/components/UiButton.vue'
@@ -7,13 +7,10 @@ import UiInput from '@/components/UiInput.vue'
 import UserInfo from '@/components/UserInfo.vue'
 import { useAppConfig } from '@/composables/useAppConfig'
 import { useAuthStore } from '@/stores/auth'
-import { useUiStore } from '@/stores/ui'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const uiStore = useUiStore()
-
 const { auth, t } = useAppConfig()
 
 const userFullName = ref('Імʼя Прізвище')
@@ -21,80 +18,44 @@ const userEmail = ref('')
 const isLoading = ref(false)
 const googleButtonRef = ref<HTMLDivElement | null>(null)
 
-// Флаг для отслеживания монтирования компонента (предотвращает утечки памяти)
-let isMounted = true
-
-// Получаем данные последнего пользователя (для отображения после выхода)
+// Данные последнего пользователя
 const lastUser = ref<{ name: string; email: string; picture: string | null } | null>(null)
 
-// Определяем, показывать ли Google кнопку
-// Кнопка показывается только если пользователь НЕ авторизован И нет данных последнего пользователя
-// Если есть данные пользователя (Welcome back), кнопка Google не показывается
+// Computed
+const hasGoogleClientId = computed(() => {
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+  return !!clientId && clientId !== 'your-google-client-id-here.apps.googleusercontent.com'
+})
+
 const shouldShowGoogleButton = computed(() => {
   return hasGoogleClientId.value && !authStore.isLoggedIn && !hasUserData.value
 })
 
-// Определяем, есть ли данные для отображения "Welcome back"
-const hasUserData = computed(() => {
-  return !!lastUser.value
-})
+const hasUserData = computed(() => !!lastUser.value)
 
-// Аватар: сначала проверяем авторизованного пользователя, потом последнего пользователя
-// НЕ используем placeholder - всегда должна быть иконка из Google
 const avatarUrl = computed(() => {
-  // Сначала проверяем авторизованного пользователя
-  if (authStore.user?.picture) {
-    return authStore.user.picture
-  }
-  // Потом проверяем последнего пользователя
-  if (lastUser.value?.picture) {
-    return lastUser.value.picture
-  }
-  // Если нет picture, возвращаем null (не показываем placeholder)
-  return null
+  return authStore.user?.picture || lastUser.value?.picture || null
 })
 
-// Имя: сначала проверяем авторизованного пользователя, потом последнего пользователя, иначе placeholder
 const displayFullName = computed(() => {
-  if (authStore.user?.name) {
-    return authStore.user.name
-  }
-  if (lastUser.value?.name) {
-    return lastUser.value.name
-  }
-  return userFullName.value
+  return authStore.user?.name || lastUser.value?.name || userFullName.value
 })
 
-// Email: если есть данные последнего пользователя - показываем его, иначе пустое
 const displayEmail = computed({
-  get: () => {
-    if (lastUser.value?.email) {
-      return lastUser.value.email
-    }
-    return userEmail.value
-  },
+  get: () => lastUser.value?.email || userEmail.value,
   set: (value: string) => {
     userEmail.value = value
   },
 })
 
-// Проверяем наличие Google Client ID
-const hasGoogleClientId = computed(() => {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
-  console.log('[auth-login] Google Client ID:', clientId ? 'найден' : 'не найден', clientId)
-  return !!clientId && clientId !== 'your-google-client-id-here.apps.googleusercontent.com'
-})
-
+// Google Sign-In callback
 async function handleGoogleSignIn(response: { credential: string }): Promise<void> {
   try {
     isLoading.value = true
-
-    // Сохраняем redirect до логина, чтобы использовать после
     const redirect = (route.query.redirect as string) || '/discounts'
 
     await authStore.loginWithGoogle(response.credential)
 
-    // Обновляем данные последнего пользователя
     if (authStore.user) {
       lastUser.value = {
         name: authStore.user.name,
@@ -103,189 +64,76 @@ async function handleGoogleSignIn(response: { credential: string }): Promise<voi
       }
     }
 
-    // Редирект сразу после успешного логина, без задержек
-    // Используем replace вместо push, чтобы не было истории возврата на login
-    // Не используем await, чтобы редирект произошел немедленно
-    router.replace(redirect).catch((error) => {
-      console.error('[auth-login] Redirect failed', error)
-    })
+    await router.replace(redirect)
   } catch (error) {
-    console.error('[auth-login] Google sign in failed', error)
+    console.error('[auth] Google sign in failed', error)
     isLoading.value = false
-    // TODO: показать ошибку пользователю
   }
 }
 
-function initializeGoogleSignIn(): void {
-  if (!window.google?.accounts?.id || !googleButtonRef.value) {
+// Простая загрузка Google SDK и рендер кнопки
+function initGoogleButton(): void {
+  if (!shouldShowGoogleButton.value || !googleButtonRef.value) return
+
+  const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
+  if (!CLIENT_ID) return
+
+  // Если SDK уже загружен - рендерим кнопку
+  if (window.google?.accounts?.id) {
+    renderGoogleButton()
     return
   }
 
-  // Получаем CLIENT_ID из переменных окружения
-  // В продакшене это должно быть в .env файле
-  const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
-
-  if (!CLIENT_ID) {
-    console.warn(
-      '[auth-login] Google Client ID not configured. Add VITE_GOOGLE_CLIENT_ID to .env file',
-    )
-    // Показываем кнопку даже без Client ID для визуальной проверки
-    // В реальном приложении здесь должен быть реальный Client ID
-    return
-  }
-
-  try {
-    window.google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      callback: handleGoogleSignIn,
-      auto_select: true,
-      cancel_on_tap_outside: true,
-    })
-
-    // Очищаем контейнер кнопки перед рендерингом (важно для перерендеринга при смене локали)
-    if (googleButtonRef.value) {
-      googleButtonRef.value.innerHTML = ''
-    }
-
-    // Локаль уже установлена через параметр hl в URL скрипта
-    // Но для надежности также передаем locale в renderButton
-    const googleLocale = uiStore.locale === 'en' ? 'en' : 'uk'
-
-    window.google.accounts.id.renderButton(googleButtonRef.value, {
-      type: 'standard',
-      theme: 'outline',
-      size: 'large',
-      text: 'signin_with',
-      shape: 'rectangular',
-      locale: googleLocale,
-    })
-
-    console.log('[auth-login] Google Sign In button rendered with locale:', googleLocale)
-  } catch (error) {
-    console.error('[auth-login] Failed to initialize Google Sign In', error)
-  }
+  // Загружаем SDK (всегда на английском — стандарт индустрии)
+  const script = document.createElement('script')
+  script.src = 'https://accounts.google.com/gsi/client'
+  script.async = true
+  script.onload = () => renderGoogleButton()
+  document.head.appendChild(script)
 }
 
-function loadGoogleSDKWithLocale(locale: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // Проверяем, не загружен ли уже скрипт с правильной локалью
-    const existingScript = document.querySelector(
-      `script[src*="accounts.google.com/gsi/client"]`,
-    ) as HTMLScriptElement | null
+function renderGoogleButton(): void {
+  if (!googleButtonRef.value || !window.google?.accounts?.id) return
 
-    // Если скрипт уже загружен и SDK доступен, просто резолвим
-    if (window.google?.accounts?.id) {
-      // Проверяем, совпадает ли локаль в URL скрипта
-      if (existingScript?.src.includes(`hl=${locale}`)) {
-        resolve()
-        return
-      }
-      // Если локаль не совпадает, удаляем старый скрипт
-      if (existingScript) {
-        existingScript.remove()
-        // Очищаем window.google для перезагрузки
-        delete window.google
-      }
-    }
+  const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
-    // Загружаем скрипт с параметром hl для локализации
-    const script = document.createElement('script')
-    script.src = `https://accounts.google.com/gsi/client?hl=${locale}`
-    script.async = true
-    script.defer = true
+  window.google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    callback: handleGoogleSignIn,
+  })
 
-    script.onload = () => {
-      // Ждем инициализации SDK
-      const checkInterval = setInterval(() => {
-        if (window.google?.accounts?.id) {
-          clearInterval(checkInterval)
-          if (isMounted) {
-            resolve()
-          }
-        }
-      }, 100)
-
-      setTimeout(() => {
-        clearInterval(checkInterval)
-        if (!window.google?.accounts?.id && isMounted) {
-          reject(new Error('Google SDK failed to initialize'))
-        }
-      }, 10000)
-    }
-
-    script.onerror = () => {
-      reject(new Error('Failed to load Google SDK'))
-    }
-
-    document.head.appendChild(script)
+  window.google.accounts.id.renderButton(googleButtonRef.value, {
+    type: 'standard',
+    theme: 'outline',
+    size: 'large',
+    text: 'signin_with',
+    shape: 'rectangular',
   })
 }
 
-function waitForGoogleSDK(): void {
-  const locale = uiStore.locale === 'en' ? 'en' : 'uk'
-  console.log('[auth-login] Loading Google SDK with locale:', locale)
-
-  if (window.google?.accounts?.id) {
-    // Проверяем, совпадает ли локаль
-    const existingScript = document.querySelector(
-      `script[src*="accounts.google.com/gsi/client"]`,
-    ) as HTMLScriptElement | null
-    // Если скрипт найден и локаль совпадает, используем существующий SDK
-    if (existingScript && existingScript.src.includes(`hl=${locale}`)) {
-      console.log('[auth-login] Google SDK already loaded with correct locale')
-      initializeGoogleSignIn()
-      return
-    }
-    // Если локаль не совпадает, удаляем старый скрипт
-    if (existingScript) {
-      console.log('[auth-login] Google SDK locale mismatch, removing old script')
-      existingScript.remove()
-      delete (window as any).google
-    }
-  }
-
-  // Загружаем SDK с правильной локалью
-  loadGoogleSDKWithLocale(locale)
-    .then(() => {
-      initializeGoogleSignIn()
-    })
-    .catch((error) => {
-      console.error('[auth-login] Failed to load Google SDK:', error)
-    })
-}
-
+// Email login
 async function handleContinue(): Promise<void> {
   const email = displayEmail.value.trim()
-  if (!email) {
-    return
-  }
+  if (!email) return
 
   try {
     isLoading.value = true
-
-    // Сохраняем redirect до логина, чтобы использовать после
     const redirect = (route.query.redirect as string) || '/discounts'
-
     const name = displayFullName.value || email.split('@')[0] || 'User'
+
     await authStore.loginWithEmail(email, name)
 
-    // Обновляем данные последнего пользователя
     if (authStore.user) {
       lastUser.value = {
         name: authStore.user.name,
         email: authStore.user.email,
-        picture: authStore.user.picture, // Сохраняем picture, если он есть
+        picture: authStore.user.picture,
       }
     }
 
-    // Редирект сразу после успешного логина, без задержек
-    // Используем replace вместо push, чтобы не было истории возврата на login
-    // Не используем await, чтобы редирект произошел немедленно
-    router.replace(redirect).catch((error) => {
-      console.error('[auth-login] Redirect failed', error)
-    })
+    await router.replace(redirect)
   } catch (error) {
-    console.error('[auth-login] Email login failed', error)
+    console.error('[auth] Email login failed', error)
     isLoading.value = false
   }
 }
@@ -297,201 +145,35 @@ function handleSubmit(event: Event): void {
 
 async function handleSwitchAccount(event: Event): Promise<void> {
   event.preventDefault()
-  // Очищаем данные последнего пользователя
   authStore.clearLastUser()
   lastUser.value = null
   userEmail.value = ''
   userFullName.value = 'Імʼя Прізвище'
 
-  // Ждем обновления DOM после изменения lastUser
-  await nextTick()
-
-  // После очистки Google кнопка появится автоматически (shouldShowGoogleButton станет true)
-  // Инициализируем Google SDK с правильной локалью
-  if (shouldShowGoogleButton.value && googleButtonRef.value) {
-    const googleLocale = uiStore.locale === 'en' ? 'en' : 'uk'
-    const existingScript = document.querySelector(
-      `script[src*="accounts.google.com/gsi/client"]`,
-    ) as HTMLScriptElement | null
-
-    // Проверяем, загружен ли SDK с правильной локалью
-    if (window.google?.accounts?.id) {
-      // Если локаль не совпадает, перезагружаем SDK
-      if (!existingScript?.src.includes(`hl=${googleLocale}`)) {
-        existingScript?.remove()
-        delete window.google
-        await nextTick()
-        try {
-          await loadGoogleSDKWithLocale(googleLocale)
-          await nextTick()
-          initializeGoogleSignIn()
-        } catch (error) {
-          console.error('[auth-login] Failed to reload Google SDK after switch account:', error)
-        }
-      } else {
-        // Локаль совпадает, просто инициализируем
-        initializeGoogleSignIn()
-      }
-    } else {
-      // SDK не загружен, загружаем с правильной локалью
-      waitForGoogleSDK()
-    }
-  }
+  // Даём Vue обновить DOM, затем инициализируем кнопку
+  setTimeout(() => initGoogleButton(), 0)
 }
 
-// Отслеживаем изменения shouldShowGoogleButton и инициализируем Google SDK когда нужно
-watch(
-  shouldShowGoogleButton,
-  async (newValue, oldValue) => {
-    if (newValue && !oldValue) {
-      // Ждем обновления DOM
-      await nextTick()
-
-      if (googleButtonRef.value) {
-        console.log('[auth-login] shouldShowGoogleButton changed to true, initializing Google SDK')
-        // Всегда проверяем и используем правильную локаль из uiStore
-        const googleLocale = uiStore.locale === 'en' ? 'en' : 'uk'
-        const existingScript = document.querySelector(
-          `script[src*="accounts.google.com/gsi/client"]`,
-        ) as HTMLScriptElement | null
-
-        // Если SDK уже загружен, проверяем локаль
-        if (window.google?.accounts?.id) {
-          // Если локаль не совпадает или скрипт не найден, перезагружаем SDK
-          if (!existingScript || !existingScript.src.includes(`hl=${googleLocale}`)) {
-            existingScript?.remove()
-            delete window.google
-            await nextTick()
-            try {
-              await loadGoogleSDKWithLocale(googleLocale)
-              await nextTick()
-              initializeGoogleSignIn()
-            } catch (error) {
-              console.error('[auth-login] Failed to reload Google SDK:', error)
-            }
-          } else {
-            // Локаль совпадает, просто инициализируем
-            initializeGoogleSignIn()
-          }
-        } else {
-          // SDK не загружен, загружаем с правильной локалью
-          waitForGoogleSDK()
-        }
-      }
-    }
-  },
-  { immediate: false },
-)
-
-// Отслеживаем изменения статуса авторизации и редиректим сразу при логине
-watch(
-  () => authStore.isLoggedIn,
-  (isLoggedIn) => {
-    if (isLoggedIn) {
-      const redirect = (route.query.redirect as string) || '/discounts'
-      router.replace(redirect).catch((error) => {
-        console.error('[auth-login] Redirect on auth change failed', error)
-      })
-    }
-  },
-  { immediate: false },
-)
-
-// Отслеживаем изменения локали и перезагружаем Google SDK с новой локалью
-watch(
-  () => uiStore.locale,
-  async (newLocale, oldLocale) => {
-    // Пропускаем первую инициализацию (когда oldLocale еще undefined)
-    if (oldLocale === undefined) {
-      return
-    }
-
-    // Перезагружаем SDK только если кнопка должна быть видна
-    if (!shouldShowGoogleButton.value || !googleButtonRef.value) {
-      console.log('[auth-login] Locale changed but Google button is not visible, skipping reload')
-      return
-    }
-
-    const googleLocale = newLocale === 'en' ? 'en' : 'uk'
-    console.log(
-      '[auth-login] Locale changed from',
-      oldLocale,
-      'to',
-      newLocale,
-      ', reloading Google SDK with locale:',
-      googleLocale,
-    )
-
-    // Ждем обновления DOM
-    await nextTick()
-
-    // Удаляем старый скрипт если он есть
-    const existingScript = document.querySelector(
-      `script[src*="accounts.google.com/gsi/client"]`,
-    ) as HTMLScriptElement | null
-    if (existingScript) {
-      existingScript.remove()
-      delete window.google
-    }
-
-    // Очищаем контейнер кнопки
-    if (googleButtonRef.value) {
-      googleButtonRef.value.innerHTML = ''
-    }
-
-    // Ждем еще один тик для полной очистки DOM
-    await nextTick()
-
-    // Загружаем SDK с новой локалью
-    try {
-      await loadGoogleSDKWithLocale(googleLocale)
-      // Ждем еще один тик после загрузки SDK
-      await nextTick()
-      initializeGoogleSignIn()
-    } catch (error) {
-      console.error('[auth-login] Failed to reload Google SDK with new locale:', error)
-    }
-  },
-  { immediate: false },
-)
-
 onMounted(() => {
-  console.log('[auth-login] Component mounted', {
-    hasGoogleClientId: hasGoogleClientId.value,
-    isLoggedIn: authStore.isLoggedIn,
-    clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-  })
-
-  // Если пользователь уже авторизован, редиректим на discounts немедленно
-  // Используем replace и не await, чтобы редирект произошел синхронно
+  // Если авторизован - редирект
   if (authStore.isLoggedIn) {
     const redirect = (route.query.redirect as string) || '/discounts'
-    router.replace(redirect).catch((error) => {
-      console.error('[auth-login] Redirect on mount failed', error)
-    })
+    router.replace(redirect)
     return
   }
 
-  // Загружаем данные последнего пользователя для отображения
+  // Загружаем данные последнего пользователя
   const savedLastUser = authStore.getLastUser()
   if (savedLastUser) {
     lastUser.value = savedLastUser
     userEmail.value = savedLastUser.email
-    // Устанавливаем имя только если оно есть, иначе оставляем дефолтное
-    if (savedLastUser.name && savedLastUser.name.trim()) {
+    if (savedLastUser.name?.trim()) {
       userFullName.value = savedLastUser.name
     }
   }
 
-  // Инициализируем Google Sign In если нужно показать кнопку
-  if (shouldShowGoogleButton.value) {
-    waitForGoogleSDK()
-  }
-})
-
-// Предотвращение утечек памяти при размонтировании компонента
-onUnmounted(() => {
-  isMounted = false
+  // Инициализируем Google кнопку
+  initGoogleButton()
 })
 </script>
 
@@ -499,8 +181,7 @@ onUnmounted(() => {
   <form class="auth-login" @submit="handleSubmit">
     <div class="auth-login__panel">
       <div class="auth-login__actions">
-        <!-- Основной способ: Email авторизация -->
-        <!-- Показываем UserInfo только если есть данные последнего пользователя -->
+        <!-- Welcome back -->
         <UserInfo
           v-if="hasUserData"
           v-model="displayEmail"
@@ -509,7 +190,7 @@ onUnmounted(() => {
           image-alt="User avatar"
         />
 
-        <!-- Если нет данных пользователя, показываем только email поле -->
+        <!-- Email input -->
         <UiInput
           v-if="!hasUserData"
           v-model="displayEmail"
@@ -528,18 +209,16 @@ onUnmounted(() => {
           :label="hasUserData ? t(auth.continue) : t(auth.login)"
         />
 
-        <!-- Альтернативный способ: Google авторизация (показываем всегда когда пользователь не авторизован) -->
-        <div v-if="shouldShowGoogleButton" class="auth-login__divider">
-          <span class="auth-login__divider-text">{{ t(auth.or) }}</span>
-        </div>
+        <!-- Google Sign-In -->
+        <template v-if="shouldShowGoogleButton">
+          <div class="auth-login__divider">
+            <span class="auth-login__divider-text">{{ t(auth.or) }}</span>
+          </div>
 
-        <div
-          v-if="shouldShowGoogleButton"
-          ref="googleButtonRef"
-          class="auth-login__google-button"
-        />
+          <div ref="googleButtonRef" class="auth-login__google-button" />
+        </template>
 
-        <!-- "Не ви? ВИКОРИСТАТИ ІНШИЙ АКАУНТ" показываем только если есть данные пользователя -->
+        <!-- Switch account -->
         <div v-if="hasUserData" class="auth-login__switch-wrapper">
           <span class="auth-login__switch-text">{{ t(auth.notYou) }}</span>
           <UiButton
@@ -586,11 +265,9 @@ onUnmounted(() => {
     justify-content: center;
     align-items: center;
     min-height: to-rem(40);
-    // Не задаём width, не делаем overflow!
+
     :deep(iframe) {
       border: none !important;
-      display: block !important;
-      min-width: 160px;
     }
   }
 
