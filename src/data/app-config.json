@@ -251,17 +251,17 @@
     }
   },
   "auth": {
+    "signInTitle": {
+      "ua": "Вхід до Corporate Discounts",
+      "en": "Sign in to Corporate Discounts"
+    },
+    "signInSubtitle": {
+      "ua": "Використовуйте корпоративний акаунт",
+      "en": "Use your corporate account"
+    },
     "continue": {
       "ua": "ПРОДОВЖИТИ",
       "en": "CONTINUE"
-    },
-    "login": {
-      "ua": "УВІЙТИ",
-      "en": "SIGN IN"
-    },
-    "or": {
-      "ua": "або",
-      "en": "or"
     },
     "welcomeBack": {
       "ua": "Ласкаво просимо, {{name}}",

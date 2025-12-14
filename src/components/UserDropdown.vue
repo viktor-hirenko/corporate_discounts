@@ -14,12 +14,12 @@ const dropdownRef = ref<HTMLDivElement | null>(null)
 
 const user = computed(() => authStore.user)
 const avatarUrl = computed(() => {
-  // Используем picture из авторизованного пользователя
-  if (user.value?.picture) {
-    return user.value.picture
-  }
-  // Если нет picture, возвращаем null (не показываем placeholder)
-  return null
+  return user.value?.picture || null
+})
+
+const userInitial = computed(() => {
+  const name = user.value?.name || user.value?.email || ''
+  return name.charAt(0).toUpperCase()
 })
 
 function toggleDropdown() {
@@ -67,6 +67,7 @@ onUnmounted(() => {
         referrerpolicy="no-referrer"
         crossorigin="anonymous"
       />
+      <span v-else class="user-dropdown__avatar-fallback">{{ userInitial }}</span>
     </button>
 
     <Transition name="dropdown-menu" :duration="300">
@@ -80,6 +81,7 @@ onUnmounted(() => {
             referrerpolicy="no-referrer"
             crossorigin="anonymous"
           />
+          <span v-else class="user-dropdown__menu-avatar-fallback">{{ userInitial }}</span>
           <div class="user-dropdown__user-details">
             <div class="user-dropdown__user-name">{{ user?.name || 'Користувач' }}</div>
             <div class="user-dropdown__user-email">{{ user?.email || '' }}</div>
@@ -125,6 +127,20 @@ onUnmounted(() => {
     object-fit: cover;
   }
 
+  &__avatar-fallback {
+    display: flex;
+    width: to-rem(32);
+    height: to-rem(32);
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-primary-500);
+    color: var(--color-secondary-100);
+    font-size: to-rem(14);
+
+    @include font-weight(extrabold);
+  }
+
   &__menu {
     position: absolute;
     top: calc(100% + to-rem(8));
@@ -149,6 +165,20 @@ onUnmounted(() => {
     height: to-rem(40);
     border-radius: 50%;
     object-fit: cover;
+  }
+
+  &__menu-avatar-fallback {
+    display: flex;
+    width: to-rem(40);
+    height: to-rem(40);
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-primary-500);
+    color: var(--color-secondary-100);
+    font-size: to-rem(18);
+
+    @include font-weight(extrabold);
   }
 
   &__user-details {

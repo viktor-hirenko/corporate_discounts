@@ -66,6 +66,8 @@ export interface PageDiscountDetails {
 }
 
 export interface AuthConfig {
+  signInTitle: LocalizedText
+  signInSubtitle: LocalizedText
   continue: LocalizedText
   login: LocalizedText
   or: LocalizedText

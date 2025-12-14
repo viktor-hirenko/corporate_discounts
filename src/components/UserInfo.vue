@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import UiInput from '@/components/UiInput.vue'
 import { useAppConfig } from '@/composables/useAppConfig'
 
 const { auth, tTemplate } = useAppConfig()
@@ -7,23 +6,14 @@ const { auth, tTemplate } = useAppConfig()
 interface Props {
   imageSrc: string | null
   fullName: string
+  email?: string
   imageAlt?: string
-  modelValue?: string
-  inputPlaceholder?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   imageAlt: 'User avatar',
-  inputPlaceholder: 'email@upstars.com',
+  email: '',
 })
-
-const emit = defineEmits<{
-  'update:modelValue': [value: string]
-}>()
-
-function handleUpdate(value: string) {
-  emit('update:modelValue', value)
-}
 </script>
 
 <template>
@@ -32,17 +22,10 @@ function handleUpdate(value: string) {
       <img :src="imageSrc" :alt="imageAlt" referrerpolicy="no-referrer" crossorigin="anonymous" />
     </div>
 
-    <p class="user-info__name">{{ tTemplate(auth.welcomeBack, { name: props.fullName }) }}</p>
-
-    <UiInput
-      class="user-info__input"
-      name="user-email"
-      type="email"
-      autocomplete="email"
-      :model-value="props.modelValue ?? ''"
-      :placeholder="props.inputPlaceholder"
-      @update:model-value="handleUpdate"
-    />
+    <div class="user-info__text">
+      <p class="user-info__name">{{ tTemplate(auth.welcomeBack, { name: fullName }) }}</p>
+      <p v-if="email" class="user-info__email">{{ email }}</p>
+    </div>
   </div>
 </template>
 
@@ -62,7 +45,6 @@ function handleUpdate(value: string) {
     border-radius: 50%;
     background: var(--color-neutral-400);
 
-    // Иконка пользователя как fallback
     &::before {
       position: absolute;
       top: 50%;
@@ -87,6 +69,12 @@ function handleUpdate(value: string) {
     }
   }
 
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: to-rem(16);
+  }
+
   &__name {
     color: var(--color-secondary-600);
     font-size: to-rem(24);
@@ -99,8 +87,12 @@ function handleUpdate(value: string) {
     }
   }
 
-  &__input {
-    width: 100%;
+  &__email {
+    color: var(--color-secondary-600);
+    font-size: to-rem(18);
+
+    @include line-height(relaxed);
+    @include font-weight(semibold);
   }
 }
 </style>
