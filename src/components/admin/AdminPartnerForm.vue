@@ -189,7 +189,7 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
   <div class="partner-form">
     <div class="partner-form__header">
       <h2>{{ isEditing ? 'Редагувати партнера' : 'Новий партнер' }}</h2>
-      <button class="partner-form__close" @click="emit('close')">
+      <button class="partner-form__close" title="Закрити форму" @click="emit('close')">
         <i class="fas fa-times"></i>
       </button>
     </div>
@@ -399,11 +399,21 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
             <div class="dynamic-list">
               <div v-for="(_, index) in formData.terms.ua" :key="index" class="dynamic-list__item">
                 <input v-model="formData.terms.ua[index]" type="text" placeholder="Умова" />
-                <button type="button" class="btn-remove" @click="removeTerm('ua', index)">
+                <button
+                  type="button"
+                  class="btn-remove"
+                  title="Видалити умову"
+                  @click="removeTerm('ua', index)"
+                >
                   <i class="fas fa-times"></i>
                 </button>
               </div>
-              <button type="button" class="btn-add" @click="addTerm('ua')">
+              <button
+                type="button"
+                class="btn-add"
+                title="Додати нову умову"
+                @click="addTerm('ua')"
+              >
                 <i class="fas fa-plus"></i> Додати
               </button>
             </div>
@@ -413,11 +423,16 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
             <div class="dynamic-list">
               <div v-for="(_, index) in formData.terms.en" :key="index" class="dynamic-list__item">
                 <input v-model="formData.terms.en[index]" type="text" placeholder="Term" />
-                <button type="button" class="btn-remove" @click="removeTerm('en', index)">
+                <button
+                  type="button"
+                  class="btn-remove"
+                  title="Remove term"
+                  @click="removeTerm('en', index)"
+                >
                   <i class="fas fa-times"></i>
                 </button>
               </div>
-              <button type="button" class="btn-add" @click="addTerm('en')">
+              <button type="button" class="btn-add" title="Add new term" @click="addTerm('en')">
                 <i class="fas fa-plus"></i> Add
               </button>
             </div>
@@ -427,8 +442,20 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
 
       <!-- Actions -->
       <div class="partner-form__footer">
-        <button type="button" class="btn-secondary" @click="emit('close')">Скасувати</button>
-        <button type="submit" class="btn-primary" :disabled="!isValid">
+        <button
+          type="button"
+          class="btn-secondary"
+          title="Закрити без збереження"
+          @click="emit('close')"
+        >
+          Скасувати
+        </button>
+        <button
+          type="submit"
+          class="btn-primary"
+          :title="isEditing ? 'Зберегти зміни партнера' : 'Створити нового партнера'"
+          :disabled="!isValid"
+        >
           <i class="fas fa-save"></i>
           {{ isEditing ? 'Зберегти зміни' : 'Створити партнера' }}
         </button>

@@ -44,9 +44,20 @@ const stats = computed(() => {
 })
 
 const quickActions = [
-  { id: 'add-partner', label: 'Додати партнера', icon: 'fas fa-plus', to: '/admin/partners/new' },
-  { id: 'open-site', label: 'Відкрити сайт', icon: 'fas fa-external-link-alt', href: '/discounts' },
-  { id: 'export', label: 'Експорт конфігу', icon: 'fas fa-download', action: 'export' },
+  {
+    id: 'add-partner',
+    label: 'Додати партнера',
+    icon: 'fas fa-plus',
+    to: '/admin/partners',
+    title: 'Перейти до створення нового партнера',
+  },
+  {
+    id: 'open-site',
+    label: 'Відкрити сайт',
+    icon: 'fas fa-external-link-alt',
+    href: '/discounts',
+    title: 'Відкрити публічний сайт у новій вкладці',
+  },
 ]
 </script>
 
@@ -81,6 +92,7 @@ const quickActions = [
           v-for="action in quickActions.filter((a) => a.to)"
           :key="action.id"
           :to="action.to!"
+          :title="action.title"
           class="action-card"
         >
           <i :class="action.icon"></i>
@@ -90,6 +102,7 @@ const quickActions = [
           v-for="action in quickActions.filter((a) => a.href)"
           :key="action.id"
           :href="action.href"
+          :title="action.title"
           target="_blank"
           rel="noopener noreferrer"
           class="action-card"

@@ -60,7 +60,11 @@ const handleLogout = () => {
 <template>
   <header class="admin-header">
     <div class="admin-header__left">
-      <button class="admin-header__toggle" @click="emit('toggle-sidebar')">
+      <button
+        class="admin-header__toggle"
+        title="Згорнути/розгорнути бічну панель"
+        @click="emit('toggle-sidebar')"
+      >
         <i class="fas fa-bars"></i>
       </button>
       <h1 class="admin-header__title">{{ pageTitle }}</h1>

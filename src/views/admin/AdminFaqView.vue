@@ -109,11 +109,15 @@ watch(
         >
       </div>
       <div class="admin-faq__actions">
-        <button class="btn-secondary" @click="handleExport">
+        <button
+          class="btn-secondary"
+          title="Завантажити всі питання у форматі JSON"
+          @click="handleExport"
+        >
           <i class="fas fa-download"></i>
           Експорт JSON
         </button>
-        <button class="btn-primary" @click="store.openCreateForm()">
+        <button class="btn-primary" title="Створити нове питання" @click="store.openCreateForm()">
           <i class="fas fa-plus"></i>
           Додати питання
         </button>
@@ -194,7 +198,7 @@ watch(
         <div class="modal" @click.stop>
           <div class="modal__header">
             <h3>Підтвердження видалення</h3>
-            <button class="modal__close" @click="handleDeleteCancel">
+            <button class="modal__close" title="Закрити вікно" @click="handleDeleteCancel">
               <i class="fas fa-times"></i>
             </button>
           </div>
@@ -202,8 +206,16 @@ watch(
             <p>Ви впевнені, що хочете видалити це питання?</p>
           </div>
           <div class="modal__footer">
-            <button class="btn-secondary" @click="handleDeleteCancel">Скасувати</button>
-            <button class="btn-danger" @click="handleDeleteConfirm">Видалити</button>
+            <button class="btn-secondary" title="Скасувати видалення" @click="handleDeleteCancel">
+              Скасувати
+            </button>
+            <button
+              class="btn-danger"
+              title="Підтвердити видалення питання"
+              @click="handleDeleteConfirm"
+            >
+              Видалити
+            </button>
           </div>
         </div>
       </div>
@@ -215,7 +227,7 @@ watch(
         <div class="modal modal--large" @click.stop>
           <div class="modal__header">
             <h3>{{ store.editingItem ? 'Редагувати питання' : 'Нове питання' }}</h3>
-            <button class="modal__close" @click="store.closeForm()">
+            <button class="modal__close" title="Закрити форму" @click="store.closeForm()">
               <i class="fas fa-times"></i>
             </button>
           </div>
@@ -249,10 +261,19 @@ watch(
               </div>
             </div>
             <div class="modal__footer">
-              <button type="button" class="btn-secondary" @click="store.closeForm()">
+              <button
+                type="button"
+                class="btn-secondary"
+                title="Закрити без збереження"
+                @click="store.closeForm()"
+              >
                 Скасувати
               </button>
-              <button type="submit" class="btn-primary">
+              <button
+                type="submit"
+                class="btn-primary"
+                :title="store.editingItem ? 'Зберегти зміни питання' : 'Створити нове питання'"
+              >
                 <i class="fas fa-save"></i>
                 {{ store.editingItem ? 'Зберегти' : 'Створити' }}
               </button>

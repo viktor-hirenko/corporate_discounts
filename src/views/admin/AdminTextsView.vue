@@ -77,7 +77,11 @@ watch(
         >
       </div>
       <div class="admin-texts__actions">
-        <button class="btn-secondary" @click="handleExport">
+        <button
+          class="btn-secondary"
+          title="Завантажити всі тексти у форматі JSON"
+          @click="handleExport"
+        >
           <i class="fas fa-download"></i>
           Експорт JSON
         </button>
@@ -139,7 +143,7 @@ watch(
         <div class="modal modal--medium" @click.stop>
           <div class="modal__header">
             <h3>Редагувати текст</h3>
-            <button class="modal__close" @click="store.closeForm()">
+            <button class="modal__close" title="Закрити форму" @click="store.closeForm()">
               <i class="fas fa-times"></i>
             </button>
           </div>
@@ -157,10 +161,15 @@ watch(
               <textarea v-model="formData.value.en" rows="3" required></textarea>
             </div>
             <div class="modal__footer">
-              <button type="button" class="btn-secondary" @click="store.closeForm()">
+              <button
+                type="button"
+                class="btn-secondary"
+                title="Закрити без збереження"
+                @click="store.closeForm()"
+              >
                 Скасувати
               </button>
-              <button type="submit" class="btn-primary">
+              <button type="submit" class="btn-primary" title="Зберегти зміни тексту">
                 <i class="fas fa-save"></i>
                 Зберегти
               </button>

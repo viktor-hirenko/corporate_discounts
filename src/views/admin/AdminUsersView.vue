@@ -123,15 +123,28 @@ const getSyncStatusText = () => {
           ></i>
           {{ getSyncStatusText() }}
         </div>
-        <button class="btn-secondary" :disabled="store.isLoading" @click="store.syncWithBackend()">
+        <button
+          class="btn-secondary"
+          title="Синхронізувати список з сервером"
+          :disabled="store.isLoading"
+          @click="store.syncWithBackend()"
+        >
           <i class="fas fa-sync"></i>
           Оновити
         </button>
-        <button class="btn-secondary" @click="handleExport">
+        <button
+          class="btn-secondary"
+          title="Завантажити список користувачів у форматі JSON"
+          @click="handleExport"
+        >
           <i class="fas fa-download"></i>
           Експорт
         </button>
-        <button class="btn-primary" @click="store.openCreateForm()">
+        <button
+          class="btn-primary"
+          title="Додати нового користувача до whitelist"
+          @click="store.openCreateForm()"
+        >
           <i class="fas fa-plus"></i>
           Додати користувача
         </button>
@@ -216,6 +229,7 @@ const getSyncStatusText = () => {
     <div class="admin-users__footer">
       <button
         class="btn-primary btn-large"
+        title="Зберегти список користувачів на сервер"
         :disabled="store.isLoading"
         @click="store.saveToBackend()"
       >
@@ -230,7 +244,7 @@ const getSyncStatusText = () => {
         <div class="modal" @click.stop>
           <div class="modal__header">
             <h3>Підтвердження видалення</h3>
-            <button class="modal__close" @click="handleDeleteCancel">
+            <button class="modal__close" title="Закрити вікно" @click="handleDeleteCancel">
               <i class="fas fa-times"></i>
             </button>
           </div>
@@ -239,8 +253,16 @@ const getSyncStatusText = () => {
             <p>Він більше не зможе авторизуватися в адмін-панелі.</p>
           </div>
           <div class="modal__footer">
-            <button class="btn-secondary" @click="handleDeleteCancel">Скасувати</button>
-            <button class="btn-danger" @click="handleDeleteConfirm">Видалити</button>
+            <button class="btn-secondary" title="Скасувати видалення" @click="handleDeleteCancel">
+              Скасувати
+            </button>
+            <button
+              class="btn-danger"
+              title="Підтвердити видалення користувача"
+              @click="handleDeleteConfirm"
+            >
+              Видалити
+            </button>
           </div>
         </div>
       </div>
@@ -252,7 +274,7 @@ const getSyncStatusText = () => {
         <div class="modal modal--medium" @click.stop>
           <div class="modal__header">
             <h3>{{ store.editingUser ? 'Редагувати користувача' : 'Новий користувач' }}</h3>
-            <button class="modal__close" @click="store.closeForm()">
+            <button class="modal__close" title="Закрити форму" @click="store.closeForm()">
               <i class="fas fa-times"></i>
             </button>
           </div>
@@ -282,10 +304,21 @@ const getSyncStatusText = () => {
               </p>
             </div>
             <div class="modal__footer">
-              <button type="button" class="btn-secondary" @click="store.closeForm()">
+              <button
+                type="button"
+                class="btn-secondary"
+                title="Закрити без збереження"
+                @click="store.closeForm()"
+              >
                 Скасувати
               </button>
-              <button type="submit" class="btn-primary">
+              <button
+                type="submit"
+                class="btn-primary"
+                :title="
+                  store.editingUser ? 'Зберегти зміни користувача' : 'Додати нового користувача'
+                "
+              >
                 <i class="fas fa-save"></i>
                 {{ store.editingUser ? 'Зберегти' : 'Додати' }}
               </button>

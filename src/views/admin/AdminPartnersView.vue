@@ -78,11 +78,19 @@ const openPartnerPage = (slug: string) => {
         >
       </div>
       <div class="admin-partners__actions">
-        <button class="btn-secondary" @click="handleExport">
+        <button
+          class="btn-secondary"
+          title="Завантажити всіх партнерів у форматі JSON"
+          @click="handleExport"
+        >
           <i class="fas fa-download"></i>
           Експорт JSON
         </button>
-        <button class="btn-primary" @click="store.openCreateForm()">
+        <button
+          class="btn-primary"
+          title="Створити нового партнера"
+          @click="store.openCreateForm()"
+        >
           <i class="fas fa-plus"></i>
           Додати партнера
         </button>
@@ -200,7 +208,7 @@ const openPartnerPage = (slug: string) => {
         <div class="modal" @click.stop>
           <div class="modal__header">
             <h3>Підтвердження видалення</h3>
-            <button class="modal__close" @click="handleDeleteCancel">
+            <button class="modal__close" title="Закрити вікно" @click="handleDeleteCancel">
               <i class="fas fa-times"></i>
             </button>
           </div>
@@ -211,8 +219,16 @@ const openPartnerPage = (slug: string) => {
             </p>
           </div>
           <div class="modal__footer">
-            <button class="btn-secondary" @click="handleDeleteCancel">Скасувати</button>
-            <button class="btn-danger" @click="handleDeleteConfirm">Видалити</button>
+            <button class="btn-secondary" title="Скасувати видалення" @click="handleDeleteCancel">
+              Скасувати
+            </button>
+            <button
+              class="btn-danger"
+              title="Підтвердити видалення партнера"
+              @click="handleDeleteConfirm"
+            >
+              Видалити
+            </button>
           </div>
         </div>
       </div>

@@ -63,7 +63,11 @@ const getCategoryLabel = (category: string): string => {
         >
       </div>
       <div class="admin-images__actions">
-        <button class="btn-secondary" @click="handleExport">
+        <button
+          class="btn-secondary"
+          title="Завантажити конфігурацію зображень у форматі JSON"
+          @click="handleExport"
+        >
           <i class="fas fa-download"></i>
           Експорт JSON
         </button>
@@ -95,10 +99,14 @@ const getCategoryLabel = (category: string): string => {
           <div v-if="editingId === image.id" class="image-card__edit">
             <input v-model="editingPath" type="text" placeholder="Шлях до зображення" />
             <div class="image-card__edit-actions">
-              <button class="btn-sm btn-primary" @click="saveEdit">
+              <button class="btn-sm btn-primary" title="Зберегти новий шлях" @click="saveEdit">
                 <i class="fas fa-check"></i>
               </button>
-              <button class="btn-sm btn-secondary" @click="cancelEdit">
+              <button
+                class="btn-sm btn-secondary"
+                title="Скасувати редагування"
+                @click="cancelEdit"
+              >
                 <i class="fas fa-times"></i>
               </button>
             </div>

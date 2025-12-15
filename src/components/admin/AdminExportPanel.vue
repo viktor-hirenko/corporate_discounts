@@ -106,17 +106,32 @@ const getStatusText = () => {
 
     <!-- Actions -->
     <div class="export-panel__actions">
-      <button class="btn-secondary" :disabled="exportStore.isExporting" @click="handleExportFile">
+      <button
+        class="btn-secondary"
+        title="Завантажити повну конфігурацію як JSON файл"
+        :disabled="exportStore.isExporting"
+        @click="handleExportFile"
+      >
         <i class="fas fa-download"></i>
         Експорт в файл
       </button>
 
-      <button class="btn-secondary" :disabled="exportStore.isExporting" @click="handleLoadFromR2">
+      <button
+        class="btn-secondary"
+        title="Завантажити актуальні дані з Cloudflare R2"
+        :disabled="exportStore.isExporting"
+        @click="handleLoadFromR2"
+      >
         <i class="fas fa-cloud-download-alt"></i>
         Завантажити з R2
       </button>
 
-      <button class="btn-primary" :disabled="exportStore.isExporting" @click="handleSaveToR2">
+      <button
+        class="btn-primary"
+        title="Зберегти всі зміни на Cloudflare R2 (потім потрібен деплой)"
+        :disabled="exportStore.isExporting"
+        @click="handleSaveToR2"
+      >
         <i
           :class="exportStore.isExporting ? 'fas fa-spinner fa-spin' : 'fas fa-cloud-upload-alt'"
         ></i>

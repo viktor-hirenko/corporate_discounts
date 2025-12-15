@@ -31,11 +31,20 @@ const handleSave = () => {
     <div class="admin-settings__header">
       <h2>Налаштування</h2>
       <div class="admin-settings__actions">
-        <button class="btn-secondary" @click="handleExport">
+        <button
+          class="btn-secondary"
+          title="Завантажити налаштування у форматі JSON"
+          @click="handleExport"
+        >
           <i class="fas fa-download"></i>
           Експорт JSON
         </button>
-        <button class="btn-primary" :disabled="!store.isDirty" @click="handleSave">
+        <button
+          class="btn-primary"
+          title="Зберегти зміни налаштувань"
+          :disabled="!store.isDirty"
+          @click="handleSave"
+        >
           <i class="fas fa-save"></i>
           Зберегти
         </button>
