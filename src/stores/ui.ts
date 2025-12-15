@@ -22,9 +22,53 @@ function readLocaleFromStorage(): Locale | null {
   return null
 }
 
+function detectBrowserLocale(): Locale {
+  if (typeof navigator === 'undefined') {
+    return DEFAULT_LOCALE
+  }
+
+  try {
+    // Получаем язык браузера (например, 'uk-UA', 'en-US', 'pl-PL')
+    const language = navigator.language
+    if (!language) {
+      return DEFAULT_LOCALE
+    }
+
+    const browserLang = language.split('-')[0]?.toLowerCase() ?? ''
+
+    // Если украинский — возвращаем 'ua'
+    if (browserLang === 'uk') {
+      return 'ua'
+    }
+
+    // Если английский — возвращаем 'en'
+    if (browserLang === 'en') {
+      return 'en'
+    }
+
+    // Для всех остальных языков — украинский по умолчанию
+    return DEFAULT_LOCALE
+  } catch (error) {
+    console.warn('[ui-store] Failed to detect browser locale.', error)
+    return DEFAULT_LOCALE
+  }
+}
+
 export const useUiStore = defineStore('ui', {
   state: () => {
-    const initialLocale = (readLocaleFromStorage() ?? DEFAULT_LOCALE) as Locale
+    // Приоритет: сохраненная локаль > язык браузера > дефолт
+    const savedLocale = readLocaleFromStorage()
+    const initialLocale = (savedLocale ?? detectBrowserLocale()) as Locale
+
+    // Если локаль была автоопределена — сохраняем её для следующих визитов
+    if (!savedLocale && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(LOCALE_STORAGE_KEY, initialLocale)
+      } catch (error) {
+        console.warn('[ui-store] Failed to persist auto-detected locale.', error)
+      }
+    }
+
     // Устанавливаем начальный lang атрибут в HTML
     if (typeof document !== 'undefined') {
       const htmlLang = initialLocale === 'en' ? 'en' : 'uk'

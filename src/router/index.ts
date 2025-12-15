@@ -59,10 +59,63 @@ const router = createRouter({
         },
       ],
     },
+    // Legacy admin route - redirect to new admin
     {
-      path: '/admin/partners',
-      name: 'partners-admin',
+      path: '/admin/partners-legacy',
+      name: 'partners-admin-legacy',
       component: () => import('../views/PartnersAdminView.vue'),
+    },
+    // New Admin Panel
+    {
+      path: '/admin',
+      component: () => import('../layouts/AdminLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'admin-dashboard',
+          component: () => import('../views/admin/AdminDashboardView.vue'),
+        },
+        {
+          path: 'partners',
+          name: 'admin-partners',
+          component: () => import('../views/admin/AdminPartnersView.vue'),
+        },
+        {
+          path: 'categories',
+          name: 'admin-categories',
+          component: () => import('../views/admin/AdminCategoriesView.vue'),
+        },
+        {
+          path: 'locations',
+          name: 'admin-locations',
+          component: () => import('../views/admin/AdminLocationsView.vue'),
+        },
+        {
+          path: 'faq',
+          name: 'admin-faq',
+          component: () => import('../views/admin/AdminFaqView.vue'),
+        },
+        {
+          path: 'texts',
+          name: 'admin-texts',
+          component: () => import('../views/admin/AdminTextsView.vue'),
+        },
+        {
+          path: 'images',
+          name: 'admin-images',
+          component: () => import('../views/admin/AdminImagesView.vue'),
+        },
+        {
+          path: 'settings',
+          name: 'admin-settings',
+          component: () => import('../views/admin/AdminSettingsView.vue'),
+        },
+        {
+          path: 'users',
+          name: 'admin-users',
+          component: () => import('../views/admin/AdminUsersView.vue'),
+        },
+      ],
     },
     {
       path: '/:pathMatch(.*)*',
@@ -76,8 +129,9 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
   // Публичные маршруты (не требуют авторизации)
-  const publicRoutes = ['/login', '/admin/partners']
-  const isPublicRoute = publicRoutes.includes(to.path)
+  // Admin панель публічна (авторизація буде через Google у Фазі 5)
+  const isPublicRoute =
+    to.path === '/login' || to.path === '/admin/partners-legacy' || to.path.startsWith('/admin')
 
   // Если пользователь не авторизован и пытается попасть на защищенный маршрут
   if (!authStore.isLoggedIn && !isPublicRoute) {
