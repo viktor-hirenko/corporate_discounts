@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAppConfig } from '@/composables/useAppConfig'
+import AdminExportPanel from '@/components/admin/AdminExportPanel.vue'
 
 const { config } = useAppConfig()
 
@@ -98,6 +99,9 @@ const quickActions = [
         </a>
       </div>
     </div>
+
+    <!-- Export Panel -->
+    <AdminExportPanel />
   </div>
 </template>
 
