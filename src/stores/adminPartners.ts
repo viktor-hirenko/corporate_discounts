@@ -14,6 +14,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
   const selectedLocation = ref('all')
   const editingPartner = ref<PartnerConfig | null>(null)
   const isFormOpen = ref(false)
+  const isSaving = ref(false)
 
   // Getters
   const partnersList = computed(() => {
@@ -76,16 +77,32 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     isFormOpen.value = false
   }
 
-  function savePartner(partner: PartnerConfig) {
+  // Автозбереження в файл
+  async function autoSave() {
+    isSaving.value = true
+    try {
+      const { useAdminExportStore } = await import('./adminExport')
+      const exportStore = useAdminExportStore()
+      await exportStore.saveToLocalFile()
+    } catch (error) {
+      console.error('Auto-save failed:', error)
+    } finally {
+      isSaving.value = false
+    }
+  }
+
+  async function savePartner(partner: PartnerConfig) {
     partners.value[partner.slug] = partner
     closeForm()
+    await autoSave()
   }
 
-  function deletePartner(slug: string) {
+  async function deletePartner(slug: string) {
     delete partners.value[slug]
+    await autoSave()
   }
 
-  function duplicatePartner(partner: PartnerConfig) {
+  async function duplicatePartner(partner: PartnerConfig) {
     const newSlug = `${partner.slug}-copy-${Date.now()}`
     const newPartner: PartnerConfig = {
       ...partner,
@@ -97,6 +114,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
       },
     }
     partners.value[newSlug] = newPartner
+    await autoSave()
   }
 
   function exportToJSON() {
@@ -123,6 +141,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     selectedLocation,
     editingPartner,
     isFormOpen,
+    isSaving,
     // Getters
     partnersList,
     filteredPartners,
@@ -140,5 +159,6 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     setSearchQuery,
     setCategory,
     setLocation,
+    autoSave,
   }
 })

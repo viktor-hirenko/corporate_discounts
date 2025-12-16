@@ -361,6 +361,10 @@ $accent-color: rgb(115 103 240);
       color: #6b7280;
     }
 
+    td {
+      color: #1f2937;
+    }
+
     tr:last-child td {
       border-bottom: none;
     }

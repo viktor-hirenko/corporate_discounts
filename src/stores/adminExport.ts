@@ -9,20 +9,27 @@ import { useAdminImagesStore } from './adminImages'
 import { useAdminSettingsStore } from './adminSettings'
 import { useAdminUsersStore } from './adminUsers'
 import type { AppConfig } from '@/types/app-config'
+import appConfigData from '@/data/app-config.json'
+
+// Оригінальний конфіг як база
+const originalConfig = appConfigData as AppConfig
 
 export const useAdminExportStore = defineStore('adminExport', () => {
   // State
   const isExporting = ref(false)
+  const isSaving = ref(false)
   const exportStatus = ref<'idle' | 'exporting' | 'success' | 'error'>('idle')
   const exportError = ref<string | null>(null)
+  const lastSaveTime = ref<Date | null>(null)
 
-  // Експорт повного app-config.json
-  function buildFullConfig(): Partial<AppConfig> {
+  // Експорт повного app-config.json (мерджимо з оригіналом)
+  function buildFullConfig(): AppConfig {
     const partnersStore = useAdminPartnersStore()
     const categoriesStore = useAdminCategoriesStore()
     const locationsStore = useAdminLocationsStore()
     const faqStore = useAdminFaqStore()
     const settingsStore = useAdminSettingsStore()
+    const imagesStore = useAdminImagesStore()
 
     // Збираємо partners
     const partners: Record<string, unknown> = {}
@@ -51,20 +58,101 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     // Збираємо FAQ
     const faqItems = faqStore.faqItemsList.map(({ order, ...item }) => item)
 
+    // Збираємо images
+    const images = {
+      logo: {
+        dark:
+          imagesStore.images.find((i) => i.id === 'logo-dark')?.path ||
+          originalConfig.images?.logo?.dark ||
+          '',
+        light:
+          imagesStore.images.find((i) => i.id === 'logo-light')?.path ||
+          originalConfig.images?.logo?.light ||
+          '',
+      },
+      tagline:
+        imagesStore.images.find((i) => i.id === 'tagline')?.path ||
+        originalConfig.images?.tagline ||
+        '',
+      loginBackground:
+        imagesStore.images.find((i) => i.id === 'login-bg')?.path ||
+        originalConfig.images?.loginBackground ||
+        '',
+      bot: imagesStore.images.find((i) => i.id === 'bot')?.path || originalConfig.images?.bot || '',
+    }
+
+    // Повертаємо повний конфіг, мерджачи з оригіналом
     return {
+      ...originalConfig,
       locales: settingsStore.settings.locales,
       defaultLocale: settingsStore.settings.defaultLocale,
+      images,
       partners,
       filters: {
+        ...originalConfig.filters,
         categories,
         locations,
       },
       pages: {
+        ...originalConfig.pages,
         faq: {
+          ...originalConfig.pages?.faq,
           items: faqItems,
         },
       },
-    } as Partial<AppConfig>
+    } as AppConfig
+  }
+
+  // Зберегти в локальний файл (через Vite dev server API)
+  async function saveToLocalFile(): Promise<boolean> {
+    isSaving.value = true
+    exportError.value = null
+
+    try {
+      const config = buildFullConfig()
+
+      const response = await fetch('/api/save-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to save config')
+      }
+
+      lastSaveTime.value = new Date()
+      exportStatus.value = 'success'
+
+      setTimeout(() => {
+        exportStatus.value = 'idle'
+      }, 3000)
+
+      return true
+    } catch (error) {
+      console.error('Failed to save to local file:', error)
+      exportError.value = error instanceof Error ? error.message : 'Failed to save config'
+      exportStatus.value = 'error'
+      return false
+    } finally {
+      isSaving.value = false
+    }
+  }
+
+  // Завантажити актуальний конфіг з файлу
+  async function loadFromLocalFile(): Promise<AppConfig | null> {
+    try {
+      const response = await fetch('/api/load-config')
+      if (!response.ok) {
+        throw new Error('Failed to load config')
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('Failed to load from local file:', error)
+      return null
+    }
   }
 
   // Експорт в JSON файл
@@ -217,11 +305,15 @@ export const useAdminExportStore = defineStore('adminExport', () => {
   return {
     // State
     isExporting,
+    isSaving,
     exportStatus,
     exportError,
+    lastSaveTime,
     // Actions
     buildFullConfig,
     exportToFile,
+    saveToLocalFile,
+    loadFromLocalFile,
     saveToR2,
     loadFromR2,
     validateConfig,

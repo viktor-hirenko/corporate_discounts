@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
 import type { PartnerConfig } from '@/types/app-config'
-import { useAppConfig } from '@/composables/useAppConfig'
+import { useAdminCategoriesStore } from '@/stores/adminCategories'
+import { useAdminLocationsStore } from '@/stores/adminLocations'
 
 interface Props {
   partner?: PartnerConfig | null
@@ -13,7 +14,8 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { config } = useAppConfig()
+const categoriesStore = useAdminCategoriesStore()
+const locationsStore = useAdminLocationsStore()
 
 const isEditing = computed(() => !!props.partner)
 
@@ -50,31 +52,25 @@ if (props.partner) {
   Object.assign(formData, JSON.parse(JSON.stringify(props.partner)))
 }
 
-// Categories from config
+// Categories from admin store (reactive - updates when new categories added)
 const categoryOptions = computed(() => {
-  const categories = config.value.filters?.categories || {}
-  return Object.entries(categories)
-    .filter(([key]) => key !== 'all' && key !== 'online')
-    .map(([_, cat]: [string, any]) => ({
+  return categoriesStore.categoriesList
+    .filter((cat) => cat.id !== 'all' && cat.id !== 'online')
+    .map((cat) => ({
       ua: cat.label.ua,
       en: cat.label.en,
     }))
     .sort((a, b) => a.ua.localeCompare(b.ua, 'uk-UA'))
 })
 
-// Locations from existing partners
+// Locations from admin store (reactive - updates when new locations added)
 const locationOptions = computed(() => {
-  const partners = config.value.partners || {}
-  const locationsMap = new Map<string, string>()
-
-  Object.values(partners).forEach((partner: any) => {
-    if (partner.location?.ua && partner.location?.en) {
-      locationsMap.set(partner.location.ua, partner.location.en)
-    }
-  })
-
-  return Array.from(locationsMap.entries())
-    .map(([ua, en]) => ({ ua, en }))
+  return locationsStore.locationsList
+    .filter((loc) => loc.id !== 'all' && loc.id !== 'online')
+    .map((loc) => ({
+      ua: loc.label.ua,
+      en: loc.label.en,
+    }))
     .sort((a, b) => a.ua.localeCompare(b.ua, 'uk-UA'))
 })
 

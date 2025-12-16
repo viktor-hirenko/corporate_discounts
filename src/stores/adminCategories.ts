@@ -22,6 +22,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
   const searchQuery = ref('')
   const editingCategory = ref<CategoryItem | null>(null)
   const isFormOpen = ref(false)
+  const isSaving = ref(false)
 
   // Ініціалізація з конфігу
   const initFromConfig = () => {
@@ -83,17 +84,33 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     isFormOpen.value = false
   }
 
-  function saveCategory(category: CategoryItem) {
+  // Автозбереження в файл
+  async function autoSave() {
+    isSaving.value = true
+    try {
+      const { useAdminExportStore } = await import('./adminExport')
+      const exportStore = useAdminExportStore()
+      await exportStore.saveToLocalFile()
+    } catch (error) {
+      console.error('Auto-save failed:', error)
+    } finally {
+      isSaving.value = false
+    }
+  }
+
+  async function saveCategory(category: CategoryItem) {
     categories.value[category.id] = {
       ...category,
       isSystem: systemCategories.includes(category.id),
     }
     closeForm()
+    await autoSave()
   }
 
-  function deleteCategory(id: string) {
+  async function deleteCategory(id: string) {
     if (systemCategories.includes(id)) return
     delete categories.value[id]
+    await autoSave()
   }
 
   function setSearchQuery(query: string) {
@@ -117,6 +134,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     searchQuery,
     editingCategory,
     isFormOpen,
+    isSaving,
     // Getters
     categoriesList,
     filteredCategories,
@@ -129,5 +147,6 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     deleteCategory,
     setSearchQuery,
     exportToJSON,
+    autoSave,
   }
 })

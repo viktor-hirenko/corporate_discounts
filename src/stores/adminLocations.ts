@@ -22,6 +22,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
   const searchQuery = ref('')
   const editingLocation = ref<LocationItem | null>(null)
   const isFormOpen = ref(false)
+  const isSaving = ref(false)
 
   // Ініціалізація з конфігу
   const initFromConfig = () => {
@@ -83,17 +84,33 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     isFormOpen.value = false
   }
 
-  function saveLocation(location: LocationItem) {
+  // Автозбереження в файл
+  async function autoSave() {
+    isSaving.value = true
+    try {
+      const { useAdminExportStore } = await import('./adminExport')
+      const exportStore = useAdminExportStore()
+      await exportStore.saveToLocalFile()
+    } catch (error) {
+      console.error('Auto-save failed:', error)
+    } finally {
+      isSaving.value = false
+    }
+  }
+
+  async function saveLocation(location: LocationItem) {
     locations.value[location.id] = {
       ...location,
       isSystem: systemLocations.includes(location.id),
     }
     closeForm()
+    await autoSave()
   }
 
-  function deleteLocation(id: string) {
+  async function deleteLocation(id: string) {
     if (systemLocations.includes(id)) return
     delete locations.value[id]
+    await autoSave()
   }
 
   function setSearchQuery(query: string) {
@@ -117,6 +134,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     searchQuery,
     editingLocation,
     isFormOpen,
+    isSaving,
     // Getters
     locationsList,
     filteredLocations,
@@ -129,5 +147,6 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     deleteLocation,
     setSearchQuery,
     exportToJSON,
+    autoSave,
   }
 })

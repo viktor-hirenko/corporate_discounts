@@ -17,6 +17,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
   const selectedCategory = ref('all')
   const editingItem = ref<FaqItemAdmin | null>(null)
   const isFormOpen = ref(false)
+  const isSaving = ref(false)
 
   // Категорії FAQ
   const faqCategories = [
@@ -84,7 +85,21 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     isFormOpen.value = false
   }
 
-  function saveItem(item: FaqItemAdmin) {
+  // Автозбереження в файл
+  async function autoSave() {
+    isSaving.value = true
+    try {
+      const { useAdminExportStore } = await import('./adminExport')
+      const exportStore = useAdminExportStore()
+      await exportStore.saveToLocalFile()
+    } catch (error) {
+      console.error('Auto-save failed:', error)
+    } finally {
+      isSaving.value = false
+    }
+  }
+
+  async function saveItem(item: FaqItemAdmin) {
     const existingIndex = faqItems.value.findIndex((f) => f.id === item.id)
     if (existingIndex >= 0) {
       faqItems.value[existingIndex] = item
@@ -93,9 +108,10 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
       faqItems.value.push(item)
     }
     closeForm()
+    await autoSave()
   }
 
-  function deleteItem(id: string) {
+  async function deleteItem(id: string) {
     const index = faqItems.value.findIndex((f) => f.id === id)
     if (index >= 0) {
       faqItems.value.splice(index, 1)
@@ -104,9 +120,10 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
         item.order = idx
       })
     }
+    await autoSave()
   }
 
-  function moveItem(id: string, direction: 'up' | 'down') {
+  async function moveItem(id: string, direction: 'up' | 'down') {
     const index = faqItems.value.findIndex((f) => f.id === id)
     if (index < 0) return
 
@@ -121,6 +138,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     faqItems.value.forEach((item, idx) => {
       item.order = idx
     })
+    await autoSave()
   }
 
   function setSearchQuery(query: string) {
@@ -148,6 +166,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     selectedCategory,
     editingItem,
     isFormOpen,
+    isSaving,
     faqCategories,
     // Getters
     faqItemsList,
@@ -164,5 +183,6 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     setCategory,
     getCategoryLabel,
     exportToJSON,
+    autoSave,
   }
 })
