@@ -75,4 +75,10 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    watch: {
+      // Ignore app-config.json to prevent HMR reload when admin saves changes
+      ignored: ['**/src/data/app-config.json'],
+    },
+  },
 })
