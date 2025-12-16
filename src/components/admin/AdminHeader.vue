@@ -98,10 +98,18 @@ $accent-color: rgb(115 103 240);
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
 
+  @include mq(null, lg) {
+    padding: to-rem(12) to-rem(16);
+  }
+
   &__left {
     display: flex;
     align-items: center;
     gap: to-rem(16);
+
+    @include mq(null, lg) {
+      gap: to-rem(12);
+    }
   }
 
   &__toggle {
@@ -118,6 +126,11 @@ $accent-color: rgb(115 103 240);
     cursor: pointer;
     transition: all 0.2s ease;
 
+    @include mq(null, lg) {
+      width: to-rem(36);
+      height: to-rem(36);
+    }
+
     &:hover {
       background: $accent-color;
       color: #fff;
@@ -129,18 +142,34 @@ $accent-color: rgb(115 103 240);
     font-weight: 600;
     color: #1f2937;
     margin: 0;
+
+    @include mq(null, lg) {
+      font-size: to-rem(18);
+    }
+
+    @include mq(null, md) {
+      font-size: to-rem(16);
+    }
   }
 
   &__right {
     display: flex;
     align-items: center;
     gap: to-rem(16);
+
+    @include mq(null, lg) {
+      gap: to-rem(8);
+    }
   }
 
   &__user {
     display: flex;
     align-items: center;
     gap: to-rem(12);
+
+    @include mq(null, lg) {
+      gap: to-rem(8);
+    }
   }
 
   &__avatar {
@@ -152,6 +181,12 @@ $accent-color: rgb(115 103 240);
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+
+    @include mq(null, lg) {
+      width: to-rem(36);
+      height: to-rem(36);
+    }
 
     img {
       width: 100%;
@@ -163,6 +198,10 @@ $accent-color: rgb(115 103 240);
       color: #fff;
       font-weight: 600;
       font-size: to-rem(16);
+
+      @include mq(null, lg) {
+        font-size: to-rem(14);
+      }
     }
   }
 
@@ -170,6 +209,10 @@ $accent-color: rgb(115 103 240);
     font-size: to-rem(14);
     font-weight: 500;
     color: #4b5563;
+
+    @include mq(null, lg) {
+      display: none;
+    }
   }
 
   &__logout {
@@ -185,6 +228,11 @@ $accent-color: rgb(115 103 240);
     font-size: to-rem(14);
     cursor: pointer;
     transition: all 0.2s ease;
+
+    @include mq(null, lg) {
+      width: to-rem(32);
+      height: to-rem(32);
+    }
 
     &:hover {
       background: #fee2e2;

@@ -262,6 +262,11 @@ $accent-color: rgb(115 103 240);
     margin-bottom: to-rem(24);
     flex-wrap: wrap;
     gap: to-rem(16);
+
+    @include mq(null, md) {
+      flex-direction: column;
+      align-items: stretch;
+    }
   }
 
   &__title-row {
@@ -274,6 +279,10 @@ $accent-color: rgb(115 103 240);
       font-weight: 600;
       color: #1f2937;
       margin: 0;
+
+      @include mq(null, md) {
+        font-size: to-rem(20);
+      }
     }
   }
 
@@ -285,6 +294,16 @@ $accent-color: rgb(115 103 240);
   &__actions {
     display: flex;
     gap: to-rem(12);
+
+    @include mq(null, md) {
+      width: 100%;
+
+      .btn-primary,
+      .btn-secondary {
+        flex: 1;
+        justify-content: center;
+      }
+    }
   }
 
   &__filters {
@@ -293,10 +312,18 @@ $accent-color: rgb(115 103 240);
     margin-bottom: to-rem(24);
     flex-wrap: wrap;
 
+    @include mq(null, md) {
+      gap: to-rem(12);
+    }
+
     .filter-group {
       position: relative;
       flex: 1;
       min-width: to-rem(250);
+
+      @include mq(null, md) {
+        min-width: 100%;
+      }
 
       i {
         position: absolute;
@@ -328,6 +355,11 @@ $accent-color: rgb(115 103 240);
       min-width: to-rem(180);
       background: #fff;
 
+      @include mq(null, md) {
+        min-width: 0;
+        flex: 1;
+      }
+
       &:focus {
         outline: none;
         border-color: $accent-color;
@@ -339,12 +371,14 @@ $accent-color: rgb(115 103 240);
     background: #fff;
     border-radius: to-rem(12);
     border: 1px solid #e5e7eb;
-    overflow: hidden;
+    overflow-x: auto; // Horizontal scroll for mobile
+    -webkit-overflow-scrolling: touch;
   }
 
   &__table {
     width: 100%;
     border-collapse: collapse;
+    min-width: to-rem(900); // Minimum width to trigger scroll on mobile
 
     th,
     td {

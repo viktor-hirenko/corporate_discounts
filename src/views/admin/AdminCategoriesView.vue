@@ -353,12 +353,14 @@ $accent-color: rgb(115 103 240);
     background: #fff;
     border-radius: to-rem(12);
     border: 1px solid #e5e7eb;
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   &__table {
     width: 100%;
     border-collapse: collapse;
+    min-width: to-rem(600);
 
     th,
     td {

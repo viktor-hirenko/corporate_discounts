@@ -1,12 +1,26 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 interface Props {
   isCollapsed: boolean
+  isMobile?: boolean
+  isOpen?: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  close: []
+}>()
+
+const router = useRouter()
+
+// Close menu on route change (mobile)
+router.afterEach(() => {
+  if (props.isMobile && props.isOpen) {
+    emit('close')
+  }
+})
 
 const route = useRoute()
 
@@ -42,15 +56,26 @@ const siteUrl = computed(() => {
 </script>
 
 <template>
-  <aside class="admin-sidebar" :class="{ collapsed: isCollapsed }">
+  <aside
+    class="admin-sidebar"
+    :class="{
+      collapsed: isCollapsed,
+      mobile: isMobile,
+      'mobile-open': isMobile && isOpen,
+    }"
+  >
     <div class="admin-sidebar__logo">
       <div class="admin-sidebar__logo-icon">
         <i class="fas fa-building"></i>
       </div>
-      <span v-if="!isCollapsed" class="admin-sidebar__logo-text">
+      <span v-if="!isCollapsed || isMobile" class="admin-sidebar__logo-text">
         UPSTARS<br />
         <small>Admin Panel</small>
       </span>
+      <!-- Mobile close button -->
+      <button v-if="isMobile" class="admin-sidebar__close" @click="emit('close')">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
 
     <nav class="admin-sidebar__nav">
@@ -60,10 +85,10 @@ const siteUrl = computed(() => {
         :to="item.to"
         class="admin-sidebar__item"
         :class="{ active: isActive(item.to) }"
-        :title="isCollapsed ? item.label : undefined"
+        :title="isCollapsed && !isMobile ? item.label : undefined"
       >
         <i :class="item.icon"></i>
-        <span v-if="!isCollapsed">{{ item.label }}</span>
+        <span v-if="!isCollapsed || isMobile">{{ item.label }}</span>
       </RouterLink>
     </nav>
 
@@ -73,10 +98,10 @@ const siteUrl = computed(() => {
         target="_blank"
         rel="noopener noreferrer"
         class="admin-sidebar__item"
-        :title="isCollapsed ? 'Відкрити сайт' : undefined"
+        :title="isCollapsed && !isMobile ? 'Відкрити сайт' : undefined"
       >
         <i class="fas fa-external-link-alt"></i>
-        <span v-if="!isCollapsed">Відкрити сайт</span>
+        <span v-if="!isCollapsed || isMobile">Відкрити сайт</span>
       </a>
     </div>
   </aside>
@@ -199,6 +224,41 @@ $sidebar-collapsed-width: to-rem(80);
   &__footer {
     padding: to-rem(16) to-rem(12);
     border-top: 1px solid #e5e7eb;
+  }
+
+  &__close {
+    position: absolute;
+    top: to-rem(20);
+    right: to-rem(16);
+    width: to-rem(32);
+    height: to-rem(32);
+    background: #f3f4f6;
+    border: none;
+    border-radius: to-rem(6);
+    color: #6b7280;
+    font-size: to-rem(14);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+  }
+
+  // Mobile styles
+  &.mobile {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: none;
+
+    &.mobile-open {
+      transform: translateX(0);
+      box-shadow: 4px 0 20px rgb(0 0 0 / 15%);
+    }
   }
 }
 </style>

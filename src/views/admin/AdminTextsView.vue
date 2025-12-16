@@ -164,12 +164,12 @@ watch(
               <button
                 type="button"
                 class="btn-secondary"
-                title="Закрити без збереження"
-                @click="store.closeForm()"
-              >
+                @click="store.closeForm()">   
+            
+              
                 Скасувати
               </button>
-              <button type="submit" class="btn-primary" title="Зберегти зміни тексту">
+              <button type="submit" class="btn-primary">
                 <i class="fas fa-save"></i>
                 Зберегти
               </button>

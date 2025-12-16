@@ -1508,3 +1508,4 @@ logAdminAction('partner:create', user.email, { slug: 'roslynka' })
 **Версія документації:** 1.0.0  
 **Дата оновлення:** 15 грудня 2024  
 **Автор:** UPSTARS Development Team
+
