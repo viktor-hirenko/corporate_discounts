@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAdminLocationsStore, type LocationItem } from '@/stores/adminLocations'
+import { sanitizeString } from '@/utils/sanitize'
 
 const store = useAdminLocationsStore()
 
@@ -69,12 +70,25 @@ const handleFormOpen = () => {
 }
 
 const handleSave = () => {
+  // ✅ Санітизація вводу
   const location: LocationItem = {
     id: formData.value.id || generateId(formData.value.label.en),
-    label: { ...formData.value.label },
-    description: { ...formData.value.description },
+    label: {
+      ua: sanitizeString(formData.value.label.ua),
+      en: sanitizeString(formData.value.label.en),
+    },
+    description: {
+      ua: sanitizeString(formData.value.description.ua),
+      en: sanitizeString(formData.value.description.en),
+    },
     isSystem: false,
   }
+
+  if (!location.label.ua || !location.label.en) {
+    alert("Назва локації обов'язкова для обох мов")
+    return
+  }
+
   store.saveLocation(location)
 }
 

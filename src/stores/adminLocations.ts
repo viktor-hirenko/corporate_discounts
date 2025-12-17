@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { FilterLocation, LocalizedText } from '@/types/app-config'
-import appConfigData from '@/data/app-config.json'
-import type { AppConfig } from '@/types/app-config'
-
-const config = appConfigData as AppConfig
+import type { FilterLocation, LocalizedText, AppConfig } from '@/types/app-config'
 
 export interface LocationItem {
   id: string
@@ -23,26 +19,44 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
   const editingLocation = ref<LocationItem | null>(null)
   const isFormOpen = ref(false)
   const isSaving = ref(false)
+  const isInitialized = ref(false)
 
-  // Ініціалізація з конфігу
-  const initFromConfig = () => {
-    const configLocations = config.filters?.locations || {}
-    const result: Record<string, LocationItem> = {}
+  // Ініціалізація з конфігу (динамічна)
+  async function init() {
+    if (isInitialized.value) return
 
-    Object.entries(configLocations).forEach(([key, loc]) => {
-      result[key] = {
-        id: key,
-        label: (loc as FilterLocation).label,
-        description: (loc as FilterLocation).description,
-        isSystem: systemLocations.includes(key),
+    try {
+      let configLocations: Record<string, FilterLocation> = {}
+
+      const response = await fetch('/api/load-config')
+      if (response.ok) {
+        const config = (await response.json()) as AppConfig
+        configLocations = config.filters?.locations || {}
+      } else {
+        const configModule = await import('@/data/app-config.json')
+        const config = configModule.default as AppConfig
+        configLocations = config.filters?.locations || {}
       }
-    })
 
-    locations.value = result
+      const result: Record<string, LocationItem> = {}
+      Object.entries(configLocations).forEach(([key, loc]) => {
+        result[key] = {
+          id: key,
+          label: loc.label,
+          description: loc.description,
+          isSystem: systemLocations.includes(key),
+        }
+      })
+      locations.value = result
+    } catch (e) {
+      console.error('Failed to load locations:', e)
+    }
+
+    isInitialized.value = true
   }
 
-  // Ініціалізуємо при створенні store
-  initFromConfig()
+  // Автоматична ініціалізація
+  init()
 
   // Getters
   const locationsList = computed(() => {
@@ -135,11 +149,13 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     editingLocation,
     isFormOpen,
     isSaving,
+    isInitialized,
     // Getters
     locationsList,
     filteredLocations,
     locationsCount,
     // Actions
+    init,
     openCreateForm,
     openEditForm,
     closeForm,

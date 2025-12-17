@@ -1,9 +1,29 @@
 import { ref } from 'vue'
 import type { PartnerConfig } from '@/types/app-config'
+import { sanitizeString, sanitizeEmail, sanitizeUrl } from '@/utils/sanitize'
 
 export interface PartnerFormData extends Omit<PartnerConfig, 'id' | 'slug'> {
   id?: string
   slug?: string
+}
+
+// ✅ Санітизація локалізованого тексту
+function sanitizeLocalized(obj: { ua: string; en: string }): { ua: string; en: string } {
+  return {
+    ua: sanitizeString(obj.ua),
+    en: sanitizeString(obj.en),
+  }
+}
+
+// ✅ Санітизація масиву локалізованих текстів
+function sanitizeLocalizedArray(obj: { ua: string[]; en: string[] }): {
+  ua: string[]
+  en: string[]
+} {
+  return {
+    ua: obj.ua.map((s) => sanitizeString(s)).filter(Boolean),
+    en: obj.en.map((s) => sanitizeString(s)).filter(Boolean),
+  }
 }
 
 export function usePartnersAdmin() {
@@ -35,37 +55,41 @@ export function usePartnersAdmin() {
       .trim()
   }
 
-  // Создание нового партнера
+  // Создание нового партнера з санітизацією
   const createPartner = (formData: PartnerFormData): PartnerConfig => {
     const slug = formData.slug || generateSlug(formData.name.ua || formData.name.en)
     const id = slug
 
-    // Явно указываем порядок ключей СТРОГО как в app-config.json
-    // Порядок: id → slug → image → promoCode → contact → socials → category → location → name → summary → description → discount → address → terms → tags
+    // ✅ Санітизація всіх полів
+    const fbSocial = formData.socials.find((s) => s.type === 'facebook')
+    const igSocial = formData.socials.find((s) => s.type === 'instagram')
+
     return {
       id,
       slug,
-      image: formData.image,
-      promoCode: formData.promoCode,
+      image: sanitizeString(formData.image),
+      promoCode: sanitizeString(formData.promoCode),
       contact: {
-        website: formData.contact.website || '',
-        email: formData.contact.email || '',
-        phone: formData.contact.phone || '',
+        website: sanitizeUrl(formData.contact.website || ''),
+        email: sanitizeEmail(formData.contact.email || ''),
+        phone: sanitizeString(formData.contact.phone || ''),
       },
       socials: [
-        // Всегда Facebook первым, Instagram вторым
-        formData.socials.find((s) => s.type === 'facebook') || { type: 'facebook', url: '' },
-        formData.socials.find((s) => s.type === 'instagram') || { type: 'instagram', url: '' },
+        { type: 'facebook', url: sanitizeUrl(fbSocial?.url || '') },
+        { type: 'instagram', url: sanitizeUrl(igSocial?.url || '') },
       ],
-      category: formData.category,
-      location: formData.location,
-      name: formData.name,
-      summary: formData.summary,
-      description: formData.description,
-      discount: formData.discount,
-      address: formData.address,
-      terms: formData.terms,
-      tags: formData.tags,
+      category: sanitizeLocalized(formData.category),
+      location: sanitizeLocalized(formData.location),
+      name: sanitizeLocalized(formData.name),
+      summary: sanitizeLocalized(formData.summary),
+      description: sanitizeLocalized(formData.description),
+      discount: {
+        label: sanitizeLocalized(formData.discount?.label || { ua: '', en: '' }),
+        description: sanitizeLocalized(formData.discount?.description || { ua: '', en: '' }),
+      },
+      address: sanitizeLocalized(formData.address || { ua: '', en: '' }),
+      terms: sanitizeLocalizedArray(formData.terms),
+      tags: sanitizeLocalizedArray(formData.tags),
     } as PartnerConfig
   }
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAdminFaqStore, type FaqItemAdmin } from '@/stores/adminFaq'
+import { sanitizeString } from '@/utils/sanitize'
 
 const store = useAdminFaqStore()
 
@@ -80,13 +81,31 @@ const handleFormOpen = () => {
 }
 
 const handleSave = () => {
+  // ✅ Санітизація вводу
   const item: FaqItemAdmin = {
     id: formData.value.id || `faq-${Date.now()}`,
     category: formData.value.category as 'general' | 'promoCodes' | 'catalog' | 'support',
-    question: { ...formData.value.question },
-    answer: { ...formData.value.answer },
+    question: {
+      ua: sanitizeString(formData.value.question.ua),
+      en: sanitizeString(formData.value.question.en),
+    },
+    answer: {
+      ua: sanitizeString(formData.value.answer.ua),
+      en: sanitizeString(formData.value.answer.en),
+    },
     order: formData.value.order,
   }
+
+  if (!item.question.ua || !item.question.en) {
+    alert("Питання обов'язкове для обох мов")
+    return
+  }
+
+  if (!item.answer.ua || !item.answer.en) {
+    alert("Відповідь обов'язкова для обох мов")
+    return
+  }
+
   store.saveItem(item)
 }
 

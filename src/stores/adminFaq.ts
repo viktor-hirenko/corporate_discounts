@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { FaqItem, LocalizedText } from '@/types/app-config'
-import appConfigData from '@/data/app-config.json'
-import type { AppConfig } from '@/types/app-config'
-
-const config = appConfigData as AppConfig
+import type { FaqItem, AppConfig, LocalizedText } from '@/types/app-config'
 
 export interface FaqItemAdmin extends FaqItem {
   order: number
@@ -18,6 +14,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
   const editingItem = ref<FaqItemAdmin | null>(null)
   const isFormOpen = ref(false)
   const isSaving = ref(false)
+  const isInitialized = ref(false)
 
   // Категорії FAQ
   const faqCategories = [
@@ -27,17 +24,36 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     { id: 'support', label: { ua: 'Підтримка', en: 'Support' } },
   ]
 
-  // Ініціалізація з конфігу
-  const initFromConfig = () => {
-    const configFaq = config.pages?.faq?.items || []
-    faqItems.value = configFaq.map((item, index) => ({
-      ...item,
-      order: index,
-    }))
+  // Ініціалізація з конфігу (динамічна)
+  async function init() {
+    if (isInitialized.value) return
+
+    try {
+      let configFaq: FaqItem[] = []
+
+      const response = await fetch('/api/load-config')
+      if (response.ok) {
+        const config = (await response.json()) as AppConfig
+        configFaq = config.pages?.faq?.items || []
+      } else {
+        const configModule = await import('@/data/app-config.json')
+        const config = configModule.default as AppConfig
+        configFaq = config.pages?.faq?.items || []
+      }
+
+      faqItems.value = configFaq.map((item, index) => ({
+        ...item,
+        order: index,
+      }))
+    } catch (e) {
+      console.error('Failed to load FAQ:', e)
+    }
+
+    isInitialized.value = true
   }
 
-  // Ініціалізуємо при створенні store
-  initFromConfig()
+  // Автоматична ініціалізація
+  init()
 
   // Getters
   const faqItemsList = computed(() => {
@@ -167,12 +183,14 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     editingItem,
     isFormOpen,
     isSaving,
+    isInitialized,
     faqCategories,
     // Getters
     faqItemsList,
     filteredFaqItems,
     faqCount,
     // Actions
+    init,
     openCreateForm,
     openEditForm,
     closeForm,

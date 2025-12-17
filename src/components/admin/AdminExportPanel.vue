@@ -10,8 +10,8 @@ const stats = computed(() => exportStore.getStatistics())
 
 const validation = computed(() => exportStore.validateConfig())
 
-const handleExportFile = () => {
-  const success = exportStore.exportToFile()
+const handleExportFile = async () => {
+  const success = await exportStore.exportToFile()
   if (success) {
     showValidationErrors.value = false
   }
@@ -347,4 +347,3 @@ $accent-color: rgb(115 103 240);
   }
 }
 </style>
-

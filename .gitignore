@@ -36,3 +36,11 @@ coverage
 __screenshots__/
 docs/
 .cursor/
+
+# Cloudflare
+wrangler.toml
+.wrangler/
+
+# Environment files with secrets
+.env.local
+.env.production

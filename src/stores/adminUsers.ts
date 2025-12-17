@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { sanitizeEmail, sanitizeString } from '@/utils/sanitize'
 
 export interface AdminUser {
   id: string
@@ -92,8 +93,11 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
   }
 
   function addUser(user: Omit<AdminUser, 'id' | 'addedAt' | 'addedBy'>) {
+    // ✅ Санітизація на рівні стора (друга лінія захисту)
     const newUser: AdminUser = {
       ...user,
+      email: sanitizeEmail(user.email),
+      name: sanitizeString(user.name),
       id: `user-${Date.now()}`,
       addedAt: new Date().toISOString().split('T')[0]!,
       addedBy: 'admin',
@@ -105,7 +109,12 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
   function updateUser(user: AdminUser) {
     const index = users.value.findIndex((u) => u.id === user.id)
     if (index >= 0) {
-      users.value[index] = user
+      // ✅ Санітизація при оновленні
+      users.value[index] = {
+        ...user,
+        email: sanitizeEmail(user.email),
+        name: sanitizeString(user.name),
+      }
     }
     closeForm()
   }

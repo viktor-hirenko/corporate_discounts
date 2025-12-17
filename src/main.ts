@@ -1,3 +1,12 @@
+// ✅ HTTPS редирект для production (безпека)
+if (
+  import.meta.env.PROD &&
+  window.location.protocol === 'http:' &&
+  !window.location.hostname.includes('localhost')
+) {
+  window.location.href = window.location.href.replace('http:', 'https:')
+}
+
 import '@/design/tokens.css'
 import '@/styles/main.scss'
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAdminCategoriesStore, type CategoryItem } from '@/stores/adminCategories'
+import { sanitizeString } from '@/utils/sanitize'
 
 const store = useAdminCategoriesStore()
 
@@ -69,12 +70,25 @@ const handleFormOpen = () => {
 }
 
 const handleSave = () => {
+  // ✅ Санітизація вводу
   const category: CategoryItem = {
     id: formData.value.id || generateId(formData.value.label.en),
-    label: { ...formData.value.label },
-    description: { ...formData.value.description },
+    label: {
+      ua: sanitizeString(formData.value.label.ua),
+      en: sanitizeString(formData.value.label.en),
+    },
+    description: {
+      ua: sanitizeString(formData.value.description.ua),
+      en: sanitizeString(formData.value.description.en),
+    },
     isSystem: false,
   }
+
+  if (!category.label.ua || !category.label.en) {
+    alert("Назва категорії обов'язкова для обох мов")
+    return
+  }
+
   store.saveCategory(category)
 }
 

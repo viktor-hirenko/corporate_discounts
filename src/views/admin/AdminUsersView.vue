@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { useAdminUsersStore, type AdminUser } from '@/stores/adminUsers'
 import { useAdminExportStore } from '@/stores/adminExport'
+import { sanitizeEmail, sanitizeString, isValidEmail } from '@/utils/sanitize'
 
 const store = useAdminUsersStore()
 const exportStore = useAdminExportStore()
@@ -67,17 +68,32 @@ const resetForm = () => {
 }
 
 const handleSave = () => {
+  // ✅ Санітизація вводу
+  const email = sanitizeEmail(formData.value.email)
+  const name = sanitizeString(formData.value.name)
+
+  // ✅ Валідація email
+  if (!isValidEmail(email)) {
+    alert('Невірний формат email')
+    return
+  }
+
+  if (!name.trim()) {
+    alert("Ім'я не може бути порожнім")
+    return
+  }
+
   if (store.editingUser) {
     store.updateUser({
       ...store.editingUser,
-      email: formData.value.email,
-      name: formData.value.name,
+      email,
+      name,
       role: formData.value.role,
     })
   } else {
     store.addUser({
-      email: formData.value.email,
-      name: formData.value.name,
+      email,
+      name,
       role: formData.value.role,
     })
   }

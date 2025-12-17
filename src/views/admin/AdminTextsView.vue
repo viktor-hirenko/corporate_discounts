@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAdminTextsStore, type TextItem } from '@/stores/adminTexts'
+import { sanitizeString } from '@/utils/sanitize'
 
 const store = useAdminTextsStore()
 
@@ -49,12 +50,22 @@ const resetForm = () => {
 }
 
 const handleSave = () => {
+  // ✅ Санітизація вводу
   const text: TextItem = {
     path: formData.value.path,
     label: formData.value.label,
-    value: { ...formData.value.value },
+    value: {
+      ua: sanitizeString(formData.value.value.ua),
+      en: sanitizeString(formData.value.value.en),
+    },
     category: formData.value.category,
   }
+
+  if (!text.value.ua && !text.value.en) {
+    alert('Текст не може бути порожнім')
+    return
+  }
+
   store.saveText(text)
 }
 

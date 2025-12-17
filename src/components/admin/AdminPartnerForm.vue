@@ -3,6 +3,15 @@ import { ref, reactive, computed, watch } from 'vue'
 import type { PartnerConfig } from '@/types/app-config'
 import { useAdminCategoriesStore } from '@/stores/adminCategories'
 import { useAdminLocationsStore } from '@/stores/adminLocations'
+import { sanitizeString, sanitizeEmail, sanitizeUrl } from '@/utils/sanitize'
+
+// ✅ Санітизація локалізованого тексту
+function sanitizeLocalized(obj: { ua: string; en: string }): { ua: string; en: string } {
+  return {
+    ua: sanitizeString(obj.ua),
+    en: sanitizeString(obj.en),
+  }
+}
 
 interface Props {
   partner?: PartnerConfig | null
@@ -124,34 +133,42 @@ const isValid = computed(() => {
   )
 })
 
-// Save
+// Save з санітизацією
 const handleSave = () => {
   if (!isValid.value) return
 
+  // ✅ Санітизація всіх полів
   const partner: PartnerConfig = {
     id: formData.slug,
-    slug: formData.slug,
-    image: formData.image || `/images/partners/${formData.slug}.webp`,
-    promoCode: formData.promoCode,
-    contact: { ...formData.contact },
-    socials: [...formData.socials],
-    category: { ...formData.category },
-    location: { ...formData.location },
-    name: { ...formData.name },
-    summary: { ...formData.summary },
-    description: { ...formData.description },
-    discount: {
-      label: { ...formData.discount.label },
-      description: { ...formData.discount.description },
+    slug: sanitizeString(formData.slug),
+    image: sanitizeString(formData.image) || `/images/partners/${formData.slug}.webp`,
+    promoCode: sanitizeString(formData.promoCode),
+    contact: {
+      website: sanitizeUrl(formData.contact.website),
+      email: sanitizeEmail(formData.contact.email),
+      phone: sanitizeString(formData.contact.phone),
     },
-    address: { ...formData.address },
+    socials: formData.socials.map((s) => ({
+      type: s.type,
+      url: sanitizeUrl(s.url),
+    })),
+    category: sanitizeLocalized(formData.category),
+    location: sanitizeLocalized(formData.location),
+    name: sanitizeLocalized(formData.name),
+    summary: sanitizeLocalized(formData.summary),
+    description: sanitizeLocalized(formData.description),
+    discount: {
+      label: sanitizeLocalized(formData.discount.label),
+      description: sanitizeLocalized(formData.discount.description),
+    },
+    address: sanitizeLocalized(formData.address),
     terms: {
-      ua: formData.terms.ua.filter((t) => t.trim() !== ''),
-      en: formData.terms.en.filter((t) => t.trim() !== ''),
+      ua: formData.terms.ua.filter((t) => t.trim() !== '').map((t) => sanitizeString(t)),
+      en: formData.terms.en.filter((t) => t.trim() !== '').map((t) => sanitizeString(t)),
     },
     tags: {
-      ua: formData.tags.ua.filter((t) => t.trim() !== ''),
-      en: formData.tags.en.filter((t) => t.trim() !== ''),
+      ua: formData.tags.ua.filter((t) => t.trim() !== '').map((t) => sanitizeString(t)),
+      en: formData.tags.en.filter((t) => t.trim() !== '').map((t) => sanitizeString(t)),
     },
   }
 

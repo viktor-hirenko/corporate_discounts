@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { FilterCategory, LocalizedText } from '@/types/app-config'
-import appConfigData from '@/data/app-config.json'
-import type { AppConfig } from '@/types/app-config'
-
-const config = appConfigData as AppConfig
+import type { FilterCategory, LocalizedText, AppConfig } from '@/types/app-config'
 
 export interface CategoryItem {
   id: string
@@ -23,26 +19,46 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
   const editingCategory = ref<CategoryItem | null>(null)
   const isFormOpen = ref(false)
   const isSaving = ref(false)
+  const isInitialized = ref(false)
 
-  // Ініціалізація з конфігу
-  const initFromConfig = () => {
-    const configCategories = config.filters?.categories || {}
-    const result: Record<string, CategoryItem> = {}
+  // Ініціалізація з конфігу (динамічна)
+  async function init() {
+    if (isInitialized.value) return
 
-    Object.entries(configCategories).forEach(([key, cat]) => {
-      result[key] = {
-        id: key,
-        label: (cat as FilterCategory).label,
-        description: (cat as FilterCategory).description,
-        isSystem: systemCategories.includes(key),
+    try {
+      let configCategories: Record<string, FilterCategory> = {}
+
+      // Завантажуємо через API
+      const response = await fetch('/api/load-config')
+      if (response.ok) {
+        const config = (await response.json()) as AppConfig
+        configCategories = config.filters?.categories || {}
+      } else {
+        // Fallback: динамічний імпорт
+        const configModule = await import('@/data/app-config.json')
+        const config = configModule.default as AppConfig
+        configCategories = config.filters?.categories || {}
       }
-    })
 
-    categories.value = result
+      const result: Record<string, CategoryItem> = {}
+      Object.entries(configCategories).forEach(([key, cat]) => {
+        result[key] = {
+          id: key,
+          label: cat.label,
+          description: cat.description,
+          isSystem: systemCategories.includes(key),
+        }
+      })
+      categories.value = result
+    } catch (e) {
+      console.error('Failed to load categories:', e)
+    }
+
+    isInitialized.value = true
   }
 
-  // Ініціалізуємо при створенні store
-  initFromConfig()
+  // Автоматична ініціалізація
+  init()
 
   // Getters
   const categoriesList = computed(() => {
@@ -135,11 +151,13 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     editingCategory,
     isFormOpen,
     isSaving,
+    isInitialized,
     // Getters
     categoriesList,
     filteredCategories,
     categoriesCount,
     // Actions
+    init,
     openCreateForm,
     openEditForm,
     closeForm,

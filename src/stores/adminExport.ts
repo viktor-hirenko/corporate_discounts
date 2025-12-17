@@ -22,6 +22,24 @@ export const useAdminExportStore = defineStore('adminExport', () => {
   const exportError = ref<string | null>(null)
   const lastSaveTime = ref<Date | null>(null)
 
+  // Чекаємо ініціалізації всіх stores перед збереженням
+  async function ensureStoresInitialized(): Promise<void> {
+    const partnersStore = useAdminPartnersStore()
+    const categoriesStore = useAdminCategoriesStore()
+    const locationsStore = useAdminLocationsStore()
+    const faqStore = useAdminFaqStore()
+    const usersStore = useAdminUsersStore()
+
+    // Чекаємо init() для всіх stores
+    await Promise.all([
+      partnersStore.init(),
+      categoriesStore.init(),
+      locationsStore.init(),
+      faqStore.init(),
+      usersStore.init(),
+    ])
+  }
+
   // Експорт повного app-config.json (мерджимо з оригіналом)
   function buildFullConfig(): AppConfig {
     const partnersStore = useAdminPartnersStore()
@@ -32,32 +50,43 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     const imagesStore = useAdminImagesStore()
     const usersStore = useAdminUsersStore()
 
-    // Збираємо partners
-    const partners: Record<string, unknown> = {}
-    Object.entries(partnersStore.partners).forEach(([key, partner]) => {
-      partners[key] = partner
-    })
+    // ✅ ЗАХИСТ: якщо stores порожні — використовуємо оригінальні дані
+    const partners: Record<string, unknown> =
+      Object.keys(partnersStore.partners).length > 0
+        ? { ...partnersStore.partners }
+        : { ...originalConfig.partners }
 
-    // Збираємо categories
-    const categories: Record<string, unknown> = {}
-    Object.entries(categoriesStore.categories).forEach(([key, cat]) => {
-      categories[key] = {
-        label: cat.label,
-        description: cat.description,
-      }
-    })
+    // ✅ ЗАХИСТ: categories
+    const categories: Record<string, unknown> =
+      Object.keys(categoriesStore.categories).length > 0
+        ? Object.fromEntries(
+            Object.entries(categoriesStore.categories).map(([key, cat]) => [
+              key,
+              { label: cat.label, description: cat.description },
+            ]),
+          )
+        : { ...originalConfig.filters?.categories }
 
-    // Збираємо locations
-    const locations: Record<string, unknown> = {}
-    Object.entries(locationsStore.locations).forEach(([key, loc]) => {
-      locations[key] = {
-        label: loc.label,
-        description: loc.description,
-      }
-    })
+    // ✅ ЗАХИСТ: locations
+    const locations: Record<string, unknown> =
+      Object.keys(locationsStore.locations).length > 0
+        ? Object.fromEntries(
+            Object.entries(locationsStore.locations).map(([key, loc]) => [
+              key,
+              { label: loc.label, description: loc.description },
+            ]),
+          )
+        : { ...originalConfig.filters?.locations }
 
-    // Збираємо FAQ
-    const faqItems = faqStore.faqItemsList.map(({ order, ...item }) => item)
+    // ✅ ЗАХИСТ: FAQ
+    const faqItems =
+      faqStore.faqItemsList.length > 0
+        ? faqStore.faqItemsList.map(({ order, ...item }) => item)
+        : originalConfig.pages?.faq?.items || []
+
+    // ✅ ЗАХИСТ: users
+    const allowedUsers =
+      usersStore.users.length > 0 ? usersStore.users : originalConfig.allowedUsers || []
 
     // Збираємо images
     const images = {
@@ -85,7 +114,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     // Повертаємо повний конфіг, мерджачи з оригіналом
     return {
       ...originalConfig,
-      allowedUsers: usersStore.users,
+      allowedUsers,
       locales: settingsStore.settings.locales,
       defaultLocale: settingsStore.settings.defaultLocale,
       images,
@@ -111,6 +140,8 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     exportError.value = null
 
     try {
+      // ✅ Чекаємо ініціалізації stores перед збереженням
+      await ensureStoresInitialized()
       const config = buildFullConfig()
 
       const response = await fetch('/api/save-config', {
@@ -158,8 +189,9 @@ export const useAdminExportStore = defineStore('adminExport', () => {
   }
 
   // Експорт в JSON файл
-  function exportToFile() {
+  async function exportToFile() {
     try {
+      await ensureStoresInitialized()
       const config = buildFullConfig()
       const json = JSON.stringify(config, null, 2)
       const blob = new Blob([json], { type: 'application/json' })
@@ -184,6 +216,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     exportError.value = null
 
     try {
+      await ensureStoresInitialized()
       const config = buildFullConfig()
 
       // В майбутньому тут буде API call до Cloudflare Worker

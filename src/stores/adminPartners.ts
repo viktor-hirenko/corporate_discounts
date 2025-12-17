@@ -1,14 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { PartnerConfig } from '@/types/app-config'
-import appConfigData from '@/data/app-config.json'
-import type { AppConfig } from '@/types/app-config'
-
-const config = appConfigData as AppConfig
+import type { PartnerConfig, AppConfig } from '@/types/app-config'
 
 export const useAdminPartnersStore = defineStore('adminPartners', () => {
   // State
-  const partners = ref<Record<string, PartnerConfig>>({ ...config.partners })
+  const partners = ref<Record<string, PartnerConfig>>({})
+  const isInitialized = ref(false)
   const searchQuery = ref('')
   const selectedCategory = ref('all')
   const selectedLocation = ref('all')
@@ -60,6 +57,45 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
   })
 
   const partnersCount = computed(() => partnersList.value.length)
+
+  // Ініціалізація - динамічне завантаження з конфігу
+  async function init() {
+    if (isInitialized.value) return
+
+    try {
+      // Завантажуємо конфіг через API (dev) або статичний файл (prod)
+      const response = await fetch('/api/load-config')
+      if (response.ok) {
+        const config = (await response.json()) as AppConfig
+        if (config.partners) {
+          partners.value = { ...config.partners }
+        }
+      } else {
+        // Fallback: динамічний імпорт
+        const configModule = await import('@/data/app-config.json')
+        const configData = configModule.default as AppConfig
+        if (configData.partners) {
+          partners.value = { ...configData.partners }
+        }
+      }
+    } catch {
+      // Fallback: динамічний імпорт
+      try {
+        const configModule = await import('@/data/app-config.json')
+        const configData = configModule.default as AppConfig
+        if (configData.partners) {
+          partners.value = { ...configData.partners }
+        }
+      } catch (e) {
+        console.error('Failed to load partners config:', e)
+      }
+    }
+
+    isInitialized.value = true
+  }
+
+  // Автоматична ініціалізація
+  init()
 
   // Actions
   function openCreateForm() {
@@ -142,6 +178,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     editingPartner,
     isFormOpen,
     isSaving,
+    isInitialized,
     // Getters
     partnersList,
     filteredPartners,
@@ -149,6 +186,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     locations,
     partnersCount,
     // Actions
+    init,
     openCreateForm,
     openEditForm,
     closeForm,
