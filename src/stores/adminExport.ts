@@ -30,6 +30,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     const faqStore = useAdminFaqStore()
     const settingsStore = useAdminSettingsStore()
     const imagesStore = useAdminImagesStore()
+    const usersStore = useAdminUsersStore()
 
     // Збираємо partners
     const partners: Record<string, unknown> = {}
@@ -84,6 +85,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     // Повертаємо повний конфіг, мерджачи з оригіналом
     return {
       ...originalConfig,
+      allowedUsers: usersStore.users,
       locales: settingsStore.settings.locales,
       defaultLocale: settingsStore.settings.defaultLocale,
       images,
@@ -320,4 +322,3 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     getStatistics,
   }
 })
-

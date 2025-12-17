@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useAdminUsersStore } from './adminUsers'
 
 interface GoogleUser {
   credential: string
@@ -68,8 +69,18 @@ export const useAuthStore = defineStore('auth', {
         }
         const payload = JSON.parse(atob(parts[1]))
 
-        // Google JWT может содержать picture в разных полях
-        // Проверяем несколько возможных вариантов
+        // ✅ Перевірка whitelist — чи email дозволений
+        const usersStore = useAdminUsersStore()
+        // Чекаємо ініціалізацію стора (динамічне завантаження)
+        await usersStore.init()
+
+        if (!usersStore.isEmailAllowed(payload.email)) {
+          console.warn('[auth-store] email not in whitelist:', payload.email)
+          throw new Error('Доступ заборонено. Ваш email не в списку дозволених.')
+        }
+
+        // Google JWT може містити picture в різних полях
+        // Перевіряємо декілька можливих варіантів
         const pictureUrl = payload.picture || payload.avatar_url || payload.photo || null
 
         this.user = {
@@ -80,10 +91,10 @@ export const useAuthStore = defineStore('auth', {
         this.token = credential
         this.isAuthenticated = true
 
-        // Сохраняем в localStorage
+        // Зберігаємо в localStorage
         this.saveToStorage()
 
-        // Обновляем данные последнего пользователя
+        // Оновлюємо дані останнього користувача
         if (this.user) {
           const lastUserData = {
             name: this.user.name,
@@ -94,6 +105,9 @@ export const useAuthStore = defineStore('auth', {
         }
       } catch (error) {
         console.error('[auth-store] failed to login with Google', error)
+        if (error instanceof Error && error.message.includes('Доступ заборонено')) {
+          throw error
+        }
         throw new Error('Не вдалося увійти через Google')
       }
     },

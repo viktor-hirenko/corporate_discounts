@@ -340,6 +340,7 @@ $accent-color: rgb(115 103 240);
     background: #f3f4f6;
     padding: to-rem(2) to-rem(6);
     border-radius: to-rem(4);
+    overflow-wrap: anywhere;
   }
 
   &__content {

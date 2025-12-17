@@ -12,16 +12,8 @@ export interface AdminUser {
 
 export const useAdminUsersStore = defineStore('adminUsers', () => {
   // State
-  const users = ref<AdminUser[]>([
-    {
-      id: '1',
-      email: 'admin@upstars.com',
-      name: 'Admin',
-      role: 'admin',
-      addedAt: '2024-01-01',
-      addedBy: 'system',
-    },
-  ])
+  const users = ref<AdminUser[]>([])
+  const isInitialized = ref(false)
   const searchQuery = ref('')
   const editingUser = ref<AdminUser | null>(null)
   const isFormOpen = ref(false)
@@ -43,6 +35,45 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
   })
 
   const usersCount = computed(() => users.value.length)
+
+  // Ініціалізація - динамічне завантаження з конфігу
+  async function init() {
+    if (isInitialized.value) return
+
+    try {
+      // Завантажуємо конфіг через API (dev) або статичний файл (prod)
+      const response = await fetch('/api/load-config')
+      if (response.ok) {
+        const config = await response.json()
+        if (config.allowedUsers?.length) {
+          users.value = config.allowedUsers
+        }
+      } else {
+        // Fallback: завантаження через статичний імпорт для production
+        const configModule = await import('@/data/app-config.json')
+        const configData = configModule.default as { allowedUsers?: AdminUser[] }
+        if (configData.allowedUsers?.length) {
+          users.value = configData.allowedUsers
+        }
+      }
+    } catch {
+      // Fallback: динамічний імпорт
+      try {
+        const configModule = await import('@/data/app-config.json')
+        const configData = configModule.default as { allowedUsers?: AdminUser[] }
+        if (configData.allowedUsers?.length) {
+          users.value = configData.allowedUsers
+        }
+      } catch (e) {
+        console.error('Failed to load users config:', e)
+      }
+    }
+
+    isInitialized.value = true
+  }
+
+  // Автоматична ініціалізація
+  init()
 
   // Actions
   function openCreateForm() {
@@ -99,13 +130,14 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isLoading.value = true
 
     try {
-      // В майбутньому тут буде API call до Cloudflare Worker
-      // const response = await fetch('/api/admin/users')
-      // const data = await response.json()
-      // users.value = data.users
-
-      // Симуляція затримки
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Перезавантажуємо конфіг з файлу
+      const response = await fetch('/api/load-config')
+      if (response.ok) {
+        const config = await response.json()
+        if (config.allowedUsers?.length) {
+          users.value = config.allowedUsers
+        }
+      }
 
       syncStatus.value = 'success'
       setTimeout(() => {
@@ -157,11 +189,13 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isFormOpen,
     isLoading,
     syncStatus,
+    isInitialized,
     // Getters
     usersList,
     filteredUsers,
     usersCount,
     // Actions
+    init,
     openCreateForm,
     openEditForm,
     closeForm,

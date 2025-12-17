@@ -214,7 +214,17 @@ export interface PartnersConfig {
   [key: string]: PartnerConfig
 }
 
+export interface AdminUser {
+  id: string
+  email: string
+  name: string
+  role: 'admin' | 'editor'
+  addedAt: string
+  addedBy: string
+}
+
 export interface AppConfig {
+  allowedUsers?: AdminUser[]
   locales: Locale[]
   defaultLocale: Locale
   languages: Language[]

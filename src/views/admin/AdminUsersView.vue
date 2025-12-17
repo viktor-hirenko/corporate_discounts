@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAdminUsersStore, type AdminUser } from '@/stores/adminUsers'
+import { useAdminExportStore } from '@/stores/adminExport'
 
 const store = useAdminUsersStore()
+const exportStore = useAdminExportStore()
 
 const deleteConfirmId = ref<string | null>(null)
 
@@ -232,12 +234,12 @@ const getSyncStatusText = () => {
     <div class="admin-users__footer">
       <button
         class="btn-primary btn-large"
-        title="Зберегти список користувачів на сервер"
-        :disabled="store.isLoading"
-        @click="store.saveToBackend()"
+        title="Зберегти список користувачів в конфіг"
+        :disabled="exportStore.isSaving"
+        @click="exportStore.saveToLocalFile()"
       >
-        <i :class="store.isLoading ? 'fas fa-spinner fa-spin' : 'fas fa-cloud-upload-alt'"></i>
-        {{ store.isLoading ? 'Збереження...' : 'Зберегти зміни на сервер' }}
+        <i :class="exportStore.isSaving ? 'fas fa-spinner fa-spin' : 'fas fa-save'"></i>
+        {{ exportStore.isSaving ? 'Збереження...' : 'Зберегти зміни' }}
       </button>
     </div>
 
