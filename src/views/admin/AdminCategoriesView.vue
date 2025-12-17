@@ -158,8 +158,10 @@ watch(
         <tbody>
           <tr v-for="category in store.filteredCategories" :key="category.id">
             <td class="col-id">
-              <code>{{ category.id }}</code>
-              <span v-if="category.isSystem" class="badge badge--system">Системна</span>
+              <div class="id-cell">
+                <code>{{ category.id }}</code>
+                <span v-if="category.isSystem" class="badge badge--system">Системна</span>
+              </div>
             </td>
             <td class="col-label">{{ category.label.ua }}</td>
             <td class="col-label">{{ category.label.en }}</td>
@@ -433,7 +435,14 @@ $accent-color: rgb(115 103 240);
 }
 
 .col-id {
-  width: to-rem(150);
+  width: to-rem(120);
+
+  .id-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: to-rem(4);
+  }
 }
 
 .col-label {
@@ -462,7 +471,6 @@ code {
   border-radius: to-rem(10);
   font-size: to-rem(10);
   font-weight: 500;
-  margin-left: to-rem(8);
 
   &--system {
     background: #dbeafe;

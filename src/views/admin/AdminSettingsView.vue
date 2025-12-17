@@ -4,6 +4,12 @@ import type { Locale } from '@/types/app-config'
 
 const store = useAdminSettingsStore()
 
+// Google Client ID from .env (read-only)
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+
+// Site URL (read-only, auto-detected)
+const siteUrl = window.location.origin
+
 const handleDefaultLocaleChange = (event: Event) => {
   const target = event.target as HTMLSelectElement
   store.updateDefaultLocale(target.value as Locale)
@@ -98,13 +104,11 @@ const handleSave = () => {
         <div class="settings-section__content">
           <div class="form-group">
             <label>Client ID</label>
-            <input
-              :value="store.settings.googleClientId"
-              type="text"
-              placeholder="Ваш Google OAuth Client ID"
-              @input="store.updateGoogleClientId(($event.target as HTMLInputElement).value)"
-            />
-            <p class="form-hint">Налаштовується в Google Cloud Console</p>
+            <input :value="googleClientId" type="text" readonly class="input-readonly" />
+            <p class="form-hint">
+              <i class="fas fa-lock"></i>
+              Зчитується з файлу <code>.env</code> (VITE_GOOGLE_CLIENT_ID)
+            </p>
           </div>
         </div>
       </section>
@@ -112,18 +116,17 @@ const handleSave = () => {
       <!-- Site Settings -->
       <section class="settings-section">
         <div class="settings-section__header">
-          <i class="fas fa-cog"></i>
-          <h3>Загальні налаштування</h3>
+          <i class="fas fa-link"></i>
+          <h3>Адреса сайту</h3>
         </div>
         <div class="settings-section__content">
           <div class="form-group">
-            <label>URL сайту</label>
-            <input
-              :value="store.settings.siteUrl"
-              type="url"
-              placeholder="https://discounts.upstars.com"
-              @input="store.updateSiteUrl(($event.target as HTMLInputElement).value)"
-            />
+            <label>Поточний URL</label>
+            <input :value="siteUrl" type="text" readonly class="input-readonly" />
+            <p class="form-hint">
+              <i class="fas fa-info-circle"></i>
+              Визначається автоматично з поточного домену
+            </p>
           </div>
         </div>
       </section>
@@ -271,9 +274,30 @@ $accent-color: rgb(115 103 240);
 }
 
 .form-hint {
+  display: flex;
+  align-items: center;
+  gap: to-rem(6);
   font-size: to-rem(12);
   color: #9ca3af;
   margin: to-rem(6) 0 0 0;
+
+  i {
+    font-size: to-rem(10);
+  }
+
+  code {
+    padding: to-rem(2) to-rem(6);
+    background: #f3f4f6;
+    border-radius: to-rem(4);
+    font-size: to-rem(11);
+  }
+}
+
+.input-readonly {
+  background: #f9fafb !important;
+  color: #6b7280 !important;
+  cursor: not-allowed;
+  border-style: dashed !important;
 }
 
 .locale-chips {
