@@ -100,50 +100,53 @@ watch(
 
 <template>
   <div class="admin-faq">
-    <!-- Header -->
-    <div class="admin-faq__header">
-      <div class="admin-faq__title-row">
-        <h2>FAQ</h2>
-        <span class="admin-faq__count"
-          >{{ store.filteredFaqItems.length }} з {{ store.faqCount }}</span
-        >
+    <!-- Controls (sticky) -->
+    <div class="admin-faq__controls">
+      <!-- Header -->
+      <div class="admin-faq__header">
+        <div class="admin-faq__title-row">
+          <h2>FAQ</h2>
+          <span class="admin-faq__count"
+            >{{ store.filteredFaqItems.length }} з {{ store.faqCount }}</span
+          >
+        </div>
+        <div class="admin-faq__actions">
+          <button
+            class="btn-secondary"
+            title="Завантажити всі питання у форматі JSON"
+            @click="handleExport"
+          >
+            <i class="fas fa-download"></i>
+            Експорт JSON
+          </button>
+          <button class="btn-primary" title="Створити нове питання" @click="store.openCreateForm()">
+            <i class="fas fa-plus"></i>
+            Додати питання
+          </button>
+        </div>
       </div>
-      <div class="admin-faq__actions">
-        <button
-          class="btn-secondary"
-          title="Завантажити всі питання у форматі JSON"
-          @click="handleExport"
-        >
-          <i class="fas fa-download"></i>
-          Експорт JSON
-        </button>
-        <button class="btn-primary" title="Створити нове питання" @click="store.openCreateForm()">
-          <i class="fas fa-plus"></i>
-          Додати питання
-        </button>
+
+      <!-- Filters -->
+      <div class="admin-faq__filters">
+        <div class="filter-group">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Пошук за питанням або відповіддю..."
+            :value="store.searchQuery"
+            @input="handleSearch"
+          />
+        </div>
+        <select :value="store.selectedCategory" @change="handleCategoryChange">
+          <option value="all">Всі категорії</option>
+          <option v-for="cat in store.faqCategories" :key="cat.id" :value="cat.id">
+            {{ cat.label.ua }}
+          </option>
+        </select>
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="admin-faq__filters">
-      <div class="filter-group">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          placeholder="Пошук за питанням або відповіддю..."
-          :value="store.searchQuery"
-          @input="handleSearch"
-        />
-      </div>
-      <select :value="store.selectedCategory" @change="handleCategoryChange">
-        <option value="all">Всі категорії</option>
-        <option v-for="cat in store.faqCategories" :key="cat.id" :value="cat.id">
-          {{ cat.label.ua }}
-        </option>
-      </select>
-    </div>
-
-    <!-- List -->
+    <!-- List (scrollable) -->
     <div class="admin-faq__list">
       <div v-for="item in store.filteredFaqItems" :key="item.id" class="faq-item">
         <div class="faq-item__header">
@@ -291,6 +294,16 @@ watch(
 $accent-color: rgb(115 103 240);
 
 .admin-faq {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__controls {
+    flex-shrink: 0;
+    background: #f8fafc;
+    padding-bottom: to-rem(8);
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
@@ -372,9 +385,14 @@ $accent-color: rgb(115 103 240);
   }
 
   &__list {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: to-rem(12);
+    overflow-y: auto;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: to-rem(12);
   }
 
   &__empty {
@@ -580,6 +598,7 @@ $accent-color: rgb(115 103 240);
   border-radius: to-rem(16);
   max-width: to-rem(480);
   width: 100%;
+  color: #1f2937;
 
   &--large {
     max-width: to-rem(800);
@@ -614,13 +633,19 @@ $accent-color: rgb(115 103 240);
 
   &__body {
     padding: to-rem(24);
+
+    p {
+      margin: 0 0 to-rem(12) 0;
+      color: #4b5563;
+    }
   }
 
   &__footer {
     display: flex;
     justify-content: flex-end;
     gap: to-rem(12);
-    padding-top: to-rem(16);
+    padding: to-rem(16) to-rem(24);
+    border-top: 1px solid #e5e7eb;
   }
 }
 

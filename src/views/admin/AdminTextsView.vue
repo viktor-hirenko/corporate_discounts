@@ -68,46 +68,49 @@ watch(
 
 <template>
   <div class="admin-texts">
-    <!-- Header -->
-    <div class="admin-texts__header">
-      <div class="admin-texts__title-row">
-        <h2>Тексти сторінок</h2>
-        <span class="admin-texts__count"
-          >{{ store.filteredTexts.length }} з {{ store.textsCount }}</span
-        >
+    <!-- Controls (sticky) -->
+    <div class="admin-texts__controls">
+      <!-- Header -->
+      <div class="admin-texts__header">
+        <div class="admin-texts__title-row">
+          <h2>Тексти сторінок</h2>
+          <span class="admin-texts__count"
+            >{{ store.filteredTexts.length }} з {{ store.textsCount }}</span
+          >
+        </div>
+        <div class="admin-texts__actions">
+          <button
+            class="btn-secondary"
+            title="Завантажити всі тексти у форматі JSON"
+            @click="handleExport"
+          >
+            <i class="fas fa-download"></i>
+            Експорт JSON
+          </button>
+        </div>
       </div>
-      <div class="admin-texts__actions">
-        <button
-          class="btn-secondary"
-          title="Завантажити всі тексти у форматі JSON"
-          @click="handleExport"
-        >
-          <i class="fas fa-download"></i>
-          Експорт JSON
-        </button>
+
+      <!-- Filters -->
+      <div class="admin-texts__filters">
+        <div class="filter-group">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Пошук за текстом або ключем..."
+            :value="store.searchQuery"
+            @input="handleSearch"
+          />
+        </div>
+        <select :value="store.selectedCategory" @change="handleCategoryChange">
+          <option value="all">Всі категорії</option>
+          <option v-for="cat in store.textCategories" :key="cat.id" :value="cat.id">
+            {{ cat.label }}
+          </option>
+        </select>
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="admin-texts__filters">
-      <div class="filter-group">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          placeholder="Пошук за текстом або ключем..."
-          :value="store.searchQuery"
-          @input="handleSearch"
-        />
-      </div>
-      <select :value="store.selectedCategory" @change="handleCategoryChange">
-        <option value="all">Всі категорії</option>
-        <option v-for="cat in store.textCategories" :key="cat.id" :value="cat.id">
-          {{ cat.label }}
-        </option>
-      </select>
-    </div>
-
-    <!-- List -->
+    <!-- List (scrollable) -->
     <div class="admin-texts__list">
       <div v-for="text in store.filteredTexts" :key="text.path" class="text-item">
         <div class="text-item__header">
@@ -161,12 +164,7 @@ watch(
               <textarea v-model="formData.value.en" rows="3" required></textarea>
             </div>
             <div class="modal__footer">
-              <button
-                type="button"
-                class="btn-secondary"
-                @click="store.closeForm()">   
-            
-              
+              <button type="button" class="btn-secondary" @click="store.closeForm()">
                 Скасувати
               </button>
               <button type="submit" class="btn-primary">
@@ -187,6 +185,16 @@ watch(
 $accent-color: rgb(115 103 240);
 
 .admin-texts {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__controls {
+    flex-shrink: 0;
+    background: #f8fafc;
+    padding-bottom: to-rem(8);
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
@@ -268,9 +276,14 @@ $accent-color: rgb(115 103 240);
   }
 
   &__list {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: to-rem(12);
+    overflow-y: auto;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: to-rem(12);
   }
 
   &__empty {
@@ -431,6 +444,7 @@ $accent-color: rgb(115 103 240);
   border-radius: to-rem(16);
   max-width: to-rem(480);
   width: 100%;
+  color: #1f2937;
 
   &--medium {
     max-width: to-rem(600);

@@ -73,7 +73,13 @@ const handleLogout = () => {
     <div class="admin-header__right">
       <div class="admin-header__user">
         <div class="admin-header__avatar">
-          <img v-if="userAvatar" :src="userAvatar" :alt="userName" />
+          <img
+            v-if="userAvatar"
+            :src="userAvatar"
+            :alt="userName"
+            referrerpolicy="no-referrer"
+            crossorigin="anonymous"
+          />
           <span v-else class="admin-header__avatar-fallback">{{ userInitial }}</span>
         </div>
         <span class="admin-header__user-name">{{ userName }}</span>

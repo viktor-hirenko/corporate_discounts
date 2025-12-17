@@ -72,8 +72,14 @@ onUnmounted(() => {
 
 .admin-layout {
   display: flex;
-  min-height: 100vh;
+  height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
   background-color: #f8fafc;
+
+  @include mq(null, md) {
+    height: calc(100vh - 48px);
+    min-height: calc(100vh - 48px);
+  }
 
   &__overlay {
     position: fixed;
@@ -95,7 +101,7 @@ onUnmounted(() => {
   &__content {
     flex: 1;
     padding: to-rem(24);
-    overflow-y: auto;
+    overflow-y: auto; // Default scroll for pages without tables
     overflow-x: hidden;
   }
 

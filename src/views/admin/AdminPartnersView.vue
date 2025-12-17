@@ -69,60 +69,63 @@ const openPartnerPage = (slug: string) => {
 
 <template>
   <div class="admin-partners">
-    <!-- Header -->
-    <div class="admin-partners__header">
-      <div class="admin-partners__title-row">
-        <h2>Партнери</h2>
-        <span class="admin-partners__count"
-          >{{ store.filteredPartners.length }} з {{ store.partnersCount }}</span
-        >
+    <!-- Controls (sticky) -->
+    <div class="admin-partners__controls">
+      <!-- Header -->
+      <div class="admin-partners__header">
+        <div class="admin-partners__title-row">
+          <h2>Партнери</h2>
+          <span class="admin-partners__count"
+            >{{ store.filteredPartners.length }} з {{ store.partnersCount }}</span
+          >
+        </div>
+        <div class="admin-partners__actions">
+          <button
+            class="btn-secondary"
+            title="Завантажити всіх партнерів у форматі JSON"
+            @click="handleExport"
+          >
+            <i class="fas fa-download"></i>
+            Експорт JSON
+          </button>
+          <button
+            class="btn-primary"
+            title="Створити нового партнера"
+            @click="store.openCreateForm()"
+          >
+            <i class="fas fa-plus"></i>
+            Додати партнера
+          </button>
+        </div>
       </div>
-      <div class="admin-partners__actions">
-        <button
-          class="btn-secondary"
-          title="Завантажити всіх партнерів у форматі JSON"
-          @click="handleExport"
-        >
-          <i class="fas fa-download"></i>
-          Експорт JSON
-        </button>
-        <button
-          class="btn-primary"
-          title="Створити нового партнера"
-          @click="store.openCreateForm()"
-        >
-          <i class="fas fa-plus"></i>
-          Додати партнера
-        </button>
+
+      <!-- Filters -->
+      <div class="admin-partners__filters">
+        <div class="filter-group">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Пошук за назвою, slug або промокодом..."
+            :value="store.searchQuery"
+            @input="handleSearch"
+          />
+        </div>
+        <select :value="store.selectedCategory" @change="handleCategoryChange">
+          <option value="all">Всі категорії</option>
+          <option v-for="cat in store.categories" :key="cat" :value="cat">
+            {{ cat }}
+          </option>
+        </select>
+        <select :value="store.selectedLocation" @change="handleLocationChange">
+          <option value="all">Всі локації</option>
+          <option v-for="loc in store.locations" :key="loc" :value="loc">
+            {{ loc }}
+          </option>
+        </select>
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="admin-partners__filters">
-      <div class="filter-group">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          placeholder="Пошук за назвою, slug або промокодом..."
-          :value="store.searchQuery"
-          @input="handleSearch"
-        />
-      </div>
-      <select :value="store.selectedCategory" @change="handleCategoryChange">
-        <option value="all">Всі категорії</option>
-        <option v-for="cat in store.categories" :key="cat" :value="cat">
-          {{ cat }}
-        </option>
-      </select>
-      <select :value="store.selectedLocation" @change="handleLocationChange">
-        <option value="all">Всі локації</option>
-        <option v-for="loc in store.locations" :key="loc" :value="loc">
-          {{ loc }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Table -->
+    <!-- Table (scrollable) -->
     <div class="admin-partners__table-wrapper">
       <table class="admin-partners__table">
         <thead>
@@ -255,6 +258,17 @@ const openPartnerPage = (slug: string) => {
 $accent-color: rgb(115 103 240);
 
 .admin-partners {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: calc(100vh - to-rem(80)); // Subtract header height
+
+  &__controls {
+    flex-shrink: 0;
+    background: #f8fafc;
+    padding-bottom: to-rem(8);
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
@@ -266,6 +280,7 @@ $accent-color: rgb(115 103 240);
     @include mq(null, md) {
       flex-direction: column;
       align-items: stretch;
+      margin-bottom: to-rem(16);
     }
   }
 
@@ -368,10 +383,11 @@ $accent-color: rgb(115 103 240);
   }
 
   &__table-wrapper {
+    flex: 1;
     background: #fff;
     border-radius: to-rem(12);
     border: 1px solid #e5e7eb;
-    overflow-x: auto; // Horizontal scroll for mobile
+    overflow: auto; // Both scrolls
     -webkit-overflow-scrolling: touch;
   }
 
@@ -379,6 +395,18 @@ $accent-color: rgb(115 103 240);
     width: 100%;
     border-collapse: collapse;
     min-width: to-rem(900); // Minimum width to trigger scroll on mobile
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #f9fafb;
+      box-shadow: 0 1px 0 #e5e7eb;
+
+      th {
+        background: inherit;
+      }
+    }
 
     th,
     td {
@@ -614,6 +642,7 @@ code {
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
+  color: #1f2937;
 
   &--large {
     max-width: to-rem(900);

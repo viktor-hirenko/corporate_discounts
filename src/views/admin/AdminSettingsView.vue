@@ -27,31 +27,34 @@ const handleSave = () => {
 
 <template>
   <div class="admin-settings">
-    <!-- Header -->
-    <div class="admin-settings__header">
-      <h2>Налаштування</h2>
-      <div class="admin-settings__actions">
-        <button
-          class="btn-secondary"
-          title="Завантажити налаштування у форматі JSON"
-          @click="handleExport"
-        >
-          <i class="fas fa-download"></i>
-          Експорт JSON
-        </button>
-        <button
-          class="btn-primary"
-          title="Зберегти зміни налаштувань"
-          :disabled="!store.isDirty"
-          @click="handleSave"
-        >
-          <i class="fas fa-save"></i>
-          Зберегти
-        </button>
+    <!-- Controls (sticky) -->
+    <div class="admin-settings__controls">
+      <!-- Header -->
+      <div class="admin-settings__header">
+        <h2>Налаштування</h2>
+        <div class="admin-settings__actions">
+          <button
+            class="btn-secondary"
+            title="Завантажити налаштування у форматі JSON"
+            @click="handleExport"
+          >
+            <i class="fas fa-download"></i>
+            Експорт JSON
+          </button>
+          <button
+            class="btn-primary"
+            title="Зберегти зміни налаштувань"
+            :disabled="!store.isDirty"
+            @click="handleSave"
+          >
+            <i class="fas fa-save"></i>
+            Зберегти
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Sections -->
+    <!-- Sections (scrollable) -->
     <div class="admin-settings__sections">
       <!-- Localization -->
       <section class="settings-section">
@@ -156,11 +159,20 @@ const handleSave = () => {
 $accent-color: rgb(115 103 240);
 
 .admin-settings {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__controls {
+    flex-shrink: 0;
+    background: #f8fafc;
+    margin-bottom: to-rem(24);
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: to-rem(24);
     flex-wrap: wrap;
     gap: to-rem(16);
 
@@ -178,13 +190,16 @@ $accent-color: rgb(115 103 240);
   }
 
   &__sections {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: to-rem(24);
+    overflow-y: auto;
   }
 }
 
 .settings-section {
+  flex-shrink: 0;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: to-rem(12);

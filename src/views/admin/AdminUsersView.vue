@@ -104,76 +104,79 @@ const getSyncStatusText = () => {
 
 <template>
   <div class="admin-users">
-    <!-- Header -->
-    <div class="admin-users__header">
-      <div class="admin-users__title-row">
-        <h2>Користувачі адмінки</h2>
-        <span class="admin-users__count"
-          >{{ store.filteredUsers.length }} з {{ store.usersCount }}</span
-        >
-      </div>
-      <div class="admin-users__actions">
-        <div v-if="store.syncStatus !== 'idle'" class="sync-status" :class="store.syncStatus">
-          <i
-            :class="{
-              'fas fa-sync fa-spin': store.syncStatus === 'syncing',
-              'fas fa-check': store.syncStatus === 'success',
-              'fas fa-exclamation-triangle': store.syncStatus === 'error',
-            }"
-          ></i>
-          {{ getSyncStatusText() }}
+    <!-- Controls (sticky) -->
+    <div class="admin-users__controls">
+      <!-- Header -->
+      <div class="admin-users__header">
+        <div class="admin-users__title-row">
+          <h2>Користувачі адмінки</h2>
+          <span class="admin-users__count"
+            >{{ store.filteredUsers.length }} з {{ store.usersCount }}</span
+          >
         </div>
-        <button
-          class="btn-secondary"
-          title="Синхронізувати список з сервером"
-          :disabled="store.isLoading"
-          @click="store.syncWithBackend()"
-        >
-          <i class="fas fa-sync"></i>
-          Оновити
-        </button>
-        <button
-          class="btn-secondary"
-          title="Завантажити список користувачів у форматі JSON"
-          @click="handleExport"
-        >
-          <i class="fas fa-download"></i>
-          Експорт
-        </button>
-        <button
-          class="btn-primary"
-          title="Додати нового користувача до whitelist"
-          @click="store.openCreateForm()"
-        >
-          <i class="fas fa-plus"></i>
-          Додати користувача
-        </button>
+        <div class="admin-users__actions">
+          <div v-if="store.syncStatus !== 'idle'" class="sync-status" :class="store.syncStatus">
+            <i
+              :class="{
+                'fas fa-sync fa-spin': store.syncStatus === 'syncing',
+                'fas fa-check': store.syncStatus === 'success',
+                'fas fa-exclamation-triangle': store.syncStatus === 'error',
+              }"
+            ></i>
+            {{ getSyncStatusText() }}
+          </div>
+          <button
+            class="btn-secondary"
+            title="Синхронізувати список з сервером"
+            :disabled="store.isLoading"
+            @click="store.syncWithBackend()"
+          >
+            <i class="fas fa-sync"></i>
+            Оновити
+          </button>
+          <button
+            class="btn-secondary"
+            title="Завантажити список користувачів у форматі JSON"
+            @click="handleExport"
+          >
+            <i class="fas fa-download"></i>
+            Експорт
+          </button>
+          <button
+            class="btn-primary"
+            title="Додати нового користувача до whitelist"
+            @click="store.openCreateForm()"
+          >
+            <i class="fas fa-plus"></i>
+            Додати користувача
+          </button>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="admin-users__info">
+        <i class="fas fa-shield-alt"></i>
+        <p>
+          Тільки користувачі з цього списку можуть авторизуватися в адмін-панелі через Google.
+          Додайте email-адреси співробітників, яким потрібен доступ.
+        </p>
+      </div>
+
+      <!-- Search -->
+      <div class="admin-users__filters">
+        <div class="filter-group">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Пошук за email або ім'ям..."
+            :value="store.searchQuery"
+            @input="handleSearch"
+          />
+        </div>
       </div>
     </div>
 
-    <!-- Info -->
-    <div class="admin-users__info">
-      <i class="fas fa-shield-alt"></i>
-      <p>
-        Тільки користувачі з цього списку можуть авторизуватися в адмін-панелі через Google. Додайте
-        email-адреси співробітників, яким потрібен доступ.
-      </p>
-    </div>
-
-    <!-- Search -->
-    <div class="admin-users__filters">
-      <div class="filter-group">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          placeholder="Пошук за email або ім'ям..."
-          :value="store.searchQuery"
-          @input="handleSearch"
-        />
-      </div>
-    </div>
-
-    <!-- Table -->
+    <!-- Table (scrollable) -->
     <div class="admin-users__table-wrapper">
       <table class="admin-users__table">
         <thead>
@@ -336,6 +339,16 @@ const getSyncStatusText = () => {
 $accent-color: rgb(115 103 240);
 
 .admin-users {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__controls {
+    flex-shrink: 0;
+    background: #f8fafc;
+    padding-bottom: to-rem(8);
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
@@ -394,8 +407,6 @@ $accent-color: rgb(115 103 240);
   }
 
   &__filters {
-    margin-bottom: to-rem(24);
-
     .filter-group {
       position: relative;
       max-width: to-rem(400);
@@ -424,18 +435,27 @@ $accent-color: rgb(115 103 240);
   }
 
   &__table-wrapper {
+    flex: 1;
     background: #fff;
     border-radius: to-rem(12);
     border: 1px solid #e5e7eb;
-    overflow-x: auto;
+    overflow: auto;
     -webkit-overflow-scrolling: touch;
-    margin-bottom: to-rem(24);
+    margin-top: to-rem(16);
   }
 
   &__table {
     width: 100%;
     border-collapse: collapse;
     min-width: to-rem(600);
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #f9fafb;
+      box-shadow: 0 1px 0 #e5e7eb;
+    }
 
     th,
     td {
@@ -446,7 +466,7 @@ $accent-color: rgb(115 103 240);
     }
 
     th {
-      background: #f9fafb;
+      background: inherit;
       font-weight: 600;
       font-size: to-rem(12);
       text-transform: uppercase;
@@ -483,6 +503,7 @@ $accent-color: rgb(115 103 240);
 
   &__footer {
     display: flex;
+    margin-top: to-rem(20);
     justify-content: flex-end;
   }
 }
@@ -500,7 +521,8 @@ $accent-color: rgb(115 103 240);
 }
 
 .col-date {
-  width: to-rem(120);
+  width: to-rem(100);
+  white-space: nowrap;
 }
 
 .col-actions {
@@ -675,6 +697,7 @@ $accent-color: rgb(115 103 240);
   border-radius: to-rem(16);
   max-width: to-rem(480);
   width: 100%;
+  color: #1f2937;
 
   &--medium {
     max-width: to-rem(500);
@@ -709,13 +732,19 @@ $accent-color: rgb(115 103 240);
 
   &__body {
     padding: to-rem(24);
+
+    p {
+      margin: 0 0 to-rem(12) 0;
+      color: #4b5563;
+    }
   }
 
   &__footer {
     display: flex;
     justify-content: flex-end;
     gap: to-rem(12);
-    padding-top: to-rem(16);
+    padding: to-rem(16) to-rem(24);
+    border-top: 1px solid #e5e7eb;
   }
 }
 

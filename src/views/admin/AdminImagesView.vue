@@ -54,36 +54,39 @@ const getCategoryLabel = (category: string): string => {
 
 <template>
   <div class="admin-images">
-    <!-- Header -->
-    <div class="admin-images__header">
-      <div class="admin-images__title-row">
-        <h2>Зображення</h2>
-        <span class="admin-images__count"
-          >{{ store.filteredImages.length }} з {{ store.imagesCount }}</span
-        >
+    <!-- Controls (sticky) -->
+    <div class="admin-images__controls">
+      <!-- Header -->
+      <div class="admin-images__header">
+        <div class="admin-images__title-row">
+          <h2>Зображення</h2>
+          <span class="admin-images__count"
+            >{{ store.filteredImages.length }} з {{ store.imagesCount }}</span
+          >
+        </div>
+        <div class="admin-images__actions">
+          <button
+            class="btn-secondary"
+            title="Завантажити конфігурацію зображень у форматі JSON"
+            @click="handleExport"
+          >
+            <i class="fas fa-download"></i>
+            Експорт JSON
+          </button>
+        </div>
       </div>
-      <div class="admin-images__actions">
-        <button
-          class="btn-secondary"
-          title="Завантажити конфігурацію зображень у форматі JSON"
-          @click="handleExport"
-        >
-          <i class="fas fa-download"></i>
-          Експорт JSON
-        </button>
+
+      <!-- Filters -->
+      <div class="admin-images__filters">
+        <select :value="store.selectedCategory" @change="handleCategoryChange">
+          <option value="all">Всі категорії</option>
+          <option value="logo">Логотипи</option>
+          <option value="general">Загальні</option>
+        </select>
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="admin-images__filters">
-      <select :value="store.selectedCategory" @change="handleCategoryChange">
-        <option value="all">Всі категорії</option>
-        <option value="logo">Логотипи</option>
-        <option value="general">Загальні</option>
-      </select>
-    </div>
-
-    <!-- Grid -->
+    <!-- Grid (scrollable) -->
     <div class="admin-images__grid">
       <div v-for="image in store.filteredImages" :key="image.id" class="image-card">
         <div class="image-card__preview">
@@ -143,6 +146,16 @@ const getCategoryLabel = (category: string): string => {
 $accent-color: rgb(115 103 240);
 
 .admin-images {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__controls {
+    flex-shrink: 0;
+    background: #f8fafc;
+    padding-bottom: to-rem(8);
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
@@ -194,10 +207,14 @@ $accent-color: rgb(115 103 240);
   }
 
   &__grid {
+    flex: 1;
+    min-height: 0;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(to-rem(280), 1fr));
+    grid-auto-rows: max-content;
     gap: to-rem(20);
-    margin-bottom: to-rem(24);
+    overflow-y: auto;
+    align-content: start;
   }
 
   &__empty {
@@ -223,10 +240,12 @@ $accent-color: rgb(115 103 240);
   }
 
   &__hint {
+    flex-shrink: 0;
     display: flex;
     align-items: flex-start;
     gap: to-rem(12);
     padding: to-rem(16);
+    margin-top: to-rem(20);
     background: #f0f9ff;
     border: 1px solid #bae6fd;
     border-radius: to-rem(8);
@@ -247,6 +266,7 @@ $accent-color: rgb(115 103 240);
 }
 
 .image-card {
+  flex-shrink: 0;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: to-rem(12);
@@ -254,7 +274,17 @@ $accent-color: rgb(115 103 240);
 
   &__preview {
     height: to-rem(140);
-    background: #f9fafb;
+    background-color: #f9fafb;
+    background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
+      linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
+      linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+    background-size: 16px 16px;
+    background-position:
+      0 0,
+      0 8px,
+      8px -8px,
+      -8px 0;
     display: flex;
     align-items: center;
     justify-content: center;

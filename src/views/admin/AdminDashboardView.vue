@@ -205,6 +205,7 @@ $accent-color: rgb(115 103 240);
 
 .actions-grid {
   display: grid;
+  margin-bottom: to-rem(24);
   grid-template-columns: repeat(auto-fit, minmax(to-rem(200), 1fr));
   gap: to-rem(16);
 }

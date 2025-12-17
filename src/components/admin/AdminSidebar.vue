@@ -69,7 +69,7 @@ const siteUrl = computed(() => {
         <i class="fas fa-building"></i>
       </div>
       <span v-if="!isCollapsed || isMobile" class="admin-sidebar__logo-text">
-        UPSTARS<br />
+        UPSTARS <br />Corporate Discounts<br />
         <small>Admin Panel</small>
       </span>
       <!-- Mobile close button -->

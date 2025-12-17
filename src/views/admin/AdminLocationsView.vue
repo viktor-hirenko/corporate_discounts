@@ -97,44 +97,47 @@ watch(
 
 <template>
   <div class="admin-locations">
-    <!-- Header -->
-    <div class="admin-locations__header">
-      <div class="admin-locations__title-row">
-        <h2>Локації</h2>
-        <span class="admin-locations__count"
-          >{{ store.filteredLocations.length }} з {{ store.locationsCount }}</span
-        >
+    <!-- Controls (sticky) -->
+    <div class="admin-locations__controls">
+      <!-- Header -->
+      <div class="admin-locations__header">
+        <div class="admin-locations__title-row">
+          <h2>Локації</h2>
+          <span class="admin-locations__count"
+            >{{ store.filteredLocations.length }} з {{ store.locationsCount }}</span
+          >
+        </div>
+        <div class="admin-locations__actions">
+          <button
+            class="btn-secondary"
+            title="Завантажити всі локації у форматі JSON"
+            @click="handleExport"
+          >
+            <i class="fas fa-download"></i>
+            Експорт JSON
+          </button>
+          <button class="btn-primary" title="Створити нову локацію" @click="store.openCreateForm()">
+            <i class="fas fa-plus"></i>
+            Додати локацію
+          </button>
+        </div>
       </div>
-      <div class="admin-locations__actions">
-        <button
-          class="btn-secondary"
-          title="Завантажити всі локації у форматі JSON"
-          @click="handleExport"
-        >
-          <i class="fas fa-download"></i>
-          Експорт JSON
-        </button>
-        <button class="btn-primary" title="Створити нову локацію" @click="store.openCreateForm()">
-          <i class="fas fa-plus"></i>
-          Додати локацію
-        </button>
+
+      <!-- Search -->
+      <div class="admin-locations__filters">
+        <div class="filter-group">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Пошук за назвою або ID..."
+            :value="store.searchQuery"
+            @input="handleSearch"
+          />
+        </div>
       </div>
     </div>
 
-    <!-- Search -->
-    <div class="admin-locations__filters">
-      <div class="filter-group">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          placeholder="Пошук за назвою або ID..."
-          :value="store.searchQuery"
-          @input="handleSearch"
-        />
-      </div>
-    </div>
-
-    <!-- Table -->
+    <!-- Table (scrollable) -->
     <div class="admin-locations__table-wrapper">
       <table class="admin-locations__table">
         <thead>
@@ -283,6 +286,16 @@ watch(
 $accent-color: rgb(115 103 240);
 
 .admin-locations {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__controls {
+    flex-shrink: 0;
+    background: #f8fafc;
+    padding-bottom: to-rem(8);
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
@@ -316,8 +329,6 @@ $accent-color: rgb(115 103 240);
   }
 
   &__filters {
-    margin-bottom: to-rem(24);
-
     .filter-group {
       position: relative;
       max-width: to-rem(400);
@@ -346,17 +357,27 @@ $accent-color: rgb(115 103 240);
   }
 
   &__table-wrapper {
+    flex: 1;
     background: #fff;
     border-radius: to-rem(12);
     border: 1px solid #e5e7eb;
-    overflow-x: auto;
+    overflow: auto;
     -webkit-overflow-scrolling: touch;
+    margin-top: to-rem(16);
   }
 
   &__table {
     width: 100%;
     border-collapse: collapse;
     min-width: to-rem(600);
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #f9fafb;
+      box-shadow: 0 1px 0 #e5e7eb;
+    }
 
     th,
     td {
@@ -367,7 +388,7 @@ $accent-color: rgb(115 103 240);
     }
 
     th {
-      background: #f9fafb;
+      background: inherit;
       font-weight: 600;
       font-size: to-rem(12);
       text-transform: uppercase;
@@ -537,6 +558,7 @@ code {
   border-radius: to-rem(16);
   max-width: to-rem(480);
   width: 100%;
+  color: #1f2937;
 
   &--medium {
     max-width: to-rem(600);
@@ -571,13 +593,19 @@ code {
 
   &__body {
     padding: to-rem(24);
+
+    p {
+      margin: 0 0 to-rem(12) 0;
+      color: #4b5563;
+    }
   }
 
   &__footer {
     display: flex;
     justify-content: flex-end;
     gap: to-rem(12);
-    padding-top: to-rem(16);
+    padding: to-rem(16) to-rem(24);
+    border-top: 1px solid #e5e7eb;
   }
 }
 
