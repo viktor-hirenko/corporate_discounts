@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { FilterCategory, LocalizedText, AppConfig } from '@/types/app-config'
+import { getApiUrl } from '@/utils/api-config'
 
 export interface CategoryItem {
   id: string
@@ -29,7 +30,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
       let configCategories: Record<string, FilterCategory> = {}
 
       // Завантажуємо через API
-      const response = await fetch('/api/load-config')
+      const response = await fetch(getApiUrl('/api/load-config'))
       if (response.ok) {
         const config = (await response.json()) as AppConfig
         configCategories = config.filters?.categories || {}

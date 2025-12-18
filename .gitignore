@@ -38,8 +38,8 @@ docs/
 .cursor/
 
 # Cloudflare
-wrangler.toml
-.wrangler/
+worker/.wrangler/
+worker/wrangler.toml
 
 # Environment files with secrets
 .env.local

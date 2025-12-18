@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { FaqItem, AppConfig, LocalizedText } from '@/types/app-config'
+import { getApiUrl } from '@/utils/api-config'
 
 export interface FaqItemAdmin extends FaqItem {
   order: number
@@ -31,7 +32,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     try {
       let configFaq: FaqItem[] = []
 
-      const response = await fetch('/api/load-config')
+      const response = await fetch(getApiUrl('/api/load-config'))
       if (response.ok) {
         const config = (await response.json()) as AppConfig
         configFaq = config.pages?.faq?.items || []

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { FilterLocation, LocalizedText, AppConfig } from '@/types/app-config'
+import { getApiUrl } from '@/utils/api-config'
 
 export interface LocationItem {
   id: string
@@ -28,7 +29,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     try {
       let configLocations: Record<string, FilterLocation> = {}
 
-      const response = await fetch('/api/load-config')
+      const response = await fetch(getApiUrl('/api/load-config'))
       if (response.ok) {
         const config = (await response.json()) as AppConfig
         configLocations = config.filters?.locations || {}

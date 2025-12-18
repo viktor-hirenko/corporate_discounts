@@ -12,11 +12,10 @@ echo -e "${BLUE}🚀 Деплой corporate_discounts на Cloudflare R2${NC}\n"
 if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)
 fi
-ACCOUNT_ID="$ACCOUNT_ID"
 
-BUCKET_NAME="dicounts-upstars-com"
-PROFILE="upstars-discounts"
-ENDPOINT="https://$ACCOUNT_ID.r2.cloudflarestorage.com"
+BUCKET_NAME="$R2_BUCKET_NAME"
+PROFILE="$AWS_PROFILE"
+ENDPOINT="$R2_ENDPOINT"
 
 # 1. Сборка проекта
 echo -e "${BLUE}📦 Шаг 1: Сборка проекта...${NC}"
@@ -84,5 +83,5 @@ echo -e "${GREEN}✅ JSON файлы загружены${NC}\n"
 # 5. Готово
 echo -e "${GREEN}🎉 Деплой завершен успешно!${NC}\n"
 echo -e "${BLUE}Сайт доступен по адресу:${NC}"
-echo -e "${GREEN}https://pub-37aeae40035e428e93ab550125107a2d.r2.dev/index.html${NC}\n"
+echo -e "${GREEN}https://corporate-discounts-worker.upstars-marbella.workers.dev${NC}\n"
 

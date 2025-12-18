@@ -10,6 +10,7 @@ import { useAdminSettingsStore } from './adminSettings'
 import { useAdminUsersStore } from './adminUsers'
 import type { AppConfig } from '@/types/app-config'
 import appConfigData from '@/data/app-config.json'
+import { getApiUrl } from '@/utils/api-config'
 
 // Оригінальний конфіг як база
 const originalConfig = appConfigData as AppConfig
@@ -144,7 +145,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       await ensureStoresInitialized()
       const config = buildFullConfig()
 
-      const response = await fetch('/api/save-config', {
+      const response = await fetch(getApiUrl('/api/save-config'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config),
@@ -177,7 +178,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
   // Завантажити актуальний конфіг з файлу
   async function loadFromLocalFile(): Promise<AppConfig | null> {
     try {
-      const response = await fetch('/api/load-config')
+      const response = await fetch(getApiUrl('/api/load-config'))
       if (!response.ok) {
         throw new Error('Failed to load config')
       }

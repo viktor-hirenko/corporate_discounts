@@ -128,10 +128,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
-  // Публичные маршруты (не требуют авторизации)
-  // Admin панель публічна (авторизація буде через Google у Фазі 5)
-  const isPublicRoute =
-    to.path === '/login' || to.path === '/admin/partners-legacy' || to.path.startsWith('/admin')
+  // Публичные маршруты (не требуют авторизации) — ТОЛЬКО login
+  const isPublicRoute = to.path === '/login'
 
   // Если пользователь не авторизован и пытается попасть на защищенный маршрут
   if (!authStore.isLoggedIn && !isPublicRoute) {

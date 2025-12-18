@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { PartnerConfig, AppConfig } from '@/types/app-config'
+import { getApiUrl } from '@/utils/api-config'
 
 export const useAdminPartnersStore = defineStore('adminPartners', () => {
   // State
@@ -64,7 +65,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
 
     try {
       // Завантажуємо конфіг через API (dev) або статичний файл (prod)
-      const response = await fetch('/api/load-config')
+      const response = await fetch(getApiUrl('/api/load-config'))
       if (response.ok) {
         const config = (await response.json()) as AppConfig
         if (config.partners) {

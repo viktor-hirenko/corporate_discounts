@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { sanitizeEmail, sanitizeString } from '@/utils/sanitize'
+import { getApiUrl } from '@/utils/api-config'
 
 export interface AdminUser {
   id: string
@@ -43,7 +44,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
 
     try {
       // Завантажуємо конфіг через API (dev) або статичний файл (prod)
-      const response = await fetch('/api/load-config')
+      const response = await fetch(getApiUrl('/api/load-config'))
       if (response.ok) {
         const config = await response.json()
         if (config.allowedUsers?.length) {
@@ -140,7 +141,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
 
     try {
       // Перезавантажуємо конфіг з файлу
-      const response = await fetch('/api/load-config')
+      const response = await fetch(getApiUrl('/api/load-config'))
       if (response.ok) {
         const config = await response.json()
         if (config.allowedUsers?.length) {
