@@ -135,11 +135,14 @@ AWS_PROFILE=upstars-discounts
 3. Відкрийте: **Variables and Secrets**
 4. Додайте Secrets:
 
-| Name                    | Type   | Звідки взяти                       |
-| ----------------------- | ------ | ---------------------------------- |
-| `AWS_ACCESS_KEY_ID`     | Secret | R2 API Tokens                      |
-| `AWS_SECRET_ACCESS_KEY` | Secret | R2 API Tokens                      |
-| `GOOGLE_CLIENT_SECRET`  | Secret | Google Cloud Console (опціонально) |
+| Name                    | Type   | Звідки взяти                             |
+| ----------------------- | ------ | ---------------------------------------- |
+| `JWT_SECRET` ⚠️         | Secret | `openssl rand -hex 32` (мін. 32 символи) |
+| `AWS_ACCESS_KEY_ID`     | Secret | R2 API Tokens                            |
+| `AWS_SECRET_ACCESS_KEY` | Secret | R2 API Tokens                            |
+| `GOOGLE_CLIENT_SECRET`  | Secret | Google Cloud Console (опціонально)       |
+
+> ⚠️ **JWT_SECRET обов'язковий!** Без нього API endpoints не працюватимуть.
 
 ### Крок 4: Перевірте wrangler.toml
 

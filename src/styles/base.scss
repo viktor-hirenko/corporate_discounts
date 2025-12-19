@@ -5,6 +5,7 @@
 
 @use './utils/mixins' as *;
 @use './utils/functions' as *;
+@use './utils/link' as *;
 
 *,
 *::before,
@@ -115,8 +116,8 @@ body {
 }
 
 .scroll-visible-alt {
-  $scrollbar-thumb-color: #0927f2;
-  $scrollbar-thumb-color-active: #0719c4;
+  $scrollbar-thumb-color: #d9d8ffcc;
+  $scrollbar-thumb-color-active: #d9d8ffcc;
 
   scrollbar-width: thin;
   scrollbar-color: $scrollbar-thumb-color var(--color-neutral-400, #e8e7ff);

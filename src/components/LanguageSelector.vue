@@ -34,9 +34,9 @@ function handleLanguageChange(lang: 'ua' | 'en') {
   <div class="language-selector" :class="`language-selector--${variant}`">
     <template v-for="lang in languages" :key="lang.code">
       <button
-        class="language-selector__button"
+        class="language-selector__button link"
         :class="{
-          'language-selector__button--active': currentLanguage === lang.code,
+          'link--active': currentLanguage === lang.code,
         }"
         type="button"
         @click="handleLanguageChange(lang.code)"
@@ -60,44 +60,22 @@ function handleLanguageChange(lang: 'ua' | 'en') {
   }
 
   &__button {
-    padding: 0;
-    border: none;
+    // Наследует базовые стили от .link класса
     background-color: var(--color-secondary-100, #fcfcff);
-    color: var(--color-secondary-600, #01001f);
     font-size: to-rem(16);
-    transition: color 0.2s ease;
-    cursor: pointer;
 
     @include line-height(relaxed);
     @include font-weight(extrabold);
-
-    &:hover:not(&--active) {
-      color: var(--color-secondary-300, #928fec);
-    }
-
-    &--active {
-      color: var(--color-secondary-400, #5535be);
-    }
   }
 
   &--mobile &__button {
-    color: var(--color-secondary-600, #01001f);
     font-size: to-rem(32);
-    transition: color 0.2s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
 
     @include line-height(tight);
     @include font-weight(black);
-
-    &:hover:not(&--active) {
-      color: var(--color-secondary-300, #928fec);
-    }
-
-    &--active {
-      color: var(--color-secondary-400, #5535be);
-    }
   }
 }
 </style>

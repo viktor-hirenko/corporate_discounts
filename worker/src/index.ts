@@ -1,13 +1,33 @@
 /// <reference types="@cloudflare/workers-types" />
 
+import { SignJWT, jwtVerify } from 'jose'
+
 export interface Env {
   R2_BUCKET: R2Bucket
   BUCKET_NAME: string
   PUBLIC_URL: string
+  JWT_SECRET: string // Required: 32+ character secret for JWT signing
   GOOGLE_CLIENT_ID?: string
   GOOGLE_CLIENT_SECRET?: string
   AWS_ACCESS_KEY_ID?: string
   AWS_SECRET_ACCESS_KEY?: string
+}
+
+interface AdminUser {
+  id: string
+  email: string
+  name: string
+  role: 'admin' | 'editor'
+  addedAt: string
+  addedBy: string
+}
+
+interface JWTPayload {
+  email: string
+  name: string
+  role: string
+  iat?: number
+  exp?: number
 }
 
 // ============================================
@@ -50,7 +70,9 @@ const securityHeaders = {
 // ============================================
 const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
 const MAX_API_REQUESTS = 30 // 30 requests per minute per IP
+const MAX_LOGIN_ATTEMPTS = 5 // 5 login attempts per minute per IP
 const apiRequests = new Map<string, { count: number; resetTime: number }>()
+const loginAttempts = new Map<string, { count: number; resetTime: number }>()
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now()
@@ -69,8 +91,67 @@ function isRateLimited(ip: string): boolean {
   return false
 }
 
+function isLoginRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const record = loginAttempts.get(ip)
+
+  if (!record || now > record.resetTime) {
+    loginAttempts.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW })
+    return false
+  }
+
+  if (record.count >= MAX_LOGIN_ATTEMPTS) {
+    return true
+  }
+
+  record.count++
+  return false
+}
+
 function getClientIP(request: Request): string {
   return request.headers.get('CF-Connecting-IP') || 'unknown'
+}
+
+// ============================================
+// JWT Helpers
+// ============================================
+const JWT_EXPIRATION = '24h' // Token expires in 24 hours
+
+async function createJWT(payload: JWTPayload, secret: string): Promise<string> {
+  const secretKey = new TextEncoder().encode(secret)
+
+  return await new SignJWT({ email: payload.email, name: payload.name, role: payload.role })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(JWT_EXPIRATION)
+    .sign(secretKey)
+}
+
+async function verifyJWT(token: string, secret: string): Promise<JWTPayload | null> {
+  try {
+    const secretKey = new TextEncoder().encode(secret)
+    const { payload } = await jwtVerify(token, secretKey)
+
+    return {
+      email: payload.email as string,
+      name: payload.name as string,
+      role: payload.role as string,
+    }
+  } catch (error) {
+    console.error('JWT verification failed:', error)
+    return null
+  }
+}
+
+async function authenticateRequest(request: Request, env: Env): Promise<JWTPayload | null> {
+  const authHeader = request.headers.get('Authorization')
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    return null
+  }
+
+  const token = authHeader.slice('Bearer '.length)
+  return await verifyJWT(token, env.JWT_SECRET)
 }
 
 // ============================================
@@ -90,6 +171,26 @@ function rateLimitResponse(origin: string | null): Response {
   return corsResponse(
     new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
       status: 429,
+      headers: { 'Content-Type': 'application/json' },
+    }),
+    origin,
+  )
+}
+
+function unauthorizedResponse(origin: string | null, message = 'Unauthorized'): Response {
+  return corsResponse(
+    new Response(JSON.stringify({ error: message }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    }),
+    origin,
+  )
+}
+
+function forbiddenResponse(origin: string | null, message = 'Forbidden'): Response {
+  return corsResponse(
+    new Response(JSON.stringify({ error: message }), {
+      status: 403,
       headers: { 'Content-Type': 'application/json' },
     }),
     origin,
@@ -117,20 +218,65 @@ export default {
       if (path.startsWith('/api/')) {
         const clientIP = getClientIP(request)
 
-        // Rate limit check
+        // API: POST /api/login — special rate limit for login
+        if (path === '/api/login' && request.method === 'POST') {
+          if (isLoginRateLimited(clientIP)) {
+            console.warn(`Login rate limit exceeded for IP: ${clientIP}`)
+            return rateLimitResponse(origin)
+          }
+          return corsResponse(await handleLogin(request, env), origin)
+        }
+
+        // Rate limit check for other API endpoints
         if (isRateLimited(clientIP)) {
           console.warn(`Rate limit exceeded for IP: ${clientIP}`)
           return rateLimitResponse(origin)
         }
 
-        // API: GET /api/load-config
+        // API: GET /api/load-config — public (needed for initial load)
         if (path === '/api/load-config' && request.method === 'GET') {
           return corsResponse(await loadConfig(env), origin)
         }
 
-        // API: POST /api/save-config
+        // API: POST /api/save-config — PROTECTED: requires valid JWT
         if (path === '/api/save-config' && request.method === 'POST') {
+          const jwtPayload = await authenticateRequest(request, env)
+
+          if (!jwtPayload) {
+            return unauthorizedResponse(origin, 'Valid JWT token required')
+          }
+
+          // Optional: check role for admin-only actions
+          if (jwtPayload.role !== 'admin' && jwtPayload.role !== 'editor') {
+            return forbiddenResponse(origin, 'Insufficient permissions')
+          }
+
           return corsResponse(await saveConfig(request, env), origin)
+        }
+
+        // API: GET /api/verify — verify JWT token validity
+        if (path === '/api/verify' && request.method === 'GET') {
+          const jwtPayload = await authenticateRequest(request, env)
+
+          if (!jwtPayload) {
+            return unauthorizedResponse(origin, 'Invalid or expired token')
+          }
+
+          return corsResponse(
+            new Response(
+              JSON.stringify({
+                valid: true,
+                email: jwtPayload.email,
+                name: jwtPayload.name,
+                role: jwtPayload.role,
+              }),
+              {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+              },
+            ),
+            origin,
+          )
         }
 
         // Unknown API endpoint
@@ -161,6 +307,107 @@ export default {
 // ============================================
 // API Handlers
 // ============================================
+
+// Handle login: validate Google credential, check whitelist, issue JWT
+async function handleLogin(request: Request, env: Env): Promise<Response> {
+  try {
+    const body = await request.json<{ credential: string }>()
+
+    if (!body.credential) {
+      return new Response(JSON.stringify({ error: 'Missing credential' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Decode Google JWT (we trust Google's signature since it came from their SDK)
+    const parts = body.credential.split('.')
+    if (parts.length < 2 || !parts[1]) {
+      return new Response(JSON.stringify({ error: 'Invalid credential format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    let googlePayload: { email: string; name: string; picture?: string }
+    try {
+      googlePayload = JSON.parse(atob(parts[1]))
+    } catch {
+      return new Response(JSON.stringify({ error: 'Failed to decode credential' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!googlePayload.email) {
+      return new Response(JSON.stringify({ error: 'Email not found in credential' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Load config to check whitelist
+    const configObject = await env.R2_BUCKET.get('data/app-config.json')
+    if (!configObject) {
+      return new Response(JSON.stringify({ error: 'Config not found' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const config = await configObject.json<{ allowedUsers: AdminUser[] }>()
+    const allowedUsers = config.allowedUsers || []
+
+    // Check if email is in whitelist (case-insensitive)
+    const user = allowedUsers.find(
+      (u) => u.email.toLowerCase() === googlePayload.email.toLowerCase(),
+    )
+
+    if (!user) {
+      console.warn(`Login denied for email: ${googlePayload.email}`)
+      return new Response(
+        JSON.stringify({ error: 'Access denied. Your email is not in the allowed list.' }),
+        {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+    }
+
+    // Generate JWT token
+    const jwtToken = await createJWT(
+      {
+        email: user.email,
+        name: user.name || googlePayload.name,
+        role: user.role,
+      },
+      env.JWT_SECRET,
+    )
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        token: jwtToken,
+        user: {
+          email: user.email,
+          name: user.name || googlePayload.name,
+          role: user.role,
+          picture: googlePayload.picture || null,
+        },
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    )
+  } catch (error) {
+    console.error('Login error:', error)
+    return new Response(JSON.stringify({ error: 'Login failed' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
 
 // Load app-config.json from R2
 async function loadConfig(env: Env): Promise<Response> {

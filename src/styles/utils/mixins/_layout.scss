@@ -17,10 +17,10 @@
   justify-content: space-between;
   align-items: start;
   gap: to-rem(32);
-  color: var(--color-secondary-150);
+  color: var(--color-secondary-100);
 
   @if $with-border {
-    border-bottom: to-rem(3) solid var(--color-neutral-400);
+    border-bottom: to-rem(3) solid var(--color-secondary-100);
     padding-bottom: to-rem(45);
   }
 
@@ -32,6 +32,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: to-rem(24);
+    border-bottom: to-rem(1) solid var(--color-secondary-100);
   }
 }
 

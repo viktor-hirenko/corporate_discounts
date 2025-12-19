@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia'
-import { useAdminUsersStore } from './adminUsers'
-
-interface GoogleUser {
-  credential: string
-  select_by: string
-}
+import { getApiUrl, saveJwtToken, getJwtToken, clearJwtToken } from '@/utils/api-config'
 
 interface AuthState {
   isAuthenticated: boolean
@@ -12,6 +7,7 @@ interface AuthState {
     email: string
     name: string
     picture: string | null
+    role: string
   } | null
   token: string | null
 }
@@ -36,12 +32,14 @@ export const useAuthStore = defineStore('auth', {
     init(): void {
       // Восстанавливаем состояние из localStorage при инициализации
       const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) {
+      const jwtToken = getJwtToken()
+
+      if (stored && jwtToken) {
         try {
           const parsed = JSON.parse(stored)
           this.isAuthenticated = parsed.isAuthenticated ?? false
           this.user = parsed.user ?? null
-          this.token = parsed.token ?? null
+          this.token = jwtToken
 
           // Проверяем, что picture не потерялся при восстановлении
           if (this.user && !this.user.picture && parsed.user?.picture) {
@@ -62,33 +60,35 @@ export const useAuthStore = defineStore('auth', {
 
     async loginWithGoogle(credential: string): Promise<void> {
       try {
-        // Декодируем JWT токен от Google
-        const parts = credential.split('.')
-        if (parts.length < 2 || !parts[1]) {
-          throw new Error('Invalid credential format')
-        }
-        const payload = JSON.parse(atob(parts[1]))
+        // Вызываем /api/login на Worker для получения JWT
+        const response = await fetch(getApiUrl('/api/login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential }),
+        })
 
-        // ✅ Перевірка whitelist — чи email дозволений
-        const usersStore = useAdminUsersStore()
-        // Чекаємо ініціалізацію стора (динамічне завантаження)
-        await usersStore.init()
+        const data = await response.json()
 
-        if (!usersStore.isEmailAllowed(payload.email)) {
-          console.warn('[auth-store] email not in whitelist:', payload.email)
-          throw new Error('Доступ заборонено. Ваш email не в списку дозволених.')
+        if (!response.ok) {
+          console.warn('[auth-store] login failed:', data.error)
+          throw new Error(data.error || 'Не вдалося увійти')
         }
 
-        // Google JWT може містити picture в різних полях
-        // Перевіряємо декілька можливих варіантів
-        const pictureUrl = payload.picture || payload.avatar_url || payload.photo || null
+        if (!data.success || !data.token || !data.user) {
+          throw new Error('Invalid response from login API')
+        }
 
+        // Сохраняем JWT токен
+        saveJwtToken(data.token)
+
+        // Сохраняем данные пользователя
         this.user = {
-          email: payload.email,
-          name: payload.name || payload.email,
-          picture: pictureUrl,
+          email: data.user.email,
+          name: data.user.name,
+          picture: data.user.picture || null,
+          role: data.user.role,
         }
-        this.token = credential
+        this.token = data.token
         this.isAuthenticated = true
 
         // Зберігаємо в localStorage
@@ -105,33 +105,11 @@ export const useAuthStore = defineStore('auth', {
         }
       } catch (error) {
         console.error('[auth-store] failed to login with Google', error)
-        if (error instanceof Error && error.message.includes('Доступ заборонено')) {
+        if (error instanceof Error) {
           throw error
         }
         throw new Error('Не вдалося увійти через Google')
       }
-    },
-
-    async loginWithEmail(email: string, name: string): Promise<void> {
-      // При логине через email сохраняем picture из lastUser, если он есть
-      const lastUser = this.getLastUser()
-      this.user = {
-        email,
-        name,
-        picture: lastUser?.picture || null, // Сохраняем picture из lastUser, если есть
-      }
-      this.token = null
-      this.isAuthenticated = true
-
-      this.saveToStorage()
-
-      // Обновляем данные последнего пользователя
-      const lastUserData = {
-        name: this.user.name,
-        email: this.user.email,
-        picture: this.user.picture,
-      }
-      localStorage.setItem(LAST_USER_KEY, JSON.stringify(lastUserData))
     },
 
     logout(): void {
@@ -148,6 +126,9 @@ export const useAuthStore = defineStore('auth', {
       this.isAuthenticated = false
       this.user = null
       this.token = null
+
+      // Очищаем JWT токен
+      clearJwtToken()
       localStorage.removeItem(STORAGE_KEY)
     },
 
@@ -172,7 +153,7 @@ export const useAuthStore = defineStore('auth', {
       const data = {
         isAuthenticated: this.isAuthenticated,
         user: this.user,
-        token: this.token,
+        // Не сохраняем token здесь — он хранится отдельно через saveJwtToken
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
     },

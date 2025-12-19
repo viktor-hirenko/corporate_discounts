@@ -184,15 +184,16 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .scrollbar {
-  $scrollbar-thumb-color: #0927f2;
-  $scrollbar-thumb-color-active: #0719c4;
+  $scrollbar-thumb-color: #d9d8ffcc;
+  $scrollbar-thumb-color-active: #d9d8ffcc;
 
   position: absolute;
   top: 0;
   right: 0;
   z-index: 10;
   width: to-rem(8);
-  background-color: var(--color-neutral-400);
+  // if needed background color for track
+  // background-color: var(--color-neutral-400);
   cursor: pointer;
 
   &__thumb {
@@ -205,7 +206,8 @@ onUnmounted(() => {
     cursor: grab;
 
     &:active {
-      background-color: $scrollbar-thumb-color-active;
+      // if needed background color for thumb
+      // background-color: $scrollbar-thumb-color-active;
       cursor: grabbing;
     }
   }

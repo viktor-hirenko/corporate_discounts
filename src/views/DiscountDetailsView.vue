@@ -586,7 +586,6 @@ $container-max-width: calc(1312px);
     gap: max(to-cqw(24, $container-max-width), to-rem(24));
     border: to-rem(1) solid var(--color-secondary-600);
     border-radius: to-rem(16);
-    background-color: var(--color-primary-100, #fcfcff);
     color: var(--color-secondary-600, #01001f);
   }
 

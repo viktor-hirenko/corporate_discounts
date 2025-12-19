@@ -228,11 +228,15 @@ Worker обслуговує статичні файли з R2 та надає AP
 
 ### API Endpoints
 
-| Method | Endpoint           | Опис                             |
-| ------ | ------------------ | -------------------------------- |
-| `GET`  | `/api/load-config` | Завантажити app-config.json з R2 |
-| `POST` | `/api/save-config` | Зберегти app-config.json в R2    |
-| `GET`  | `/*`               | Статичні файли (SPA fallback)    |
+| Method | Endpoint           | Auth   | Опис                              |
+| ------ | ------------------ | ------ | --------------------------------- |
+| `POST` | `/api/login`       | Public | Авторизація, отримання JWT токена |
+| `GET`  | `/api/verify`      | JWT    | Перевірка валідності JWT токена   |
+| `GET`  | `/api/load-config` | Public | Завантажити app-config.json з R2  |
+| `POST` | `/api/save-config` | JWT ⚠️ | Зберегти app-config.json в R2     |
+| `GET`  | `/*`               | Public | Статичні файли (SPA fallback)     |
+
+> ⚠️ `/api/save-config` вимагає валідний JWT токен в заголовку `Authorization: Bearer <token>`
 
 ### CORS Configuration
 
@@ -284,11 +288,41 @@ PUBLIC_URL = "https://pub-37aeae40035e428e93ab550125107a2d.r2.dev"
 
 ### Secrets (Cloudflare Dashboard)
 
-| Secret                  | Опис                              |
-| ----------------------- | --------------------------------- |
-| `AWS_ACCESS_KEY_ID`     | R2 Access Key                     |
-| `AWS_SECRET_ACCESS_KEY` | R2 Secret Key                     |
-| `GOOGLE_CLIENT_SECRET`  | Google OAuth Secret (опціонально) |
+| Secret                  | Опис                                         |
+| ----------------------- | -------------------------------------------- |
+| `JWT_SECRET` ⚠️         | Ключ для JWT (мін. 32 символи, обов'язковий) |
+| `AWS_ACCESS_KEY_ID`     | R2 Access Key                                |
+| `AWS_SECRET_ACCESS_KEY` | R2 Secret Key                                |
+| `GOOGLE_CLIENT_SECRET`  | Google OAuth Secret (опціонально)            |
+
+> ⚠️ **JWT_SECRET обов'язковий!** Генерація: `openssl rand -hex 32`
+
+### JWT Authentication Flow
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│ 1. User clicks "Sign in with Google"                          │
+│    → Google SDK returns credential (Google JWT)               │
+└───────────────────────────────────────────────────────────────┘
+                              ↓
+┌───────────────────────────────────────────────────────────────┐
+│ 2. Frontend sends POST /api/login { credential }              │
+│    → Worker validates email against allowedUsers whitelist    │
+│    → Worker generates JWT token (signed with JWT_SECRET)      │
+│    → Returns { token, user }                                  │
+└───────────────────────────────────────────────────────────────┘
+                              ↓
+┌───────────────────────────────────────────────────────────────┐
+│ 3. Frontend stores JWT in localStorage                        │
+│    → Sends Authorization: Bearer <token> with API requests    │
+└───────────────────────────────────────────────────────────────┘
+                              ↓
+┌───────────────────────────────────────────────────────────────┐
+│ 4. Worker validates JWT on protected endpoints                │
+│    → /api/save-config requires valid JWT                      │
+│    → Returns 401 if token missing/invalid/expired             │
+└───────────────────────────────────────────────────────────────┘
+```
 
 ---
 

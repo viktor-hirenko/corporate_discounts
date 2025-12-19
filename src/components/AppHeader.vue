@@ -70,10 +70,10 @@ onUnmounted(() => {
 <template>
   <header class="header" :class="{ 'header--no-shadow': !hasShadow }">
     <div class="header__inner">
-      <div class="header__brand">
+      <router-link to="/discounts" class="header__brand">
         <img :src="logoUrl" alt="UPSTARS" class="header__logo" />
         <img :src="taglineUrl" alt="Корпоративні знижки" class="header__tagline" />
-      </div>
+      </router-link>
 
       <div class="header__actions">
         <NavigationLinks variant="desktop" class="header__navigation" />
@@ -151,6 +151,13 @@ onUnmounted(() => {
     min-width: 0;
     flex-direction: column;
     align-items: flex-start;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.8;
+    }
   }
 
   &__logo {
