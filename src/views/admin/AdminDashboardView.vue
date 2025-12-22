@@ -62,7 +62,7 @@ const quickActions = [
     id: 'open-site',
     label: 'Відкрити сайт',
     icon: 'fas fa-external-link-alt',
-    href: '/discounts',
+    href: '/#/discounts',
     title: 'Відкрити публічний сайт у новій вкладці',
   },
 ]

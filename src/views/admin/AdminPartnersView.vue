@@ -63,7 +63,7 @@ const copyPartnerJSON = (partner: PartnerConfig) => {
 }
 
 const openPartnerPage = (slug: string) => {
-  window.open(`/discounts/${slug}`, '_blank')
+  window.open(`/#/discounts/${slug}`, '_blank')
 }
 </script>
 
