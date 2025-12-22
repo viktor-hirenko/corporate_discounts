@@ -98,6 +98,10 @@ export const useAdminExportStore = defineStore('adminExport', () => {
         : { ...currentConfig.filters?.categories }
 
     // ✅ ЗАХИСТ: locations
+    console.log(
+      '[buildFullConfig] locationsStore.locations keys:',
+      Object.keys(locationsStore.locations),
+    )
     const locations: Record<string, unknown> =
       Object.keys(locationsStore.locations).length > 0
         ? Object.fromEntries(
@@ -107,6 +111,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
             ]),
           )
         : { ...currentConfig.filters?.locations }
+    console.log('[buildFullConfig] Final locations keys:', Object.keys(locations))
 
     // ✅ ЗАХИСТ: FAQ
     const faqItems =
@@ -177,9 +182,11 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       partners,
       filters: {
         ...currentConfig.filters,
+        ...textsObject.filters,
+        // ВАЖНО: categories и locations должны быть ПОСЛЕ textsObject.filters
+        // чтобы не перезаписываться старыми данными из текстов
         categories,
         locations,
-        ...textsObject.filters,
       },
       pages: mergedPages,
       auth: {
@@ -287,6 +294,10 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       const config = buildFullConfig()
 
       console.log('[saveToR2] Saving config to R2...')
+      console.log(
+        '[saveToR2] Config filters.locations keys:',
+        Object.keys(config.filters?.locations || {}),
+      )
 
       const response = await fetch(getApiUrl('/api/save-config'), {
         method: 'POST',

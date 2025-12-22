@@ -36,6 +36,8 @@ export const useDiscountsStore = defineStore('discounts', {
       page: 1,
       pageSize: DEFAULT_PAGE_SIZE,
     } as PaginationState,
+    // Динамически загруженные фильтры из API
+    filtersConfig: null as AppConfig['filters'] | null,
   }),
 
   getters: {
@@ -178,6 +180,9 @@ export const useDiscountsStore = defineStore('discounts', {
         }
 
         const partnersConfig = config.partners
+
+        // Сохраняем filters из API для динамического использования в фильтрах
+        this.filtersConfig = config.filters
 
         // Преобразуем конфигурацию партнеров в массив Partner
         const partners: Partner[] = Object.values(partnersConfig).map((partnerConfig) => {

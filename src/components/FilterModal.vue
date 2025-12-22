@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import type { ComputedRef } from 'vue'
 import UiModal from './UiModal.vue'
 import ModalList from './ModalList.vue'
 import PrimaryButton from './PrimaryButton.vue'
@@ -36,7 +37,10 @@ const emit = defineEmits<{
 }>()
 
 const store = useDiscountsStore()
-const { t, filters } = useAppConfig()
+const { t, filters: staticFilters } = useAppConfig()
+
+// Используем динамические filters из API, с fallback на статические
+const filters = computed(() => store.filtersConfig || staticFilters)
 
 // Определяем мобильную версию (меньше 768px - breakpoint lg)
 const isMobile = useMediaQuery('(max-width: 768px)')
@@ -65,8 +69,8 @@ watch(
 )
 
 const locationOptions = computed(() => {
-  // Генерируем опции из ключей объекта filters.locations
-  return Object.entries(filters.locations).map(([key, config]) => ({
+  // Генерируем опции из ключей объекта filters.locations (динамически из API)
+  return Object.entries(filters.value.locations).map(([key, config]) => ({
     value: key,
     label: t(config.label),
     description: t(config.description),
@@ -74,8 +78,8 @@ const locationOptions = computed(() => {
 })
 
 const categoryOptions = computed(() => {
-  // Генерируем опции из ключей объекта filters.categories
-  return Object.entries(filters.categories).map(([key, config]) => ({
+  // Генерируем опции из ключей объекта filters.categories (динамически из API)
+  return Object.entries(filters.value.categories).map(([key, config]) => ({
     value: key,
     label: t(config.label),
     description: t(config.description),
