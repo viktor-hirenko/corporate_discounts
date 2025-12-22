@@ -206,7 +206,7 @@ onUnmounted(() => {
     cursor: grab;
 
     &:active {
-      // if needed background color for thumb
+      // if needed background color for active thumb
       // background-color: $scrollbar-thumb-color-active;
       cursor: grabbing;
     }
