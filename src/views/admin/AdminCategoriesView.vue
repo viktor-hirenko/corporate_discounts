@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAdminCategoriesStore, type CategoryItem } from '@/stores/adminCategories'
+import { useAuthStore } from '@/stores/auth'
 import { sanitizeString } from '@/utils/sanitize'
 
 const store = useAdminCategoriesStore()
+const authStore = useAuthStore()
 
 const deleteConfirmId = ref<string | null>(null)
 
@@ -179,6 +181,7 @@ watch(
         </div>
         <div class="admin-categories__actions">
           <button
+            v-if="authStore.isAdmin"
             class="btn-secondary"
             title="Завантажити всі категорії у форматі JSON"
             @click="handleExport"

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAdminFaqStore, type FaqItemAdmin } from '@/stores/adminFaq'
+import { useAuthStore } from '@/stores/auth'
 import { sanitizeString } from '@/utils/sanitize'
 
 const store = useAdminFaqStore()
+const authStore = useAuthStore()
 
 const deleteConfirmId = ref<string | null>(null)
 
@@ -131,6 +133,7 @@ watch(
         </div>
         <div class="admin-faq__actions">
           <button
+            v-if="authStore.isAdmin"
             class="btn-secondary"
             title="Завантажити всі питання у форматі JSON"
             @click="handleExport"

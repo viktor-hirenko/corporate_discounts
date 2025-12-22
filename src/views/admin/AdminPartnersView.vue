@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAdminPartnersStore } from '@/stores/adminPartners'
+import { useAuthStore } from '@/stores/auth'
 import AdminPartnerForm from '@/components/admin/AdminPartnerForm.vue'
 import type { PartnerConfig } from '@/types/app-config'
 
 const store = useAdminPartnersStore()
+const authStore = useAuthStore()
 
 const deleteConfirmSlug = ref<string | null>(null)
 
@@ -81,6 +83,7 @@ const openPartnerPage = (slug: string) => {
         </div>
         <div class="admin-partners__actions">
           <button
+            v-if="authStore.isAdmin"
             class="btn-secondary"
             title="Завантажити всіх партнерів у форматі JSON"
             @click="handleExport"
@@ -180,11 +183,16 @@ const openPartnerPage = (slug: string) => {
                 <button class="btn-icon" title="Редагувати" @click="handleEdit(partner)">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn-icon" title="Копіювати JSON" @click="copyPartnerJSON(partner)">
+                <button class="btn-icon" title="Дублювати" @click="handleDuplicate(partner)">
                   <i class="fas fa-copy"></i>
                 </button>
-                <button class="btn-icon" title="Дублювати" @click="handleDuplicate(partner)">
-                  <i class="fas fa-clone"></i>
+                <button
+                  v-if="authStore.isAdmin"
+                  class="btn-icon"
+                  title="Копіювати JSON"
+                  @click="copyPartnerJSON(partner)"
+                >
+                  <i class="fas fa-code"></i>
                 </button>
                 <button
                   class="btn-icon btn-icon--danger"

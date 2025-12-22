@@ -1,19 +1,15 @@
 <script setup lang="ts">
 import { useAdminSettingsStore } from '@/stores/adminSettings'
-import type { Locale } from '@/types/app-config'
+import { useAuthStore } from '@/stores/auth'
 
 const store = useAdminSettingsStore()
+const authStore = useAuthStore()
 
 // Google Client ID from .env (read-only)
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 
 // Site URL (read-only, auto-detected)
 const siteUrl = window.location.origin
-
-const handleDefaultLocaleChange = (event: Event) => {
-  const target = event.target as HTMLSelectElement
-  store.updateDefaultLocale(target.value as Locale)
-}
 
 const handleExport = () => {
   const json = store.exportToJSON()
@@ -25,10 +21,6 @@ const handleExport = () => {
   a.click()
   URL.revokeObjectURL(url)
 }
-
-const handleSave = () => {
-  store.saveSettings()
-}
 </script>
 
 <template>
@@ -38,7 +30,7 @@ const handleSave = () => {
       <!-- Header -->
       <div class="admin-settings__header">
         <h2>Налаштування</h2>
-        <div class="admin-settings__actions">
+        <div v-if="authStore.isAdmin" class="admin-settings__actions">
           <button
             class="btn-secondary"
             title="Завантажити налаштування у форматі JSON"
@@ -46,15 +38,6 @@ const handleSave = () => {
           >
             <i class="fas fa-download"></i>
             Експорт JSON
-          </button>
-          <button
-            class="btn-primary"
-            title="Зберегти зміни налаштувань"
-            :disabled="!store.isDirty"
-            @click="handleSave"
-          >
-            <i class="fas fa-save"></i>
-            Зберегти
           </button>
         </div>
       </div>
@@ -70,18 +53,6 @@ const handleSave = () => {
         </div>
         <div class="settings-section__content">
           <div class="form-group">
-            <label>Мова за замовчуванням</label>
-            <select :value="store.settings.defaultLocale" @change="handleDefaultLocaleChange">
-              <option
-                v-for="locale in store.availableLocales"
-                :key="locale.code"
-                :value="locale.code"
-              >
-                {{ locale.label }}
-              </option>
-            </select>
-          </div>
-          <div class="form-group">
             <label>Активні мови</label>
             <div class="locale-chips">
               <span v-for="locale in store.settings.locales" :key="locale" class="locale-chip">
@@ -89,7 +60,8 @@ const handleSave = () => {
               </span>
             </div>
             <p class="form-hint">
-              Для додавання нових мов потрібно оновити переклади в усіх розділах
+              <i class="fas fa-info-circle"></i>
+              Мова визначається автоматично за налаштуваннями браузера користувача
             </p>
           </div>
         </div>
@@ -332,29 +304,6 @@ $accent-color: rgb(115 103 240);
     border-radius: to-rem(6);
     font-size: to-rem(13);
     color: #1f2937;
-  }
-}
-
-.btn-primary {
-  display: flex;
-  align-items: center;
-  gap: to-rem(8);
-  padding: to-rem(12) to-rem(20);
-  background: $accent-color;
-  color: #fff;
-  border: none;
-  border-radius: to-rem(8);
-  font-size: to-rem(14);
-  font-weight: 500;
-  cursor: pointer;
-
-  &:hover:not(:disabled) {
-    background: darken($accent-color, 10%);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 }
 

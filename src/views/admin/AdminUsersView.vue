@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAdminUsersStore, type AdminUser } from '@/stores/adminUsers'
-import { useAdminExportStore } from '@/stores/adminExport'
+import { useAuthStore } from '@/stores/auth'
 import { sanitizeEmail, sanitizeString, isValidEmail } from '@/utils/sanitize'
 
 const store = useAdminUsersStore()
-const exportStore = useAdminExportStore()
+const authStore = useAuthStore()
 
 const deleteConfirmId = ref<string | null>(null)
 
@@ -105,19 +105,6 @@ watch(
     if (isOpen) resetForm()
   },
 )
-
-const getSyncStatusText = () => {
-  switch (store.syncStatus) {
-    case 'syncing':
-      return 'Синхронізація...'
-    case 'success':
-      return 'Збережено!'
-    case 'error':
-      return 'Помилка синхронізації'
-    default:
-      return ''
-  }
-}
 </script>
 
 <template>
@@ -133,26 +120,8 @@ const getSyncStatusText = () => {
           >
         </div>
         <div class="admin-users__actions">
-          <div v-if="store.syncStatus !== 'idle'" class="sync-status" :class="store.syncStatus">
-            <i
-              :class="{
-                'fas fa-sync fa-spin': store.syncStatus === 'syncing',
-                'fas fa-check': store.syncStatus === 'success',
-                'fas fa-exclamation-triangle': store.syncStatus === 'error',
-              }"
-            ></i>
-            {{ getSyncStatusText() }}
-          </div>
           <button
-            class="btn-secondary"
-            title="Синхронізувати список з сервером"
-            :disabled="store.isLoading"
-            @click="store.syncWithBackend()"
-          >
-            <i class="fas fa-sync"></i>
-            Оновити
-          </button>
-          <button
+            v-if="authStore.isAdmin"
             class="btn-secondary"
             title="Завантажити список користувачів у форматі JSON"
             @click="handleExport"
@@ -244,19 +213,6 @@ const getSyncStatusText = () => {
         <i class="fas fa-users"></i>
         <p>Користувачів не знайдено</p>
       </div>
-    </div>
-
-    <!-- Save Button -->
-    <div class="admin-users__footer">
-      <button
-        class="btn-primary btn-large"
-        title="Зберегти список користувачів в конфіг"
-        :disabled="exportStore.isSaving"
-        @click="exportStore.saveToLocalFile()"
-      >
-        <i :class="exportStore.isSaving ? 'fas fa-spinner fa-spin' : 'fas fa-save'"></i>
-        {{ exportStore.isSaving ? 'Збереження...' : 'Зберегти зміни' }}
-      </button>
     </div>
 
     <!-- Delete Confirmation Modal -->
@@ -518,12 +474,6 @@ $accent-color: rgb(115 103 240);
       margin: 0;
     }
   }
-
-  &__footer {
-    display: flex;
-    margin-top: to-rem(20);
-    justify-content: flex-end;
-  }
 }
 
 .col-email {
@@ -572,30 +522,6 @@ $accent-color: rgb(115 103 240);
   &.editor {
     background: #e5e7eb;
     color: #4b5563;
-  }
-}
-
-.sync-status {
-  display: flex;
-  align-items: center;
-  gap: to-rem(6);
-  font-size: to-rem(13);
-  padding: to-rem(6) to-rem(12);
-  border-radius: to-rem(6);
-
-  &.syncing {
-    background: #e0f2fe;
-    color: #0284c7;
-  }
-
-  &.success {
-    background: #dcfce7;
-    color: #16a34a;
-  }
-
-  &.error {
-    background: #fee2e2;
-    color: #dc2626;
   }
 }
 
@@ -653,11 +579,6 @@ $accent-color: rgb(115 103 240);
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-  }
-
-  &.btn-large {
-    padding: to-rem(14) to-rem(28);
-    font-size: to-rem(15);
   }
 }
 

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAdminImagesStore } from '@/stores/adminImages'
+import { useAuthStore } from '@/stores/auth'
 
 const store = useAdminImagesStore()
+const authStore = useAuthStore()
 
 const handleCategoryChange = (event: Event) => {
   const target = event.target as HTMLSelectElement
@@ -66,6 +68,7 @@ const getCategoryLabel = (category: string): string => {
         </div>
         <div class="admin-images__actions">
           <button
+            v-if="authStore.isAdmin"
             class="btn-secondary"
             title="Завантажити конфігурацію зображень у форматі JSON"
             @click="handleExport"
@@ -275,7 +278,8 @@ $accent-color: rgb(115 103 240);
   &__preview {
     height: to-rem(140);
     background-color: #f9fafb;
-    background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
+    background-image:
+      linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
       linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
       linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
       linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);

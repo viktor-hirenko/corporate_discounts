@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAdminLocationsStore, type LocationItem } from '@/stores/adminLocations'
+import { useAuthStore } from '@/stores/auth'
 import { sanitizeString } from '@/utils/sanitize'
 
 const store = useAdminLocationsStore()
+const authStore = useAuthStore()
 
 const deleteConfirmId = ref<string | null>(null)
 
@@ -177,6 +179,7 @@ watch(
         </div>
         <div class="admin-locations__actions">
           <button
+            v-if="authStore.isAdmin"
             class="btn-secondary"
             title="Завантажити всі локації у форматі JSON"
             @click="handleExport"

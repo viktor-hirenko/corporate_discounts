@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAdminTextsStore, type TextItem } from '@/stores/adminTexts'
+import { useAuthStore } from '@/stores/auth'
 import { sanitizeString } from '@/utils/sanitize'
 
 const store = useAdminTextsStore()
+const authStore = useAuthStore()
 
 const handleSearch = (event: Event) => {
   const target = event.target as HTMLInputElement
@@ -91,6 +93,7 @@ watch(
         </div>
         <div class="admin-texts__actions">
           <button
+            v-if="authStore.isAdmin"
             class="btn-secondary"
             title="Завантажити всі тексти у форматі JSON"
             @click="handleExport"

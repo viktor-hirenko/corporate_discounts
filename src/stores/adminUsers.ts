@@ -94,7 +94,18 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isFormOpen.value = false
   }
 
-  function addUser(user: Omit<AdminUser, 'id' | 'addedAt' | 'addedBy'>) {
+  // Автосохранение — аналогично партнёрам
+  async function autoSave() {
+    try {
+      const { useAdminExportStore } = await import('./adminExport')
+      const exportStore = useAdminExportStore()
+      await exportStore.autoSave()
+    } catch (error) {
+      console.error('[adminUsers] Auto-save failed:', error)
+    }
+  }
+
+  async function addUser(user: Omit<AdminUser, 'id' | 'addedAt' | 'addedBy'>) {
     // ✅ Санитизация на уровне стора (вторая линия защиты)
     const newUser: AdminUser = {
       ...user,
@@ -106,9 +117,10 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     }
     users.value.push(newUser)
     closeForm()
+    await autoSave()
   }
 
-  function updateUser(user: AdminUser) {
+  async function updateUser(user: AdminUser) {
     const index = users.value.findIndex((u) => u.id === user.id)
     if (index >= 0) {
       // ✅ Санитизация при обновлении
@@ -119,13 +131,15 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
       }
     }
     closeForm()
+    await autoSave()
   }
 
-  function deleteUser(id: string) {
+  async function deleteUser(id: string) {
     const index = users.value.findIndex((u) => u.id === id)
     if (index >= 0) {
       users.value.splice(index, 1)
     }
+    await autoSave()
   }
 
   function setSearchQuery(query: string) {
@@ -219,5 +233,6 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     syncWithBackend,
     saveToBackend,
     exportToJSON,
+    autoSave,
   }
 })
