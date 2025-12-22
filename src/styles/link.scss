@@ -1,0 +1,53 @@
+// -----------------------------------------------------------------------------
+// Link Utilities
+// Общие стили для ссылок, кнопок навигации, пагинации (по гайдлайнам UPSTARS)
+// -----------------------------------------------------------------------------
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-secondary-400, #01001f);
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+
+  // Hover state (не для active и disabled)
+  &:hover:not(&--active, :disabled, &--disabled) {
+    color: var(--color-secondary-300, #7367f0);
+  }
+
+  // Active state (текущая страница/выбранный элемент)
+  &--active {
+    color: var(--color-secondary-400, #7367f0);
+    cursor: default;
+  }
+
+  // Disabled state
+  &:disabled,
+  &--disabled {
+    color: var(--color-secondary-200, #babce1);
+    background: none;
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  // Focus-visible (accessibility)
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-400, #7367f0);
+    outline-offset: 2px;
+    z-index: 1;
+  }
+
+  // Pressed/Active state (только визуально при клике)
+  &:active:not(:disabled, &--disabled, &--active) {
+    color: var(--color-primary-600, #7367f0);
+  }
+}

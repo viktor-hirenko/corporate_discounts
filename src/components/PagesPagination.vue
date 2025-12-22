@@ -113,8 +113,8 @@ function handleNext() {
   <nav class="pagination" :aria-label="t(pagination.ariaLabels.navigation)">
     <!-- Previous button -->
     <button
-      class="pagination__button pagination__button--prev"
-      :class="{ 'pagination__button--disabled': currentPage === 1 }"
+      class="link pagination__button pagination__button--prev"
+      :class="{ 'link--disabled pagination__button--disabled': currentPage === 1 }"
       :disabled="currentPage === 1"
       type="button"
       :aria-label="t(pagination.ariaLabels.previousPage)"
@@ -129,8 +129,11 @@ function handleNext() {
       <button
         v-for="page in visiblePages"
         :key="page"
-        class="pagination__page"
-        :class="{ 'pagination__page--active': page === currentPage }"
+        class="link pagination__page"
+        :class="{
+          'link--active pagination__page--active': page === currentPage,
+          'link--disabled': page === '...',
+        }"
         :disabled="page === '...'"
         type="button"
         :aria-label="
@@ -147,8 +150,8 @@ function handleNext() {
 
     <!-- Next button -->
     <button
-      class="pagination__button pagination__button--next"
-      :class="{ 'pagination__button--disabled': currentPage === totalPages }"
+      class="link pagination__button pagination__button--next"
+      :class="{ 'link--disabled pagination__button--disabled': currentPage === totalPages }"
       :disabled="currentPage === totalPages"
       type="button"
       :aria-label="t(pagination.ariaLabels.nextPage)"
@@ -249,7 +252,7 @@ function handleNext() {
     align-items: center;
     border: none;
     background: none;
-    color: var(--color-secondary-600, #01001f);
+    color: var(--color-secondary-400, #01001f);
     font-size: to-rem(16);
     transition: opacity 0.2s ease;
     cursor: pointer;

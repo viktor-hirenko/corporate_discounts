@@ -34,9 +34,9 @@ function handleLanguageChange(lang: 'ua' | 'en') {
   <div class="language-selector" :class="`language-selector--${variant}`">
     <template v-for="lang in languages" :key="lang.code">
       <button
-        class="language-selector__button"
+        class="link language-selector__button"
         :class="{
-          'language-selector__button--active': currentLanguage === lang.code,
+          'link--active language-selector__button--active': currentLanguage === lang.code,
         }"
         type="button"
         @click="handleLanguageChange(lang.code)"

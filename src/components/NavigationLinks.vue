@@ -36,8 +36,8 @@ function handleClick() {
   <nav class="navigation-links" :class="`navigation-links--${variant}`">
     <router-link
       to="/discounts"
-      class="navigation-links__link"
-      :class="{ 'navigation-links__link--active': isHomeActive }"
+      class="link navigation-links__link"
+      :class="{ 'link--active navigation-links__link--active': isHomeActive }"
       @click="handleClick"
     >
       {{ t(navigation.home) }}
@@ -45,8 +45,8 @@ function handleClick() {
 
     <router-link
       to="/faq"
-      class="navigation-links__link"
-      :class="{ 'navigation-links__link--active': isFaqActive }"
+      class="link navigation-links__link"
+      :class="{ 'link--active navigation-links__link--active': isFaqActive }"
       @click="handleClick"
     >
       {{ t(navigation.faq) }}
