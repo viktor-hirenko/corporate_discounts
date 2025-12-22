@@ -291,17 +291,7 @@ npm run deploy:worker    # Worker API
 | [DEPLOY_GUIDE.md](./DEPLOY_GUIDE.md)                   | DevOps     | Налаштування та деплой         |
 | [worker/README.md](./worker/README.md)                 | Розробники | Документація Worker            |
 
-## 🤝 Підтримка
-
-- **Slack:** #dev-corporate-discounts
-- **Email:** dev@upstars.com
-
-## 📄 Ліцензія
-
-Internal UPSTARS project © 2024-2025
-
 ---
 
 **Версія:** 1.1.0  
-**Дата оновлення:** 24 листопада 2025  
-**Автор:** UPSTARS Development Team
+**Дата оновлення:** 24 листопада 2025
