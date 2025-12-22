@@ -4,9 +4,10 @@ export interface Env {
   R2_BUCKET: R2Bucket
   BUCKET_NAME: string
   PUBLIC_URL: string
-  JWT_SECRET: string
+  // Google OAuth credentials (optional, auth handled client-side)
   GOOGLE_CLIENT_ID?: string
   GOOGLE_CLIENT_SECRET?: string
+  // AWS credentials for R2 (if using AWS SDK)
   AWS_ACCESS_KEY_ID?: string
   AWS_SECRET_ACCESS_KEY?: string
 }

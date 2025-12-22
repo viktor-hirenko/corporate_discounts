@@ -1,11 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAdminUsersStore } from './adminUsers'
 
-interface GoogleUser {
-  credential: string
-  select_by: string
-}
-
 interface AuthState {
   isAuthenticated: boolean
   user: {
@@ -29,6 +24,48 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isLoggedIn(state): boolean {
       return state.isAuthenticated && state.user !== null
+    },
+
+    /**
+     * Проверяет, имеет ли пользователь доступ к админке (роль admin или editor)
+     */
+    hasAdminAccess(): boolean {
+      if (!this.isLoggedIn || !this.user) return false
+
+      const usersStore = useAdminUsersStore()
+      const adminUser = usersStore.users.find(
+        (u) => u.email.toLowerCase() === this.user!.email.toLowerCase(),
+      )
+
+      return adminUser?.role === 'admin' || adminUser?.role === 'editor'
+    },
+
+    /**
+     * Проверяет, является ли пользователь админом (может управлять пользователями)
+     */
+    isAdmin(): boolean {
+      if (!this.isLoggedIn || !this.user) return false
+
+      const usersStore = useAdminUsersStore()
+      const adminUser = usersStore.users.find(
+        (u) => u.email.toLowerCase() === this.user!.email.toLowerCase(),
+      )
+
+      return adminUser?.role === 'admin'
+    },
+
+    /**
+     * Возвращает роль текущего пользователя
+     */
+    userRole(): 'admin' | 'editor' | null {
+      if (!this.isLoggedIn || !this.user) return null
+
+      const usersStore = useAdminUsersStore()
+      const adminUser = usersStore.users.find(
+        (u) => u.email.toLowerCase() === this.user!.email.toLowerCase(),
+      )
+
+      return adminUser?.role || null
     },
   },
 
@@ -69,14 +106,13 @@ export const useAuthStore = defineStore('auth', {
         }
         const payload = JSON.parse(atob(parts[1]))
 
-        // ✅ Проверка whitelist — разрешен ли email
-        const usersStore = useAdminUsersStore()
-        // Ждем инициализацию стора (динамическая загрузка)
-        await usersStore.init()
+        // ✅ Проверка домена email — только @upstars.com
+        const email = payload.email?.toLowerCase() || ''
+        const allowedDomain = '@upstars.com'
 
-        if (!usersStore.isEmailAllowed(payload.email)) {
-          console.warn('[auth-store] email not in whitelist:', payload.email)
-          throw new Error('Доступ запрещен. Ваш email не в списке разрешенных.')
+        if (!email.endsWith(allowedDomain)) {
+          console.warn('[auth-store] email domain not allowed:', email)
+          throw new Error(`Доступ разрешён только для сотрудников ${allowedDomain}`)
         }
 
         // Google JWT может содержать picture в разных полях
@@ -105,7 +141,7 @@ export const useAuthStore = defineStore('auth', {
         }
       } catch (error) {
         console.error('[auth-store] failed to login with Google', error)
-        if (error instanceof Error && error.message.includes('Доступ заборонено')) {
+        if (error instanceof Error && error.message.includes('Доступ')) {
           throw error
         }
         throw new Error('Не вдалося увійти через Google')

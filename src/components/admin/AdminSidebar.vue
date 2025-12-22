@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 interface Props {
   isCollapsed: boolean
@@ -14,6 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 // Close menu on route change (mobile)
 router.afterEach(() => {
@@ -29,9 +31,10 @@ interface MenuItem {
   label: string
   icon: string
   to: string
+  adminOnly?: boolean // Только для роли admin
 }
 
-const menuItems: MenuItem[] = [
+const allMenuItems: MenuItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-chart-line', to: '/admin' },
   { id: 'partners', label: 'Партнери', icon: 'fas fa-handshake', to: '/admin/partners' },
   { id: 'categories', label: 'Категорії', icon: 'fas fa-tags', to: '/admin/categories' },
@@ -40,8 +43,24 @@ const menuItems: MenuItem[] = [
   { id: 'texts', label: 'Тексти сторінок', icon: 'fas fa-file-alt', to: '/admin/texts' },
   { id: 'images', label: 'Зображення', icon: 'fas fa-images', to: '/admin/images' },
   { id: 'settings', label: 'Налаштування', icon: 'fas fa-cog', to: '/admin/settings' },
-  { id: 'users', label: 'Користувачі', icon: 'fas fa-users-cog', to: '/admin/users' },
+  {
+    id: 'users',
+    label: 'Користувачі',
+    icon: 'fas fa-users-cog',
+    to: '/admin/users',
+    adminOnly: true,
+  },
 ]
+
+// Фильтруем меню: пункты с adminOnly доступны только для роли admin
+const menuItems = computed(() => {
+  return allMenuItems.filter((item) => {
+    if (item.adminOnly) {
+      return authStore.isAdmin
+    }
+    return true
+  })
+})
 
 const isActive = (path: string) => {
   if (path === '/admin') {

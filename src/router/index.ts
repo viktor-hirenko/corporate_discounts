@@ -125,11 +125,14 @@ const router = createRouter({
 })
 
 // Navigation guard для проверки авторизации
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
   // Публичные маршруты (не требуют авторизации) — ТОЛЬКО login
   const isPublicRoute = to.path === '/login'
+
+  // Админ-маршруты (требуют роль admin или editor)
+  const isAdminRoute = to.path.startsWith('/admin')
 
   // Если пользователь не авторизован и пытается попасть на защищенный маршрут
   if (!authStore.isLoggedIn && !isPublicRoute) {
@@ -141,6 +144,28 @@ router.beforeEach((to, from, next) => {
   if (authStore.isLoggedIn && to.path === '/login') {
     next({ name: 'discounts' })
     return
+  }
+
+  // Проверка доступа к админке — только admin или editor
+  if (isAdminRoute && authStore.isLoggedIn) {
+    // Убедимся что adminUsers store инициализирован
+    const { useAdminUsersStore } = await import('@/stores/adminUsers')
+    const usersStore = useAdminUsersStore()
+    await usersStore.init()
+
+    if (!authStore.hasAdminAccess) {
+      // Нет доступа к админке — редирект на главную
+      console.warn('[router] no admin access for:', authStore.user?.email)
+      next({ name: 'discounts' })
+      return
+    }
+
+    // Страница пользователей доступна только для admin (не editor)
+    if (to.path === '/admin/users' && !authStore.isAdmin) {
+      console.warn('[router] users page requires admin role:', authStore.user?.email)
+      next({ name: 'admin-dashboard' })
+      return
+    }
   }
 
   next()
