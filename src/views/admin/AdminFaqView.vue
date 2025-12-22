@@ -216,7 +216,7 @@ watch(
 
     <!-- Delete Confirmation Modal -->
     <Teleport to="body">
-      <div v-if="deleteConfirmId" class="modal-overlay" @click="handleDeleteCancel">
+      <div v-if="deleteConfirmId !== null" class="modal-overlay" @click="handleDeleteCancel">
         <div class="modal" @click.stop>
           <div class="modal__header">
             <h3>Підтвердження видалення</h3>

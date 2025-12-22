@@ -83,22 +83,80 @@ const locationOptions = computed(() => {
     .sort((a, b) => a.ua.localeCompare(b.ua, 'uk-UA'))
 })
 
-// Generate slug from name
+// Транслітерація кирилиці для slug
+const cyrillicMap: Record<string, string> = {
+  а: 'a',
+  б: 'b',
+  в: 'v',
+  г: 'h',
+  ґ: 'g',
+  д: 'd',
+  е: 'e',
+  є: 'ye',
+  ж: 'zh',
+  з: 'z',
+  и: 'y',
+  і: 'i',
+  ї: 'yi',
+  й: 'y',
+  к: 'k',
+  л: 'l',
+  м: 'm',
+  н: 'n',
+  о: 'o',
+  п: 'p',
+  р: 'r',
+  с: 's',
+  т: 't',
+  у: 'u',
+  ф: 'f',
+  х: 'kh',
+  ц: 'ts',
+  ч: 'ch',
+  ш: 'sh',
+  щ: 'shch',
+  ь: '',
+  ю: 'yu',
+  я: 'ya',
+  ы: 'y',
+  э: 'e',
+  ё: 'yo',
+}
+
+// Generate slug from name (з транслітерацією кирилиці)
 const generateSlug = (name: string): string => {
-  return name
+  const transliterated = name
     .toLowerCase()
+    .split('')
+    .map((char) => cyrillicMap[char] ?? char)
+    .join('')
+
+  return transliterated
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .trim()
 }
 
-// Auto-generate slug when name changes
+// Auto-generate slug when EN name changes (пріоритет EN, fallback на UA)
+watch(
+  () => formData.name.en,
+  (newNameEn) => {
+    if (!isEditing.value) {
+      const nameToUse = newNameEn || formData.name.ua
+      if (nameToUse) {
+        formData.slug = generateSlug(nameToUse)
+      }
+    }
+  },
+)
+
+// Fallback: якщо EN порожній, генеруємо з UA
 watch(
   () => formData.name.ua,
-  (newName) => {
-    if (!isEditing.value && newName) {
-      formData.slug = generateSlug(newName)
+  (newNameUa) => {
+    if (!isEditing.value && !formData.name.en && newNameUa) {
+      formData.slug = generateSlug(newNameUa)
     }
   },
 )

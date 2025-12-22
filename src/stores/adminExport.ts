@@ -333,42 +333,6 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     }
   }
 
-  // Завантаження з R2
-  async function loadFromR2() {
-    exportStatus.value = 'exporting'
-    isExporting.value = true
-    exportError.value = null
-
-    try {
-      // В майбутньому тут буде API call до Cloudflare Worker
-      // const response = await fetch('/api/admin/load-config')
-      //
-      // if (!response.ok) {
-      //   throw new Error('Failed to load config')
-      // }
-      //
-      // const config = await response.json()
-
-      // Симуляція затримки
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      exportStatus.value = 'success'
-
-      setTimeout(() => {
-        exportStatus.value = 'idle'
-      }, 3000)
-
-      return true
-    } catch (error) {
-      console.error('Failed to load from R2:', error)
-      exportError.value = error instanceof Error ? error.message : 'Failed to load from R2'
-      exportStatus.value = 'error'
-      return false
-    } finally {
-      isExporting.value = false
-    }
-  }
-
   // Валідація конфігу
   function validateConfig(): { valid: boolean; errors: string[] } {
     const errors: string[] = []
@@ -449,7 +413,6 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     saveToLocalFile,
     loadFromLocalFile,
     saveToR2,
-    loadFromR2,
     autoSave,
     validateConfig,
     getStatistics,

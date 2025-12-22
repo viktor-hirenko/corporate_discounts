@@ -71,8 +71,17 @@ const handleFormOpen = () => {
 
 const handleSave = () => {
   // ✅ Санітизація вводу
+  const generatedId = formData.value.id || generateId(formData.value.label.en)
+
+  if (!generatedId) {
+    alert(
+      'ID категорії не може бути порожнім. Введіть ID вручну або використовуйте латинські літери в назві (EN).',
+    )
+    return
+  }
+
   const category: CategoryItem = {
-    id: formData.value.id || generateId(formData.value.label.en),
+    id: generatedId,
     label: {
       ua: sanitizeString(formData.value.label.ua),
       en: sanitizeString(formData.value.label.en),
@@ -93,8 +102,53 @@ const handleSave = () => {
 }
 
 const generateId = (name: string): string => {
-  return name
+  // Транслітерація кирилиці
+  const cyrillicMap: Record<string, string> = {
+    а: 'a',
+    б: 'b',
+    в: 'v',
+    г: 'h',
+    ґ: 'g',
+    д: 'd',
+    е: 'e',
+    є: 'ye',
+    ж: 'zh',
+    з: 'z',
+    и: 'y',
+    і: 'i',
+    ї: 'yi',
+    й: 'y',
+    к: 'k',
+    л: 'l',
+    м: 'm',
+    н: 'n',
+    о: 'o',
+    п: 'p',
+    р: 'r',
+    с: 's',
+    т: 't',
+    у: 'u',
+    ф: 'f',
+    х: 'kh',
+    ц: 'ts',
+    ч: 'ch',
+    ш: 'sh',
+    щ: 'shch',
+    ь: '',
+    ю: 'yu',
+    я: 'ya',
+    ы: 'y',
+    э: 'e',
+    ё: 'yo',
+  }
+
+  const transliterated = name
     .toLowerCase()
+    .split('')
+    .map((char) => cyrillicMap[char] ?? char)
+    .join('')
+
+  return transliterated
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
@@ -207,7 +261,7 @@ watch(
 
     <!-- Delete Confirmation Modal -->
     <Teleport to="body">
-      <div v-if="deleteConfirmId" class="modal-overlay" @click="handleDeleteCancel">
+      <div v-if="deleteConfirmId !== null" class="modal-overlay" @click="handleDeleteCancel">
         <div class="modal" @click.stop>
           <div class="modal__header">
             <h3>Підтвердження видалення</h3>

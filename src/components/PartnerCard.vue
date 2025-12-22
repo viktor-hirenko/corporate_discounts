@@ -32,10 +32,12 @@ function handleImageError() {
   imageLoadError.value = true
 }
 
-// Используем данные из props (актуальные данные из API)
-const partnerName = computed(() => props.partner.name)
+// Используем данные из props с локализацией через t()
+const partnerName = computed(() => t(props.partner.name as unknown as { ua: string; en: string }))
 
-const discountLabel = computed(() => props.partner.discount.label)
+const discountLabel = computed(() =>
+  t(props.partner.discount.label as unknown as { ua: string; en: string }),
+)
 
 const categoryLabel = computed(() => {
   // Получаем категорию напрямую по ключу

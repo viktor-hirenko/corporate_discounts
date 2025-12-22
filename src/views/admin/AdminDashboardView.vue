@@ -1,15 +1,22 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAppConfig } from '@/composables/useAppConfig'
 import AdminExportPanel from '@/components/admin/AdminExportPanel.vue'
+import { useAdminPartnersStore } from '@/stores/adminPartners'
+import { useAdminCategoriesStore } from '@/stores/adminCategories'
+import { useAdminLocationsStore } from '@/stores/adminLocations'
+import { useAdminFaqStore } from '@/stores/adminFaq'
 
-const { config } = useAppConfig()
+const partnersStore = useAdminPartnersStore()
+const categoriesStore = useAdminCategoriesStore()
+const locationsStore = useAdminLocationsStore()
+const faqStore = useAdminFaqStore()
 
 const stats = computed(() => {
-  const partners = Object.keys(config.value.partners || {}).length
-  const categories = Object.keys(config.value.filters?.categories || {}).length - 1 // minus 'all'
-  const locations = Object.keys(config.value.filters?.locations || {}).length - 1 // minus 'all'
-  const faqItems = config.value.pages?.faq?.items?.length || 0
+  // Используем актуальные данные из Pinia stores (минус 'all' для категорий и локаций)
+  const partners = partnersStore.partnersCount
+  const categories = Math.max(0, categoriesStore.categoriesCount - 1)
+  const locations = Math.max(0, locationsStore.locationsCount - 1)
+  const faqItems = faqStore.faqCount
 
   return [
     {

@@ -208,34 +208,34 @@ export const useDiscountsStore = defineStore('discounts', {
           return {
             id: partnerConfig.id,
             slug: partnerConfig.slug,
-            name: t(partnerConfig.name),
+            // Храним оригінальний об'єкт {ua, en} — переклад відбувається в компоненті
+            name: partnerConfig.name as unknown as string,
             category: categoryValue,
             location: locationValue,
             discount: {
-              label: t(partnerConfig.discount.label),
-              description: partnerConfig.discount.description
-                ? t(partnerConfig.discount.description)
-                : undefined,
+              // Храним оригінальний об'єкт {ua, en}
+              label: partnerConfig.discount.label as unknown as string,
+              description: partnerConfig.discount.description as unknown as string | undefined,
               promoCode: partnerConfig.promoCode,
             },
             images: {
               thumbnail: imagePath ? getImage(imagePath) : '',
               hero: imagePath ? getImage(imagePath) : undefined,
             },
-            summary: t(partnerConfig.summary),
-            description: t(partnerConfig.description),
+            // Храним оригінальні об'єкти {ua, en}
+            summary: partnerConfig.summary as unknown as string,
+            description: partnerConfig.description as unknown as string,
             contact: {
               ...partnerConfig.contact,
-              address: partnerConfig.address
-                ? t(partnerConfig.address)
-                : partnerConfig.contact.address,
+              address: partnerConfig.address as unknown as string | undefined,
             },
             socials: partnerConfig.socials.map((social) => ({
               type: social.type as Partner['socials'][0]['type'],
               url: social.url,
             })),
-            terms: partnerConfig.terms[locale] || [],
-            tags: partnerConfig.tags[locale] || undefined,
+            // Храним оригінальний об'єкт {ua, en} — переклад відбувається в компоненті
+            terms: partnerConfig.terms as unknown as string[],
+            tags: partnerConfig.tags as unknown as string[] | undefined,
           }
         })
 

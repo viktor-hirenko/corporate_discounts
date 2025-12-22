@@ -5,6 +5,7 @@ import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
 import { useDiscountsStore } from '@/stores/discounts'
+import { useUiStore } from '@/stores/ui'
 import { useAppConfig } from '@/composables/useAppConfig'
 
 interface Props {
@@ -14,12 +15,14 @@ interface Props {
 const props = defineProps<Props>()
 const router = useRouter()
 const store = useDiscountsStore()
+const uiStore = useUiStore()
 const { t, pages, filters, images: imagesConfig } = useAppConfig()
 
 // Ensure images is reactive
 const images = computed(() => imagesConfig)
 
 const isCopied = ref(false)
+const imageLoadError = ref(false)
 let copyTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Получаем партнера по slug из props
@@ -27,20 +30,37 @@ const partner = computed(() => {
   return store.getPartnerBySlug(props.slug)
 })
 
-// Используем данные напрямую из partner (загруженные через API)
-const partnerName = computed(() => partner.value?.name || '')
+// Используем данные напрямую из partner с локализацією через t()
+const partnerName = computed(() =>
+  partner.value ? t(partner.value.name as unknown as { ua: string; en: string }) : '',
+)
 
-const partnerSummary = computed(() => partner.value?.summary || '')
+const partnerSummary = computed(() =>
+  partner.value ? t(partner.value.summary as unknown as { ua: string; en: string }) : '',
+)
 
-const partnerDescription = computed(() => partner.value?.description || '')
+const partnerDescription = computed(() =>
+  partner.value ? t(partner.value.description as unknown as { ua: string; en: string }) : '',
+)
 
-const discountLabel = computed(() => partner.value?.discount.label || '')
+const discountLabel = computed(() =>
+  partner.value ? t(partner.value.discount.label as unknown as { ua: string; en: string }) : '',
+)
 
-const discountDescription = computed(() => partner.value?.discount.description || '')
+const discountDescription = computed(() =>
+  partner.value?.discount.description
+    ? t(partner.value.discount.description as unknown as { ua: string; en: string })
+    : '',
+)
 
 const partnerImage = computed(() => partner.value?.images.thumbnail || '')
 
-const partnerTerms = computed(() => partner.value?.terms || [])
+// Terms зберігаються як {ua: [], en: []} — вибираємо за поточною локаллю
+const partnerTerms = computed(() => {
+  if (!partner.value?.terms) return []
+  const termsData = partner.value.terms as unknown as { ua: string[]; en: string[] }
+  return termsData[uiStore.locale] || termsData.ua || []
+})
 
 const partnerCategory = computed(() => {
   if (!partner.value) return ''
@@ -50,7 +70,11 @@ const partnerCategory = computed(() => {
   return categoryFilter ? t(categoryFilter.label) : partner.value.category
 })
 
-const partnerAddress = computed(() => partner.value?.contact.address || '')
+const partnerAddress = computed(() =>
+  partner.value?.contact.address
+    ? t(partner.value.contact.address as unknown as { ua: string; en: string })
+    : '',
+)
 
 // Фильтруем только заполненные соцсети
 const filledSocials = computed(() => {
@@ -58,11 +82,19 @@ const filledSocials = computed(() => {
   return partner.value.socials.filter((social) => social.url && social.url.trim() !== '')
 })
 
-// Проверяем, есть ли изображение у партнёра
+// Проверяем, есть ли изображение у партнёра (и не было ли ошибки загрузки)
 const hasPartnerImage = computed(() => {
   if (!partner.value) return false
-  return partner.value.images.thumbnail && partner.value.images.thumbnail.trim() !== ''
+  return (
+    partner.value.images.thumbnail &&
+    partner.value.images.thumbnail.trim() !== '' &&
+    !imageLoadError.value
+  )
 })
+
+function handleImageError() {
+  imageLoadError.value = true
+}
 
 // Функция для загрузки данных и проверки партнера
 async function loadAndValidatePartner() {
@@ -88,6 +120,7 @@ onMounted(() => {
 watch(
   () => props.slug,
   () => {
+    imageLoadError.value = false // Сбрасываем ошибку при смене партнёра
     loadAndValidatePartner()
   },
 )
@@ -159,6 +192,7 @@ onUnmounted(() => {
           :src="partnerImage"
           :alt="partnerName"
           class="discount-details__logo"
+          @error="handleImageError"
         />
         <div v-else class="discount-details__logo-placeholder">
           <svg
@@ -355,7 +389,7 @@ $container-max-width: calc(1312px);
     justify-content: center;
     align-items: center;
     border-radius: to-rem(8);
-    background-color: var(--color-secondary-600, #01001f);
+    background: var(--color-secondary-200, #d9d8ff);
     aspect-ratio: 1;
 
     @include mq(null, lg) {
