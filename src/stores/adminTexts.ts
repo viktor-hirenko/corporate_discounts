@@ -111,8 +111,8 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     isInitialized.value = true
   }
 
-  // Ініціалізуємо при створенні store (синхронно для быстрого рендера)
-  initFromConfig()
+  // Автоматична ініціалізація (как в adminPartners.ts)
+  init()
 
   // Функция для получения текстов как объекта (для мерджа в конфиг)
   function getTextsObject(): Record<string, unknown> {
@@ -175,12 +175,35 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     isFormOpen.value = false
   }
 
-  function saveText(text: TextItem) {
+  // Флаг сохранения
+  const isSaving = ref(false)
+
+  // Автосохранение — dev: в файл, prod: в R2
+  async function autoSave() {
+    console.log('[adminTexts] autoSave started')
+    isSaving.value = true
+    try {
+      const { useAdminExportStore } = await import('./adminExport')
+      const exportStore = useAdminExportStore()
+      console.log('[adminTexts] Calling exportStore.autoSave()')
+      await exportStore.autoSave()
+      console.log('[adminTexts] autoSave completed successfully')
+    } catch (error) {
+      console.error('[adminTexts] Auto-save texts failed:', error)
+    } finally {
+      isSaving.value = false
+    }
+  }
+
+  async function saveText(text: TextItem) {
+    console.log('[adminTexts] saveText called for:', text.path, text.value)
     const index = texts.value.findIndex((t) => t.path === text.path)
     if (index >= 0) {
       texts.value[index] = text
+      console.log('[adminTexts] Text updated in store at index:', index)
     }
     closeForm()
+    await autoSave()
   }
 
   function setSearchQuery(query: string) {
@@ -228,6 +251,7 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     isFormOpen,
     textCategories,
     isInitialized,
+    isSaving,
     // Getters
     textsList,
     filteredTexts,

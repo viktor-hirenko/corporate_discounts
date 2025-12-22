@@ -414,9 +414,13 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     const isLocalhost =
       window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 
+    console.log('[adminExport.autoSave] isLocalhost:', isLocalhost)
+
     if (isLocalhost) {
+      console.log('[adminExport.autoSave] Calling saveToLocalFile()')
       return await saveToLocalFile()
     } else {
+      console.log('[adminExport.autoSave] Calling saveToR2()')
       return await saveToR2()
     }
   }
