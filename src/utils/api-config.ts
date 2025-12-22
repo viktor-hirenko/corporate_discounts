@@ -32,7 +32,19 @@ export function getApiUrl(endpoint: string): string {
  * Возвращает headers для авторизованных запросов (с JWT токеном)
  */
 export function getAuthHeaders(): Record<string, string> {
-  const token = localStorage.getItem('auth_token')
+  let token: string | null = null
+
+  // Читаем токен из auth store (localStorage)
+  const stored = localStorage.getItem('corporate_discounts_auth')
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored)
+      token = parsed.token ?? null
+    } catch {
+      token = null
+    }
+  }
+
   return {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
