@@ -113,8 +113,8 @@ function handleNext() {
   <nav class="pagination" :aria-label="t(pagination.ariaLabels.navigation)">
     <!-- Previous button -->
     <button
-      class="pagination__button pagination__button--prev link"
-      :class="{ 'link--disabled': currentPage === 1 }"
+      class="pagination__button pagination__button--prev"
+      :class="{ 'pagination__button--disabled': currentPage === 1 }"
       :disabled="currentPage === 1"
       type="button"
       :aria-label="t(pagination.ariaLabels.previousPage)"
@@ -129,8 +129,8 @@ function handleNext() {
       <button
         v-for="page in visiblePages"
         :key="page"
-        class="pagination__page link"
-        :class="{ 'link--active': page === currentPage, 'link--disabled': page === '...' }"
+        class="pagination__page"
+        :class="{ 'pagination__page--active': page === currentPage }"
         :disabled="page === '...'"
         type="button"
         :aria-label="
@@ -147,8 +147,8 @@ function handleNext() {
 
     <!-- Next button -->
     <button
-      class="pagination__button pagination__button--next link"
-      :class="{ 'link--disabled': currentPage === totalPages }"
+      class="pagination__button pagination__button--next"
+      :class="{ 'pagination__button--disabled': currentPage === totalPages }"
       :disabled="currentPage === totalPages"
       type="button"
       :aria-label="t(pagination.ariaLabels.nextPage)"
@@ -174,9 +174,16 @@ function handleNext() {
   }
 
   &__button {
-    // Наследует базовые стили от .link класса
+    display: flex;
+    padding: 0;
+    align-items: center;
     gap: to-rem(8);
+    border: none;
+    background: none;
+    color: var(--color-secondary-600, #01001f);
     font-size: to-rem(16);
+    transition: opacity 0.2s ease;
+    cursor: pointer;
 
     @include font-weight(extrabold);
     @include line-height(relaxed);
@@ -195,11 +202,18 @@ function handleNext() {
       }
     }
 
+    &:hover:not(&--disabled) {
+      opacity: 0.8;
+    }
+
     &--prev,
     &--next {
       @include mq(null, md) {
+        display: flex;
         width: to-rem(24);
         height: to-rem(24);
+        justify-content: center;
+        align-items: center;
       }
     }
 
@@ -207,6 +221,11 @@ function handleNext() {
       @include mq(null, md) {
         transform: rotate(180deg);
       }
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   }
 
@@ -222,14 +241,35 @@ function handleNext() {
   }
 
   &__page {
-    // Наследует базовые стили от .link класса
+    display: flex;
     min-width: to-rem(32);
     height: to-rem(32);
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background: none;
+    color: var(--color-secondary-600, #01001f);
     font-size: to-rem(16);
+    transition: opacity 0.2s ease;
+    cursor: pointer;
 
     @include line-height(relaxed);
     @include font-family(primary);
     @include font-weight(extrabold);
+
+    &:disabled {
+      cursor: default;
+    }
+
+    &:hover:not(&--active, :disabled) {
+      opacity: 0.8;
+    }
+
+    &--active {
+      color: var(--color-secondary-400, #5535be);
+      cursor: default;
+    }
   }
 }
 </style>

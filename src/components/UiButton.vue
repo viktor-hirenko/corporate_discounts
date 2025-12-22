@@ -230,11 +230,11 @@ function handleClick(event: MouseEvent) {
     }
 
     &:hover:not(:disabled, &--disabled) {
-      opacity: 0.8;
+      background-color: #a6ffb1;
     }
 
     &:active:not(:disabled, &--disabled) {
-      opacity: 0.8;
+      background-color: #a6ffb1;
     }
 
     .ui-button__label {

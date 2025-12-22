@@ -6,7 +6,6 @@ import UiButton from '@/components/UiButton.vue'
 import UserInfo from '@/components/UserInfo.vue'
 import { useAppConfig } from '@/composables/useAppConfig'
 import { useAuthStore } from '@/stores/auth'
-import { verifyJwtToken, getJwtToken } from '@/utils/api-config'
 
 const router = useRouter()
 const route = useRoute()
@@ -44,7 +43,7 @@ const displayEmail = computed(() => {
   return authStore.user?.email || lastUser.value?.email || ''
 })
 
-// Продолжить как последний пользователь (если JWT токен ещё валидный)
+// Продолжить как последний пользователь (1-клик вход)
 async function handleContinue(): Promise<void> {
   if (!lastUser.value) return
 
@@ -52,25 +51,12 @@ async function handleContinue(): Promise<void> {
     isLoading.value = true
     const redirect = (route.query.redirect as string) || '/discounts'
 
-    // Проверяем есть ли сохраненный JWT токен и валидный ли он
-    const hasToken = !!getJwtToken()
-    if (hasToken) {
-      const isValid = await verifyJwtToken()
-      if (isValid) {
-        // Токен валидный — восстанавливаем сессию и редиректим
-        authStore.init()
-        await router.replace(redirect)
-        return
-      }
-    }
+    // Логиним с данными последнего пользователя
+    await authStore.loginWithEmail(lastUser.value.email, lastUser.value.name)
 
-    // Токен невалидный или отсутствует — нужен повторный вход через Google
-    // Показываем Google кнопку
-    lastUser.value = null
-    isLoading.value = false
+    await router.replace(redirect)
   } catch (error) {
     console.error('[auth] Continue failed', error)
-    lastUser.value = null
     isLoading.value = false
   }
 }

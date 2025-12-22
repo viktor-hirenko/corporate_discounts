@@ -519,12 +519,12 @@
         "en": "Travel"
       },
       "location": {
-        "ua": "UA/Київ",
-        "en": "UA/Kyiv"
+        "ua": "Україна",
+        "en": "Ukraine"
       },
       "name": {
-        "ua": "Roslynka",
-        "en": "Roslynka"
+        "ua": "Roslynka4",
+        "en": "Roslynka4"
       },
       "summary": {
         "ua": "Флораріум-студія та рослинні воркшопи для команд",
@@ -2800,7 +2800,7 @@
       },
       "terms": {
         "ua": [
-          "5% на всі товари та послуги"
+          "5% на всі то��ари та послуги"
         ],
         "en": [
           "5% on all products and services"
@@ -4578,89 +4578,6 @@
         ],
         "en": [
           ""
-        ]
-      }
-    },
-    "roslynka-copy-1766078979352": {
-      "id": "roslynka-copy-1766078979352",
-      "slug": "roslynka-copy-1766078979352",
-      "image": "/images/partners/roslynka.webp",
-      "promoCode": "UPSTARS.ROSLYNKA",
-      "contact": {
-        "website": "https://www.instagram.com/roslynka_studio_?igsh=OXp5MjZtb2FkeTR3",
-        "email": "",
-        "phone": ""
-      },
-      "socials": [
-        {
-          "type": "instagram",
-          "url": ""
-        },
-        {
-          "type": "facebook",
-          "url": ""
-        }
-      ],
-      "category": {
-        "ua": "Подорожі",
-        "en": "Travel"
-      },
-      "location": {
-        "ua": "UA/Київ",
-        "en": "UA/Kyiv"
-      },
-      "name": {
-        "ua": "Roslynka (копія)",
-        "en": "Roslynka (copy)"
-      },
-      "summary": {
-        "ua": "Флораріум-студія та рослинні воркшопи для команд",
-        "en": "Florarium studio and plant workshops for teams"
-      },
-      "description": {
-        "ua": "Roslynka проводить творчі воркшопи з флораріумів та живих композицій. Для тіммейтів доступні індивідуальні комплекти з рослинами та матеріалами для домашньої збірки.",
-        "en": "Roslynka conducts creative workshops on florariums and live compositions. Individual kits with plants and materials for home assembly are available for teammates."
-      },
-      "discount": {
-        "label": {
-          "ua": "-10%",
-          "en": "-10%"
-        },
-        "description": {
-          "ua": "Діє на всі флораріуми та майстер-класи студії",
-          "en": "Valid for all florariums and studio master classes"
-        }
-      },
-      "address": {
-        "ua": "Київ, Шулявська, Україна",
-        "en": "Kyiv, Shuliavska, Ukraine"
-      },
-      "terms": {
-        "ua": [
-          "10% знижки на продукцію власного виробництва ТМ Roslynka:",
-          "Майстер-клас \"Садочок у флораріумі\"",
-          "Майстер-клас \"Рамочка з морем\"",
-          "Майстер-клас \"Картина зі стабілізованими рослинами\"",
-          "Майстер-клас \"Паяння рамочки з гербарієм або флораріума\""
-        ],
-        "en": [
-          "10% discount on TM Roslynka's own production:",
-          "Master class \"Garden in a florarium\"",
-          "Master class \"Frame with the sea\"",
-          "Master class \"Picture with stabilized plants\"",
-          "Master class \"Soldering a frame with herbarium or florarium\""
-        ]
-      },
-      "tags": {
-        "ua": [
-          "тімбілдинг",
-          "рослини",
-          "творчість"
-        ],
-        "en": [
-          "team building",
-          "plants",
-          "creativity"
         ]
       }
     }

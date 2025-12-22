@@ -10,7 +10,7 @@ import { useAdminSettingsStore } from './adminSettings'
 import { useAdminUsersStore } from './adminUsers'
 import type { AppConfig } from '@/types/app-config'
 import appConfigData from '@/data/app-config.json'
-import { getApiUrl, getAuthHeaders } from '@/utils/api-config'
+import { getApiUrl } from '@/utils/api-config'
 
 // Оригінальний конфіг як база
 const originalConfig = appConfigData as AppConfig
@@ -147,7 +147,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
 
       const response = await fetch(getApiUrl('/api/save-config'), {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config),
       })
 

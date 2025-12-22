@@ -36,8 +36,8 @@ function handleClick() {
   <nav class="navigation-links" :class="`navigation-links--${variant}`">
     <router-link
       to="/discounts"
-      class="navigation-links__link link"
-      :class="{ 'link--active': isHomeActive }"
+      class="navigation-links__link"
+      :class="{ 'navigation-links__link--active': isHomeActive }"
       @click="handleClick"
     >
       {{ t(navigation.home) }}
@@ -45,8 +45,8 @@ function handleClick() {
 
     <router-link
       to="/faq"
-      class="navigation-links__link link"
-      :class="{ 'link--active': isFaqActive }"
+      class="navigation-links__link"
+      :class="{ 'navigation-links__link--active': isFaqActive }"
       @click="handleClick"
     >
       {{ t(navigation.faq) }}
@@ -70,15 +70,30 @@ function handleClick() {
   }
 
   &__link {
-    // Наследует базовые стили от .link класса
+    color: var(--color-secondary-600, #01001f);
     font-size: to-rem(16);
+    text-decoration: none;
+    transition: color 0.2s ease;
 
     @include line-height(relaxed);
     @include font-weight(extrabold);
+
+    &:hover:not(.router-link-active, &--active) {
+      color: var(--color-secondary-300, #928fec);
+    }
+
+    &.router-link-active,
+    &--active {
+      color: var(--color-secondary-400, #5535be);
+    }
   }
 
   &--mobile &__link {
+    padding: 0;
+    border: none;
+    background: none;
     font-size: to-rem(32);
+    cursor: pointer;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
