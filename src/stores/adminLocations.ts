@@ -29,7 +29,9 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     try {
       let configLocations: Record<string, FilterLocation> = {}
 
-      const response = await fetch(getApiUrl('/api/load-config'))
+      // Завантажуємо через API з cache-busting
+      const { fetchConfig } = await import('@/utils/api-config')
+      const response = await fetchConfig()
       if (response.ok) {
         const config = (await response.json()) as AppConfig
         configLocations = config.filters?.locations || {}
@@ -105,7 +107,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     try {
       const { useAdminExportStore } = await import('./adminExport')
       const exportStore = useAdminExportStore()
-      await exportStore.saveToLocalFile()
+      await exportStore.autoSave()
     } catch (error) {
       console.error('Auto-save failed:', error)
     } finally {

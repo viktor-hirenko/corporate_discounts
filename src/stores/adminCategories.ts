@@ -29,8 +29,9 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     try {
       let configCategories: Record<string, FilterCategory> = {}
 
-      // Завантажуємо через API
-      const response = await fetch(getApiUrl('/api/load-config'))
+      // Завантажуємо через API з cache-busting
+      const { fetchConfig } = await import('@/utils/api-config')
+      const response = await fetchConfig()
       if (response.ok) {
         const config = (await response.json()) as AppConfig
         configCategories = config.filters?.categories || {}
@@ -107,7 +108,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     try {
       const { useAdminExportStore } = await import('./adminExport')
       const exportStore = useAdminExportStore()
-      await exportStore.saveToLocalFile()
+      await exportStore.autoSave()
     } catch (error) {
       console.error('Auto-save failed:', error)
     } finally {

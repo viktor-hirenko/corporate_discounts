@@ -1,17 +1,69 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import AccordionItem from '@/components/AccordionItem.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
 import { useAppConfig } from '@/composables/useAppConfig'
+import { getApiUrl } from '@/utils/api-config'
+import type { AppConfig, LocalizedText } from '@/types/app-config'
 
-const { t, pages, images, getImage } = useAppConfig()
+const { t, images, getImage } = useAppConfig()
 
 const botImgUrl = computed(() => getImage(images.bot))
 
 const openIndex = ref<number | null>(null)
 
+// Тексты FAQ — загружаются через API (как партнеры и discounts)
+const pageFaq = ref<{
+  title: LocalizedText
+  description: LocalizedText
+  items: Array<{ question: LocalizedText; answer: LocalizedText }>
+  cta: { title: LocalizedText; description: LocalizedText; button: LocalizedText }
+  notice: { title: LocalizedText; text: LocalizedText }
+}>({
+  title: { ua: '#Часті питання', en: '#FAQ' },
+  description: {
+    ua: 'Відповіді на найпопулярніші питання',
+    en: 'Answers to the most popular questions',
+  },
+  items: [],
+  cta: {
+    title: { ua: 'Не знайшли відповідь?', en: "Didn't find an answer?" },
+    description: { ua: 'Напишіть нам у Slack', en: 'Write to us on Slack' },
+    button: { ua: 'Написати в Slack', en: 'Write to Slack' },
+  },
+  notice: {
+    title: { ua: 'Важливо', en: 'Important' },
+    text: { ua: '', en: '' },
+  },
+})
+const textsLoaded = ref(false)
+
+// Загрузка текстов через API
+async function loadFaqTexts(): Promise<void> {
+  try {
+    const cacheBuster = Date.now()
+    const response = await fetch(`${getApiUrl('/api/load-config')}?t=${cacheBuster}`, {
+      cache: 'no-store',
+    })
+    if (response.ok) {
+      const config = (await response.json()) as AppConfig
+      if (config.pages?.faq) {
+        pageFaq.value = config.pages.faq as typeof pageFaq.value
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to load FAQ texts from API:', error)
+  } finally {
+    textsLoaded.value = true
+  }
+}
+
+onMounted(() => {
+  loadFaqTexts()
+})
+
 const faqItems = computed(() =>
-  pages.faq.items.map((item) => ({
+  pageFaq.value.items.map((item) => ({
     question: t(item.question),
     answer: t(item.answer),
   })),
@@ -27,9 +79,9 @@ function handleStartChat() {
     <!-- Hero Section -->
     <div class="faq__hero">
       <div class="faq__title-section">
-        <h1 class="faq__title">{{ t(pages.faq.title) }}</h1>
+        <h1 class="faq__title">{{ t(pageFaq.title) }}</h1>
         <p class="faq__description">
-          {{ t(pages.faq.description) }}
+          {{ t(pageFaq.description) }}
         </p>
       </div>
     </div>
@@ -53,23 +105,23 @@ function handleStartChat() {
           <img :src="botImgUrl" alt="Bot icon" />
         </div>
         <div class="faq__cta-text">
-          <h2 class="faq__cta-title">{{ t(pages.faq.cta.title) }}</h2>
-          <p class="faq__cta-description">{{ t(pages.faq.cta.description) }}</p>
+          <h2 class="faq__cta-title">{{ t(pageFaq.cta.title) }}</h2>
+          <p class="faq__cta-description">{{ t(pageFaq.cta.description) }}</p>
         </div>
       </div>
       <SecondaryButton
         size="large"
         class="faq__cta-button"
-        :label="t(pages.faq.cta.button)"
+        :label="t(pageFaq.cta.button)"
         @click="handleStartChat"
       />
     </div>
 
     <!-- Important Notice -->
     <div class="faq__notice">
-      <h3 class="faq__notice-title">{{ t(pages.faq.notice.title) }}</h3>
+      <h3 class="faq__notice-title">{{ t(pageFaq.notice.title) }}</h3>
       <p class="faq__notice-text">
-        {{ t(pages.faq.notice.text) }}
+        {{ t(pageFaq.notice.text) }}
       </p>
     </div>
   </div>

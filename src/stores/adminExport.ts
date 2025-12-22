@@ -9,11 +9,33 @@ import { useAdminImagesStore } from './adminImages'
 import { useAdminSettingsStore } from './adminSettings'
 import { useAdminUsersStore } from './adminUsers'
 import type { AppConfig } from '@/types/app-config'
-import appConfigData from '@/data/app-config.json'
-import { getApiUrl } from '@/utils/api-config'
+import staticConfigData from '@/data/app-config.json'
+import { getApiUrl, getAuthHeaders } from '@/utils/api-config'
 
-// Оригінальний конфіг як база
-const originalConfig = appConfigData as AppConfig
+// Актуальный конфиг (загружается через API, fallback — статический)
+let currentConfig: AppConfig = staticConfigData as AppConfig
+let configLoaded = false
+
+// Загрузка актуального конфига с API
+async function loadCurrentConfig(): Promise<AppConfig> {
+  if (configLoaded) return currentConfig
+
+  try {
+    const cacheBuster = Date.now()
+    const response = await fetch(`${getApiUrl('/api/load-config')}?t=${cacheBuster}`, {
+      cache: 'no-store',
+    })
+    if (response.ok) {
+      currentConfig = (await response.json()) as AppConfig
+      configLoaded = true
+    }
+  } catch {
+    // Fallback: статический конфиг
+    currentConfig = staticConfigData as AppConfig
+  }
+
+  return currentConfig
+}
 
 export const useAdminExportStore = defineStore('adminExport', () => {
   // State
@@ -23,21 +45,27 @@ export const useAdminExportStore = defineStore('adminExport', () => {
   const exportError = ref<string | null>(null)
   const lastSaveTime = ref<Date | null>(null)
 
-  // Чекаємо ініціалізації всіх stores перед збереженням
+  // Ждем инициализации всех stores перед сохранением
   async function ensureStoresInitialized(): Promise<void> {
+    // Сначала загружаем актуальный конфиг с API
+    await loadCurrentConfig()
+
     const partnersStore = useAdminPartnersStore()
     const categoriesStore = useAdminCategoriesStore()
     const locationsStore = useAdminLocationsStore()
     const faqStore = useAdminFaqStore()
     const usersStore = useAdminUsersStore()
 
-    // Чекаємо init() для всіх stores
+    const textsStore = useAdminTextsStore()
+
+    // Ждем init() для всех stores
     await Promise.all([
       partnersStore.init(),
       categoriesStore.init(),
       locationsStore.init(),
       faqStore.init(),
       usersStore.init(),
+      textsStore.init(),
     ])
   }
 
@@ -50,12 +78,13 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     const settingsStore = useAdminSettingsStore()
     const imagesStore = useAdminImagesStore()
     const usersStore = useAdminUsersStore()
+    const textsStore = useAdminTextsStore()
 
     // ✅ ЗАХИСТ: якщо stores порожні — використовуємо оригінальні дані
     const partners: Record<string, unknown> =
       Object.keys(partnersStore.partners).length > 0
         ? { ...partnersStore.partners }
-        : { ...originalConfig.partners }
+        : { ...currentConfig.partners }
 
     // ✅ ЗАХИСТ: categories
     const categories: Record<string, unknown> =
@@ -66,7 +95,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
               { label: cat.label, description: cat.description },
             ]),
           )
-        : { ...originalConfig.filters?.categories }
+        : { ...currentConfig.filters?.categories }
 
     // ✅ ЗАХИСТ: locations
     const locations: Record<string, unknown> =
@@ -77,60 +106,93 @@ export const useAdminExportStore = defineStore('adminExport', () => {
               { label: loc.label, description: loc.description },
             ]),
           )
-        : { ...originalConfig.filters?.locations }
+        : { ...currentConfig.filters?.locations }
 
     // ✅ ЗАХИСТ: FAQ
     const faqItems =
       faqStore.faqItemsList.length > 0
         ? faqStore.faqItemsList.map(({ order, ...item }) => item)
-        : originalConfig.pages?.faq?.items || []
+        : currentConfig.pages?.faq?.items || []
 
     // ✅ ЗАХИСТ: users
     const allowedUsers =
-      usersStore.users.length > 0 ? usersStore.users : originalConfig.allowedUsers || []
+      usersStore.users.length > 0 ? usersStore.users : currentConfig.allowedUsers || []
 
     // Збираємо images
     const images = {
       logo: {
         dark:
           imagesStore.images.find((i) => i.id === 'logo-dark')?.path ||
-          originalConfig.images?.logo?.dark ||
+          currentConfig.images?.logo?.dark ||
           '',
         light:
           imagesStore.images.find((i) => i.id === 'logo-light')?.path ||
-          originalConfig.images?.logo?.light ||
+          currentConfig.images?.logo?.light ||
           '',
       },
       tagline:
         imagesStore.images.find((i) => i.id === 'tagline')?.path ||
-        originalConfig.images?.tagline ||
+        currentConfig.images?.tagline ||
         '',
       loginBackground:
         imagesStore.images.find((i) => i.id === 'login-bg')?.path ||
-        originalConfig.images?.loginBackground ||
+        currentConfig.images?.loginBackground ||
         '',
-      bot: imagesStore.images.find((i) => i.id === 'bot')?.path || originalConfig.images?.bot || '',
+      bot: imagesStore.images.find((i) => i.id === 'bot')?.path || currentConfig.images?.bot || '',
+    }
+
+    // Получаем отредактированные тексты
+    const textsObject = textsStore.getTextsObject() as {
+      pages?: Record<string, unknown>
+      auth?: Record<string, unknown>
+      navigation?: Record<string, unknown>
+      filters?: Record<string, unknown>
+      pagination?: Record<string, unknown>
+    }
+
+    // Мерджим тексты страниц
+    const pagesFromTexts = textsObject.pages || {}
+    const faqFromTexts =
+      typeof pagesFromTexts.faq === 'object' && pagesFromTexts.faq !== null
+        ? pagesFromTexts.faq
+        : {}
+
+    const mergedPages = {
+      ...currentConfig.pages,
+      ...pagesFromTexts,
+      faq: {
+        ...currentConfig.pages?.faq,
+        ...faqFromTexts,
+        items: faqItems,
+      },
     }
 
     // Повертаємо повний конфіг, мерджачи з оригіналом
     return {
-      ...originalConfig,
+      ...currentConfig,
       allowedUsers,
       locales: settingsStore.settings.locales,
       defaultLocale: settingsStore.settings.defaultLocale,
       images,
       partners,
       filters: {
-        ...originalConfig.filters,
+        ...currentConfig.filters,
         categories,
         locations,
+        ...textsObject.filters,
       },
-      pages: {
-        ...originalConfig.pages,
-        faq: {
-          ...originalConfig.pages?.faq,
-          items: faqItems,
-        },
+      pages: mergedPages,
+      auth: {
+        ...currentConfig.auth,
+        ...textsObject.auth,
+      },
+      navigation: {
+        ...currentConfig.navigation,
+        ...textsObject.navigation,
+      },
+      pagination: {
+        ...currentConfig.pagination,
+        ...textsObject.pagination,
       },
     } as AppConfig
   }
@@ -160,6 +222,9 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       lastSaveTime.value = new Date()
       exportStatus.value = 'success'
 
+      // Сбрасываем кэш конфига чтобы при следующем сохранении загрузился актуальный
+      configLoaded = false
+
       setTimeout(() => {
         exportStatus.value = 'idle'
       }, 3000)
@@ -178,7 +243,8 @@ export const useAdminExportStore = defineStore('adminExport', () => {
   // Завантажити актуальний конфіг з файлу
   async function loadFromLocalFile(): Promise<AppConfig | null> {
     try {
-      const response = await fetch(getApiUrl('/api/load-config'))
+      const { fetchConfig } = await import('@/utils/api-config')
+      const response = await fetchConfig()
       if (!response.ok) {
         throw new Error('Failed to load config')
       }
@@ -211,7 +277,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
   }
 
   // Збереження на R2 (через Cloudflare Worker)
-  async function saveToR2() {
+  async function saveToR2(): Promise<boolean> {
     exportStatus.value = 'exporting'
     isExporting.value = true
     exportError.value = null
@@ -220,21 +286,26 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       await ensureStoresInitialized()
       const config = buildFullConfig()
 
-      // В майбутньому тут буде API call до Cloudflare Worker
-      // const response = await fetch('/api/admin/save-config', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(config),
-      // })
-      //
-      // if (!response.ok) {
-      //   throw new Error('Failed to save config')
-      // }
+      console.log('[saveToR2] Saving config to R2...')
 
-      // Симуляція затримки
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const response = await fetch(getApiUrl('/api/save-config'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+        },
+        body: JSON.stringify(config),
+      })
 
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('[saveToR2] Failed:', response.status, errorText)
+        throw new Error(`Failed to save config: ${response.status}`)
+      }
+
+      console.log('[saveToR2] Config saved successfully!')
       exportStatus.value = 'success'
+      lastSaveTime.value = new Date()
 
       setTimeout(() => {
         exportStatus.value = 'idle'
@@ -242,7 +313,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
 
       return true
     } catch (error) {
-      console.error('Failed to save to R2:', error)
+      console.error('[saveToR2] Error:', error)
       exportError.value = error instanceof Error ? error.message : 'Failed to save to R2'
       exportStatus.value = 'error'
       return false
@@ -338,6 +409,18 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     }
   }
 
+  // Универсальная функция автосохранения: dev → файл, prod → R2
+  async function autoSave(): Promise<boolean> {
+    const isLocalhost =
+      window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+
+    if (isLocalhost) {
+      return await saveToLocalFile()
+    } else {
+      return await saveToR2()
+    }
+  }
+
   return {
     // State
     isExporting,
@@ -352,6 +435,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     loadFromLocalFile,
     saveToR2,
     loadFromR2,
+    autoSave,
     validateConfig,
     getStatistics,
   }

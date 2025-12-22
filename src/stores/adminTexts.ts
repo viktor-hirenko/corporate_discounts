@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { LocalizedText } from '@/types/app-config'
-import appConfigData from '@/data/app-config.json'
+import staticConfigData from '@/data/app-config.json'
 import type { AppConfig } from '@/types/app-config'
+import { fetchConfig } from '@/utils/api-config'
 
-const config = appConfigData as AppConfig
+// Используется для начальной инициализации, потом обновляется из API
+let config = staticConfigData as AppConfig
 
 export interface TextItem {
   path: string
@@ -89,8 +91,51 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     texts.value = result
   }
 
-  // Ініціалізуємо при створенні store
+  // Флаг ініціалізації
+  const isInitialized = ref(false)
+
+  // Асинхронна ініціалізація з API
+  async function init() {
+    if (isInitialized.value) return
+
+    try {
+      const response = await fetchConfig()
+      if (response.ok) {
+        config = (await response.json()) as AppConfig
+      }
+    } catch {
+      // Fallback: использовать статический конфиг
+    }
+
+    initFromConfig()
+    isInitialized.value = true
+  }
+
+  // Ініціалізуємо при створенні store (синхронно для быстрого рендера)
   initFromConfig()
+
+  // Функция для получения текстов как объекта (для мерджа в конфиг)
+  function getTextsObject(): Record<string, unknown> {
+    const result: Record<string, unknown> = {}
+
+    texts.value.forEach((text) => {
+      const parts = text.path.split('.')
+      let current: Record<string, unknown> = result
+
+      parts.forEach((part, index) => {
+        if (index === parts.length - 1) {
+          current[part] = text.value
+        } else {
+          if (!(part in current)) {
+            current[part] = {}
+          }
+          current = current[part] as Record<string, unknown>
+        }
+      })
+    })
+
+    return result
+  }
 
   // Getters
   const textsList = computed(() => texts.value)
@@ -182,17 +227,20 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     editingText,
     isFormOpen,
     textCategories,
+    isInitialized,
     // Getters
     textsList,
     filteredTexts,
     textsCount,
     // Actions
+    init,
     openEditForm,
     closeForm,
     saveText,
     setSearchQuery,
     setCategory,
     getCategoryLabel,
+    getTextsObject,
     exportToJSON,
   }
 })

@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 
 import { useAppConfig } from '@/composables/useAppConfig'
+import { getApiUrl } from '@/utils/api-config'
+import type { AppConfig } from '@/types/app-config'
 import type {
   DiscountFilters,
   PaginationState,
@@ -142,10 +144,38 @@ export const useDiscountsStore = defineStore('discounts', {
 
       try {
         const appConfig = useAppConfig()
-        const config = appConfig.config.value
         const locale = appConfig.locale.value
         const t = appConfig.t
         const getImage = appConfig.getImage
+
+        // Загружаем конфиг НАПРЯМУЮ через API (актуальные данные из R2)
+        let config: AppConfig
+        const apiUrl = `${getApiUrl('/api/load-config')}?t=${Date.now()}`
+        console.log('[discounts] Fetching config from:', apiUrl)
+
+        try {
+          const response = await fetch(apiUrl, {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' },
+          })
+          console.log('[discounts] Response status:', response.status, response.ok)
+
+          if (response.ok) {
+            config = (await response.json()) as AppConfig
+            console.log(
+              '[discounts] Loaded from API, sample partner:',
+              config.partners?.roslynka?.name,
+            )
+          } else {
+            console.warn('[discounts] API failed, using static fallback')
+            const configModule = await import('@/data/app-config.json')
+            config = configModule.default as AppConfig
+          }
+        } catch (err) {
+          console.error('[discounts] Fetch error:', err)
+          const configModule = await import('@/data/app-config.json')
+          config = configModule.default as AppConfig
+        }
 
         const partnersConfig = config.partners
 
@@ -205,6 +235,7 @@ export const useDiscountsStore = defineStore('discounts', {
         })
 
         this.items = partners
+        console.log('[discounts] Items updated, first partner name:', partners[0]?.name)
         this.status = 'success'
       } catch (error) {
         console.error('[discounts-store] failed to load partners', error)

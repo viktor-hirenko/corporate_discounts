@@ -29,11 +29,17 @@ const securityHeaders = {
 }
 
 function corsResponse(response: Response): Response {
-  const newResponse = new Response(response.body, response)
+  // Копируем оригинальные headers
+  const headers = new Headers(response.headers)
+  // Добавляем CORS и security headers
   Object.entries({ ...corsHeaders, ...securityHeaders }).forEach(([key, value]) => {
-    newResponse.headers.set(key, value)
+    headers.set(key, value)
   })
-  return newResponse
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  })
 }
 
 export default {
@@ -85,9 +91,15 @@ async function loadConfig(env: Env): Promise<Response> {
 
     const config = await object.text()
 
+    // ВАЖНО: Cache-Control headers чтобы браузер НЕ кэшировал ответ
     return new Response(config, {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
     })
   } catch (error) {
     console.error('Failed to load config:', error)

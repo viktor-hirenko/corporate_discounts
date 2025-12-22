@@ -14,16 +14,7 @@ interface Props {
 const props = defineProps<Props>()
 const router = useRouter()
 const store = useDiscountsStore()
-const {
-  t,
-  pages,
-  getPartnerLocalizedData,
-  filters,
-  locale,
-  images: imagesConfig,
-  getImage,
-  config,
-} = useAppConfig()
+const { t, pages, filters, images: imagesConfig } = useAppConfig()
 
 // Ensure images is reactive
 const images = computed(() => imagesConfig)
@@ -36,52 +27,20 @@ const partner = computed(() => {
   return store.getPartnerBySlug(props.slug)
 })
 
-// Локализованные данные партнера
-const localizedData = computed(() => {
-  if (!partner.value) return null
-  return getPartnerLocalizedData(partner.value.id)
-})
+// Используем данные напрямую из partner (загруженные через API)
+const partnerName = computed(() => partner.value?.name || '')
 
-const partnerName = computed(() => {
-  if (!partner.value) return ''
-  return localizedData.value ? t(localizedData.value.name) : partner.value.name
-})
+const partnerSummary = computed(() => partner.value?.summary || '')
 
-const partnerSummary = computed(() => {
-  if (!partner.value) return ''
-  return localizedData.value ? t(localizedData.value.summary) : partner.value.summary
-})
+const partnerDescription = computed(() => partner.value?.description || '')
 
-const partnerDescription = computed(() => {
-  if (!partner.value) return ''
-  return localizedData.value ? t(localizedData.value.description) : partner.value.description
-})
+const discountLabel = computed(() => partner.value?.discount.label || '')
 
-const discountLabel = computed(() => {
-  if (!partner.value) return ''
-  return localizedData.value ? t(localizedData.value.discount.label) : partner.value.discount.label
-})
+const discountDescription = computed(() => partner.value?.discount.description || '')
 
-const discountDescription = computed(() => {
-  if (!partner.value) return ''
-  return localizedData.value && localizedData.value.discount.description
-    ? t(localizedData.value.discount.description)
-    : partner.value.discount.description || ''
-})
+const partnerImage = computed(() => partner.value?.images.thumbnail || '')
 
-const partnerImage = computed(() => {
-  if (!partner.value) return ''
-  const partnerConfig = config.value.partners[partner.value.slug]
-  if (!partnerConfig?.image) {
-    return ''
-  }
-  return getImage(partnerConfig.image)
-})
-
-const partnerTerms = computed(() => {
-  if (!partner.value) return []
-  return localizedData.value ? localizedData.value.terms[locale.value] || [] : partner.value.terms
-})
+const partnerTerms = computed(() => partner.value?.terms || [])
 
 const partnerCategory = computed(() => {
   if (!partner.value) return ''
@@ -91,13 +50,7 @@ const partnerCategory = computed(() => {
   return categoryFilter ? t(categoryFilter.label) : partner.value.category
 })
 
-const partnerAddress = computed(() => {
-  if (!partner.value) return ''
-  if (localizedData.value?.address) {
-    return t(localizedData.value.address)
-  }
-  return partner.value.contact.address || ''
-})
+const partnerAddress = computed(() => partner.value?.contact.address || '')
 
 // Фильтруем только заполненные соцсети
 const filledSocials = computed(() => {
@@ -108,9 +61,7 @@ const filledSocials = computed(() => {
 // Проверяем, есть ли изображение у партнёра
 const hasPartnerImage = computed(() => {
   if (!partner.value) return false
-  const slug = partner.value.slug
-  const partnerConfig = config.value.partners[slug]
-  return partnerConfig?.image && partnerConfig.image.trim() !== ''
+  return partner.value.images.thumbnail && partner.value.images.thumbnail.trim() !== ''
 })
 
 // Функция для загрузки данных и проверки партнера

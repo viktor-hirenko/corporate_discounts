@@ -43,8 +43,9 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     if (isInitialized.value) return
 
     try {
-      // Завантажуємо конфіг через API (dev) або статичний файл (prod)
-      const response = await fetch(getApiUrl('/api/load-config'))
+      // Завантажуємо конфіг через API з cache-busting
+      const { fetchConfig } = await import('@/utils/api-config')
+      const response = await fetchConfig()
       if (response.ok) {
         const config = await response.json()
         if (config.allowedUsers?.length) {
@@ -140,8 +141,9 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isLoading.value = true
 
     try {
-      // Перезавантажуємо конфіг з файлу
-      const response = await fetch(getApiUrl('/api/load-config'))
+      // Перезавантажуємо конфіг з файлу з cache-busting
+      const { fetchConfig } = await import('@/utils/api-config')
+      const response = await fetchConfig()
       if (response.ok) {
         const config = await response.json()
         if (config.allowedUsers?.length) {

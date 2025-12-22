@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import PartnerFilter from '@/components/PartnerFilter.vue'
 import FilterChips from '@/components/FilterChips.vue'
@@ -9,13 +9,55 @@ import PrimaryButton from '@/components/PrimaryButton.vue'
 import { useDiscountsStore } from '@/stores/discounts'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { useAppConfig } from '@/composables/useAppConfig'
+import { getApiUrl } from '@/utils/api-config'
+import type { AppConfig } from '@/types/app-config'
 
 const store = useDiscountsStore()
 const router = useRouter()
 const route = useRoute()
-const { t, tTemplate, pages } = useAppConfig()
+const { t, tTemplate } = useAppConfig()
 
-const isLoading = computed(() => store.status === 'loading')
+// Тексты страницы — загружаются через API (как партнеры)
+const pageTexts = ref({
+  title: { ua: '#Корпоративні знижки', en: '#Corporate Discounts' },
+  description: {
+    ua: 'Ексклюзивні пропозиції від партнерів для тіммейтів. Фільтруйте за локацією та категорією, щоб знайти найкращі знижки.',
+    en: 'Exclusive offers from partners for teammates. Filter by location and category to find the best discounts.',
+  },
+  messages: {
+    loading: { ua: 'Завантаження...', en: 'Loading...' },
+    error: { ua: 'Помилка завантаження', en: 'Loading error' },
+    empty: { ua: 'Нічого не знайдено', en: 'Nothing found' },
+    retry: { ua: 'Спробувати ще', en: 'Try again' },
+    resultsCount: {
+      ua: 'Показано {{start}}-{{end}} з {{total}}',
+      en: 'Showing {{start}}-{{end}} of {{total}}',
+    },
+  },
+})
+const textsLoaded = ref(false)
+
+// Загрузка текстов через API (одинаковая логика с партнерами)
+async function loadPageTexts(): Promise<void> {
+  try {
+    const cacheBuster = Date.now()
+    const response = await fetch(`${getApiUrl('/api/load-config')}?t=${cacheBuster}`, {
+      cache: 'no-store',
+    })
+    if (response.ok) {
+      const config = (await response.json()) as AppConfig
+      if (config.pages?.discounts) {
+        pageTexts.value = config.pages.discounts as typeof pageTexts.value
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to load page texts from API:', error)
+  } finally {
+    textsLoaded.value = true
+  }
+}
+
+const isLoading = computed(() => store.status === 'loading' || !textsLoaded.value)
 const isError = computed(() => store.status === 'error')
 const errorMessage = computed(() => store.error)
 
@@ -67,8 +109,8 @@ function handlePageChange(page: number) {
 }
 
 onMounted(async () => {
-  // Сначала загружаем партнёров
-  await store.loadPartners()
+  // Загружаем тексты и партнеров параллельно через API
+  await Promise.all([loadPageTexts(), store.loadPartners()])
 
   // Затем восстанавливаем состояние из URL
   const pageFromUrl = route.query.page ? Number(route.query.page) : 1
@@ -98,10 +140,10 @@ onMounted(async () => {
       <section class="discounts-catalog__hero" aria-labelledby="discounts-heading">
         <div class="discounts-catalog__title-section">
           <h1 id="discounts-heading" class="discounts-catalog__title">
-            {{ t(pages.discounts.title) }}
+            {{ t(pageTexts.title) }}
           </h1>
           <p class="discounts-catalog__description">
-            {{ t(pages.discounts.description) }}
+            {{ t(pageTexts.description) }}
           </p>
         </div>
 
@@ -118,7 +160,7 @@ onMounted(async () => {
         class="discounts-catalog__results-count"
       >
         {{
-          tTemplate(pages.discounts.messages.resultsCount, {
+          tTemplate(pageTexts.messages.resultsCount, {
             start: displayedRange.start,
             end: displayedRange.end,
             total: totalPartners,
@@ -132,13 +174,13 @@ onMounted(async () => {
       <!-- Loading state -->
       <div v-if="isLoading" class="discounts-catalog__loading">
         <div class="discounts-catalog__spinner"></div>
-        <p class="discounts-catalog__loading-text">{{ t(pages.discounts.messages.loading) }}</p>
+        <p class="discounts-catalog__loading-text">{{ t(pageTexts.messages.loading) }}</p>
       </div>
 
       <!-- Error state -->
       <div v-else-if="isError" class="discounts-catalog__error">
-        <p>{{ errorMessage || t(pages.discounts.messages.error) }}</p>
-        <PrimaryButton :label="t(pages.discounts.messages.retry)" @click="store.loadPartners" />
+        <p>{{ errorMessage || t(pageTexts.messages.error) }}</p>
+        <PrimaryButton :label="t(pageTexts.messages.retry)" @click="store.loadPartners" />
       </div>
 
       <!-- Content -->
@@ -149,7 +191,7 @@ onMounted(async () => {
 
         <div v-else class="discounts-catalog__empty">
           <p>
-            {{ t(pages.discounts.messages.empty) }}
+            {{ t(pageTexts.messages.empty) }}
           </p>
         </div>
       </template>

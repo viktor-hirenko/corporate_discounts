@@ -27,3 +27,28 @@ export function getApiUrl(endpoint: string): string {
   const baseUrl = getApiBaseUrl()
   return `${baseUrl}${endpoint}`
 }
+
+/**
+ * Возвращает headers для авторизованных запросов (с JWT токеном)
+ */
+export function getAuthHeaders(): Record<string, string> {
+  const token = localStorage.getItem('auth_token')
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  }
+}
+
+/**
+ * Загружает конфиг с API с принудительным обходом кэша
+ * Используй эту функцию вместо прямого fetch для /api/load-config
+ */
+export async function fetchConfig(): Promise<Response> {
+  const cacheBuster = Date.now()
+  return fetch(`${getApiUrl('/api/load-config')}?t=${cacheBuster}`, {
+    cache: 'no-store',
+    headers: {
+      'Cache-Control': 'no-cache',
+    },
+  })
+}

@@ -64,8 +64,11 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     if (isInitialized.value) return
 
     try {
-      // Завантажуємо конфіг через API (dev) або статичний файл (prod)
-      const response = await fetch(getApiUrl('/api/load-config'))
+      // Завантажуємо конфіг через API з cache-busting
+      const cacheBuster = Date.now()
+      const response = await fetch(`${getApiUrl('/api/load-config')}?t=${cacheBuster}`, {
+        cache: 'no-store',
+      })
       if (response.ok) {
         const config = (await response.json()) as AppConfig
         if (config.partners) {
@@ -114,13 +117,13 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     isFormOpen.value = false
   }
 
-  // Автозбереження в файл
+  // Автозбереження — dev: в файл, prod: в R2
   async function autoSave() {
     isSaving.value = true
     try {
       const { useAdminExportStore } = await import('./adminExport')
       const exportStore = useAdminExportStore()
-      await exportStore.saveToLocalFile()
+      await exportStore.autoSave()
     } catch (error) {
       console.error('Auto-save failed:', error)
     } finally {

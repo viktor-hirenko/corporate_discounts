@@ -14,33 +14,28 @@ const { t, getPartnerLocalizedData, filters, getImage, config } = useAppConfig()
 
 const imageLoadError = ref(false)
 
-const localizedData = computed(() => getPartnerLocalizedData(props.partner.id))
-
+// Используем данные напрямую из props (загруженные через API)
 const partnerImage = computed(() => {
-  const partnerConfig = config.value.partners[props.partner.slug]
-  if (!partnerConfig?.image) {
-    return props.partner.images.thumbnail
-  }
-  return getImage(partnerConfig.image)
+  return props.partner.images.thumbnail || ''
 })
 
 // Проверяем, есть ли изображение у партнёра (и не было ли ошибки загрузки)
 const hasImage = computed(() => {
-  const partnerConfig = config.value.partners[props.partner.slug]
-  return partnerConfig?.image && partnerConfig.image.trim() !== '' && !imageLoadError.value
+  return (
+    props.partner.images.thumbnail &&
+    props.partner.images.thumbnail.trim() !== '' &&
+    !imageLoadError.value
+  )
 })
 
 function handleImageError() {
   imageLoadError.value = true
 }
 
-const partnerName = computed(() => {
-  return localizedData.value ? t(localizedData.value.name) : props.partner.name
-})
+// Используем данные из props (актуальные данные из API)
+const partnerName = computed(() => props.partner.name)
 
-const discountLabel = computed(() => {
-  return localizedData.value ? t(localizedData.value.discount.label) : props.partner.discount.label
-})
+const discountLabel = computed(() => props.partner.discount.label)
 
 const categoryLabel = computed(() => {
   // Получаем категорию напрямую по ключу
