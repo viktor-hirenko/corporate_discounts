@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, Teleport } from 'vue'
 import FilterButton from './FilterButton.vue'
 import FilterModal from './FilterModal.vue'
 import { useDiscountsStore } from '@/stores/discounts'
@@ -43,6 +43,13 @@ function handleApplyFilters(
   <div class="partner-filter">
     <FilterButton :is-open="isFilterModalOpen" @click="handleToggleFilters" />
 
+    <!-- Прозрачный overlay для блокировки кликов при открытом dropdown -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="isFilterModalOpen" class="partner-filter__overlay" @click="handleCloseFilters" />
+      </Transition>
+    </Teleport>
+
     <FilterModal
       :is-open="isFilterModalOpen"
       @close="handleCloseFilters"
@@ -62,5 +69,24 @@ function handleApplyFilters(
   :deep(.filter-button) {
     width: 100%;
   }
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background-color: transparent;
+    cursor: default;
+  }
+}
+
+// Transition для overlay
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
