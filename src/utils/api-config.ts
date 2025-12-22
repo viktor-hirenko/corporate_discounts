@@ -36,6 +36,7 @@ export function getAuthHeaders(): Record<string, string> {
 
   // Читаем токен из auth store (localStorage)
   const stored = localStorage.getItem('corporate_discounts_auth')
+
   if (stored) {
     try {
       const parsed = JSON.parse(stored)
