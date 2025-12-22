@@ -59,12 +59,12 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
 
   const partnersCount = computed(() => partnersList.value.length)
 
-  // Ініціалізація - динамічне завантаження з конфігу
+  // Инициализация - динамическая загрузка из конфига
   async function init() {
     if (isInitialized.value) return
 
     try {
-      // Завантажуємо конфіг через API з cache-busting
+      // Загружаем конфиг через API с cache-busting
       const cacheBuster = Date.now()
       const response = await fetch(`${getApiUrl('/api/load-config')}?t=${cacheBuster}`, {
         cache: 'no-store',
@@ -75,7 +75,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
           partners.value = { ...config.partners }
         }
       } else {
-        // Fallback: динамічний імпорт
+        // Fallback: динамический импорт
         const configModule = await import('@/data/app-config.json')
         const configData = configModule.default as AppConfig
         if (configData.partners) {
@@ -83,7 +83,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
         }
       }
     } catch {
-      // Fallback: динамічний імпорт
+      // Fallback: динамический импорт
       try {
         const configModule = await import('@/data/app-config.json')
         const configData = configModule.default as AppConfig
@@ -98,7 +98,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     isInitialized.value = true
   }
 
-  // Автоматична ініціалізація
+  // Автоматическая инициализация
   init()
 
   // Actions
@@ -117,7 +117,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     isFormOpen.value = false
   }
 
-  // Автозбереження — dev: в файл, prod: в R2
+  // Автосохранение — dev: в файл, prod: в R2
   async function autoSave() {
     isSaving.value = true
     try {
@@ -149,7 +149,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
       id: newSlug,
       slug: newSlug,
       name: {
-        ua: `${partner.name.ua} (копія)`,
+        ua: `${partner.name.ua} (копия)`,
         en: `${partner.name.en} (copy)`,
       },
     }

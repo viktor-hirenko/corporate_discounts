@@ -69,7 +69,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     ])
   }
 
-  // Експорт повного app-config.json (мерджимо з оригіналом)
+  // Экспорт полного app-config.json (мержим с оригиналом)
   function buildFullConfig(): AppConfig {
     const partnersStore = useAdminPartnersStore()
     const categoriesStore = useAdminCategoriesStore()
@@ -80,13 +80,13 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     const usersStore = useAdminUsersStore()
     const textsStore = useAdminTextsStore()
 
-    // ✅ ЗАХИСТ: якщо stores порожні — використовуємо оригінальні дані
+    // ✅ ЗАЩИТА: если stores пустые — используем оригинальные данные
     const partners: Record<string, unknown> =
       Object.keys(partnersStore.partners).length > 0
         ? { ...partnersStore.partners }
         : { ...currentConfig.partners }
 
-    // ✅ ЗАХИСТ: categories
+    // ✅ ЗАЩИТА: categories
     const categories: Record<string, unknown> =
       Object.keys(categoriesStore.categories).length > 0
         ? Object.fromEntries(
@@ -97,11 +97,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
           )
         : { ...currentConfig.filters?.categories }
 
-    // ✅ ЗАХИСТ: locations
-    console.log(
-      '[buildFullConfig] locationsStore.locations keys:',
-      Object.keys(locationsStore.locations),
-    )
+    // ✅ ЗАЩИТА: locations
     const locations: Record<string, unknown> =
       Object.keys(locationsStore.locations).length > 0
         ? Object.fromEntries(
@@ -111,19 +107,18 @@ export const useAdminExportStore = defineStore('adminExport', () => {
             ]),
           )
         : { ...currentConfig.filters?.locations }
-    console.log('[buildFullConfig] Final locations keys:', Object.keys(locations))
 
-    // ✅ ЗАХИСТ: FAQ
+    // ✅ ЗАЩИТА: FAQ
     const faqItems =
       faqStore.faqItemsList.length > 0
         ? faqStore.faqItemsList.map(({ order, ...item }) => item)
         : currentConfig.pages?.faq?.items || []
 
-    // ✅ ЗАХИСТ: users
+    // ✅ ЗАЩИТА: users
     const allowedUsers =
       usersStore.users.length > 0 ? usersStore.users : currentConfig.allowedUsers || []
 
-    // Збираємо images
+    // Собираем images
     const images = {
       logo: {
         dark:
@@ -172,7 +167,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       },
     }
 
-    // Повертаємо повний конфіг, мерджачи з оригіналом
+    // Возвращаем полный конфиг, мержа с оригиналом
     return {
       ...currentConfig,
       allowedUsers,
@@ -210,7 +205,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     exportError.value = null
 
     try {
-      // ✅ Чекаємо ініціалізації stores перед збереженням
+      // ✅ Ждем инициализации stores перед сохранением
       await ensureStoresInitialized()
       const config = buildFullConfig()
 
@@ -247,7 +242,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     }
   }
 
-  // Завантажити актуальний конфіг з файлу
+  // Загрузить актуальный конфиг из файла
   async function loadFromLocalFile(): Promise<AppConfig | null> {
     try {
       const { fetchConfig } = await import('@/utils/api-config')
@@ -293,12 +288,6 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       await ensureStoresInitialized()
       const config = buildFullConfig()
 
-      console.log('[saveToR2] Saving config to R2...')
-      console.log(
-        '[saveToR2] Config filters.locations keys:',
-        Object.keys(config.filters?.locations || {}),
-      )
-
       const response = await fetch(getApiUrl('/api/save-config'), {
         method: 'POST',
         headers: {
@@ -314,7 +303,6 @@ export const useAdminExportStore = defineStore('adminExport', () => {
         throw new Error(`Failed to save config: ${response.status}`)
       }
 
-      console.log('[saveToR2] Config saved successfully!')
       exportStatus.value = 'success'
       lastSaveTime.value = new Date()
 
@@ -333,29 +321,29 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     }
   }
 
-  // Валідація конфігу
+  // Валидация конфига
   function validateConfig(): { valid: boolean; errors: string[] } {
     const errors: string[] = []
     const partnersStore = useAdminPartnersStore()
     const usersStore = useAdminUsersStore()
 
-    // Перевірка партнерів
+    // Проверка партнеров
     if (partnersStore.partnersCount === 0) {
-      errors.push('Немає жодного партнера')
+      errors.push('Нет ни одного партнера')
     }
 
-    // Перевірка користувачів
+    // Проверка пользователей
     if (usersStore.usersCount === 0) {
-      errors.push('Немає жодного адміністратора')
+      errors.push('Нет ни одного администратора')
     }
 
-    // Перевірка обов'язкових полів партнерів
+    // Проверка обязательных полей партнеров
     Object.values(partnersStore.partners).forEach((partner) => {
       if (!partner.name.ua || !partner.name.en) {
-        errors.push(`Партнер ${partner.slug}: відсутня назва`)
+        errors.push(`Партнер ${partner.slug}: отсутствует название`)
       }
       if (!partner.promoCode) {
-        errors.push(`Партнер ${partner.slug}: відсутній промокод`)
+        errors.push(`Партнер ${partner.slug}: отсутствует промокод`)
       }
     })
 
@@ -389,13 +377,9 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     const isLocalhost =
       window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 
-    console.log('[adminExport.autoSave] isLocalhost:', isLocalhost)
-
     if (isLocalhost) {
-      console.log('[adminExport.autoSave] Calling saveToLocalFile()')
       return await saveToLocalFile()
     } else {
-      console.log('[adminExport.autoSave] Calling saveToR2()')
       return await saveToR2()
     }
   }

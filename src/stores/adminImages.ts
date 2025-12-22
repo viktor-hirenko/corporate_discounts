@@ -17,31 +17,31 @@ export const useAdminImagesStore = defineStore('adminImages', () => {
   const images = ref<ImageItem[]>([])
   const selectedCategory = ref('all')
 
-  // Ініціалізація з конфігу
+  // Инициализация из конфига
   const initFromConfig = () => {
     const result: ImageItem[] = []
 
-    // Логотипи
+    // Логотипы
     if (config.images?.logo) {
       result.push({
         id: 'logo-dark',
-        label: 'Логотип (темний)',
+        label: 'Логотип (темный)',
         path: config.images.logo.dark,
         category: 'logo',
       })
       result.push({
         id: 'logo-light',
-        label: 'Логотип (світлий)',
+        label: 'Логотип (светлый)',
         path: config.images.logo.light,
         category: 'logo',
       })
     }
 
-    // Загальні зображення
+    // Общие изображения
     if (config.images?.tagline) {
       result.push({
         id: 'tagline',
-        label: 'Тегляйн',
+        label: 'Теглайн',
         path: config.images.tagline,
         category: 'general',
       })
@@ -50,7 +50,7 @@ export const useAdminImagesStore = defineStore('adminImages', () => {
     if (config.images?.loginBackground) {
       result.push({
         id: 'login-bg',
-        label: 'Фон логіну',
+        label: 'Фон логина',
         path: config.images.loginBackground,
         category: 'general',
       })
@@ -59,7 +59,7 @@ export const useAdminImagesStore = defineStore('adminImages', () => {
     if (config.images?.bot) {
       result.push({
         id: 'bot',
-        label: 'Бот-зображення',
+        label: 'Бот-изображение',
         path: config.images.bot,
         category: 'general',
       })
@@ -68,7 +68,7 @@ export const useAdminImagesStore = defineStore('adminImages', () => {
     images.value = result
   }
 
-  // Ініціалізуємо при створенні store
+  // Инициализируем при создании store
   initFromConfig()
 
   // Getters

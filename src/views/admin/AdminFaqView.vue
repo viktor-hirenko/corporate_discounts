@@ -81,7 +81,7 @@ const handleFormOpen = () => {
 }
 
 const handleSave = () => {
-  // ✅ Санітизація вводу
+  // ✅ Санитизация ввода
   const item: FaqItemAdmin = {
     id: formData.value.id || `faq-${Date.now()}`,
     category: formData.value.category as 'general' | 'promoCodes' | 'catalog' | 'support',

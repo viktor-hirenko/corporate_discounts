@@ -5,7 +5,7 @@ import { useAdminCategoriesStore } from '@/stores/adminCategories'
 import { useAdminLocationsStore } from '@/stores/adminLocations'
 import { sanitizeString, sanitizeEmail, sanitizeUrl } from '@/utils/sanitize'
 
-// ✅ Санітизація локалізованого тексту
+// ✅ Санитизация локализованного текста
 function sanitizeLocalized(obj: { ua: string; en: string }): { ua: string; en: string } {
   return {
     ua: sanitizeString(obj.ua),
@@ -83,7 +83,7 @@ const locationOptions = computed(() => {
     .sort((a, b) => a.ua.localeCompare(b.ua, 'uk-UA'))
 })
 
-// Транслітерація кирилиці для slug
+// Транслитерация кириллицы для slug
 const cyrillicMap: Record<string, string> = {
   а: 'a',
   б: 'b',
@@ -123,7 +123,7 @@ const cyrillicMap: Record<string, string> = {
   ё: 'yo',
 }
 
-// Generate slug from name (з транслітерацією кирилиці)
+// Generate slug from name (с транслитерацией кириллицы)
 const generateSlug = (name: string): string => {
   const transliterated = name
     .toLowerCase()
@@ -138,7 +138,7 @@ const generateSlug = (name: string): string => {
     .trim()
 }
 
-// Auto-generate slug when EN name changes (пріоритет EN, fallback на UA)
+// Auto-generate slug when EN name changes (приоритет EN, fallback на UA)
 watch(
   () => formData.name.en,
   (newNameEn) => {
@@ -151,7 +151,7 @@ watch(
   },
 )
 
-// Fallback: якщо EN порожній, генеруємо з UA
+// Fallback: если EN пустой, генерируем из UA
 watch(
   () => formData.name.ua,
   (newNameUa) => {
@@ -191,11 +191,11 @@ const isValid = computed(() => {
   )
 })
 
-// Save з санітизацією
+// Save с санитизацией
 const handleSave = () => {
   if (!isValid.value) return
 
-  // ✅ Санітизація всіх полів
+  // ✅ Санитизация всех полей
   const partner: PartnerConfig = {
     id: formData.slug,
     slug: sanitizeString(formData.slug),

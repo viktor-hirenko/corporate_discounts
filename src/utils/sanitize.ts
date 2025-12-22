@@ -48,11 +48,11 @@ export function sanitizeEmail(email: string): string {
  */
 export function sanitizeUrl(url: string): string {
   const trimmed = url.trim()
-  // Дозволяємо тільки http, https та відносні URL
+  // Разрешаем только http, https и относительные URL
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/')) {
     return trimmed
   }
-  // Додаємо https:// якщо немає протоколу
+  // Добавляем https:// если нет протокола
   if (trimmed && !trimmed.includes('://')) {
     return `https://${trimmed}`
   }

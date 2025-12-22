@@ -30,7 +30,7 @@ const partner = computed(() => {
   return store.getPartnerBySlug(props.slug)
 })
 
-// Используем данные напрямую из partner с локализацією через t()
+// Используем данные напрямую из partner с локализацией через t()
 const partnerName = computed(() =>
   partner.value ? t(partner.value.name as unknown as { ua: string; en: string }) : '',
 )
@@ -55,7 +55,7 @@ const discountDescription = computed(() =>
 
 const partnerImage = computed(() => partner.value?.images.thumbnail || '')
 
-// Terms зберігаються як {ua: [], en: []} — вибираємо за поточною локаллю
+// Terms хранятся как {ua: [], en: []} — выбираем по текущей локали
 const partnerTerms = computed(() => {
   if (!partner.value?.terms) return []
   const termsData = partner.value.terms as unknown as { ua: string[]; en: string[] }

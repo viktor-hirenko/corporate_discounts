@@ -50,7 +50,7 @@ const resetForm = () => {
 }
 
 const handleSave = () => {
-  // ✅ Санітизація вводу
+  // ✅ Санитизация ввода
   const text: TextItem = {
     path: formData.value.path,
     label: formData.value.label,

@@ -23,18 +23,18 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
   const editingText = ref<TextItem | null>(null)
   const isFormOpen = ref(false)
 
-  // Категорії текстів
+  // Категории текстов
   const textCategories = [
-    { id: 'pages.discounts', label: 'Сторінка каталогу' },
-    { id: 'pages.discountDetails', label: 'Сторінка деталей' },
-    { id: 'pages.faq', label: 'Сторінка FAQ' },
-    { id: 'auth', label: 'Авторизація' },
-    { id: 'navigation', label: 'Навігація' },
-    { id: 'filters', label: 'Фільтри' },
-    { id: 'pagination', label: 'Пагінація' },
+    { id: 'pages.discounts', label: 'Страница каталога' },
+    { id: 'pages.discountDetails', label: 'Страница деталей' },
+    { id: 'pages.faq', label: 'Страница FAQ' },
+    { id: 'auth', label: 'Авторизация' },
+    { id: 'navigation', label: 'Навигация' },
+    { id: 'filters', label: 'Фильтры' },
+    { id: 'pagination', label: 'Пагинация' },
   ]
 
-  // Функція для отримання вкладеного значення за шляхом
+  // Функция для получения вложенного значения по пути
   const getNestedValue = (obj: unknown, path: string): unknown => {
     return path.split('.').reduce((acc: unknown, part: string) => {
       if (acc && typeof acc === 'object' && part in acc) {
@@ -44,7 +44,7 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     }, obj)
   }
 
-  // Функція для перевірки чи це LocalizedText
+  // Функция для проверки является ли это LocalizedText
   const isLocalizedText = (value: unknown): value is LocalizedText => {
     return (
       value !== null &&
@@ -56,7 +56,7 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     )
   }
 
-  // Рекурсивний збір текстів з об'єкта
+  // Рекурсивный сбор текстов из объекта
   const collectTexts = (obj: unknown, path: string, category: string, result: TextItem[]) => {
     if (!obj || typeof obj !== 'object') return
 
@@ -76,11 +76,11 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     }
   }
 
-  // Ініціалізація з конфігу
+  // Инициализация из конфига
   const initFromConfig = () => {
     const result: TextItem[] = []
 
-    // Збираємо тексти з різних секцій
+    // Собираем тексты из разных секций
     textCategories.forEach((cat) => {
       const section = getNestedValue(config, cat.id)
       if (section) {
@@ -91,10 +91,10 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     texts.value = result
   }
 
-  // Флаг ініціалізації
+  // Флаг инициализации
   const isInitialized = ref(false)
 
-  // Асинхронна ініціалізація з API
+  // Асинхронная инициализация с API
   async function init() {
     if (isInitialized.value) return
 
@@ -111,7 +111,7 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     isInitialized.value = true
   }
 
-  // Автоматична ініціалізація (как в adminPartners.ts)
+  // Автоматическая инициализация (как в adminPartners.ts)
   init()
 
   // Функция для получения текстов как объекта (для мерджа в конфиг)
@@ -143,12 +143,12 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
   const filteredTexts = computed(() => {
     let result = textsList.value
 
-    // Фільтр за категорією
+    // Фильтр по категории
     if (selectedCategory.value !== 'all') {
       result = result.filter((t) => t.category === selectedCategory.value)
     }
 
-    // Пошук
+    // Поиск
     if (searchQuery.value) {
       const query = searchQuery.value.toLowerCase()
       result = result.filter(
@@ -180,14 +180,11 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
 
   // Автосохранение — dev: в файл, prod: в R2
   async function autoSave() {
-    console.log('[adminTexts] autoSave started')
     isSaving.value = true
     try {
       const { useAdminExportStore } = await import('./adminExport')
       const exportStore = useAdminExportStore()
-      console.log('[adminTexts] Calling exportStore.autoSave()')
       await exportStore.autoSave()
-      console.log('[adminTexts] autoSave completed successfully')
     } catch (error) {
       console.error('[adminTexts] Auto-save texts failed:', error)
     } finally {
@@ -196,11 +193,9 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
   }
 
   async function saveText(text: TextItem) {
-    console.log('[adminTexts] saveText called for:', text.path, text.value)
     const index = texts.value.findIndex((t) => t.path === text.path)
     if (index >= 0) {
       texts.value[index] = text
-      console.log('[adminTexts] Text updated in store at index:', index)
     }
     closeForm()
     await autoSave()
@@ -220,7 +215,7 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
   }
 
   function exportToJSON() {
-    // Групуємо тексти за категоріями та будуємо об'єкт
+    // Группируем тексты по категориям и строим объект
     const result: Record<string, unknown> = {}
 
     texts.value.forEach((text) => {

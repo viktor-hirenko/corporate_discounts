@@ -38,12 +38,12 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
 
   const usersCount = computed(() => users.value.length)
 
-  // Ініціалізація - динамічне завантаження з конфігу
+  // Инициализация - динамическая загрузка из конфига
   async function init() {
     if (isInitialized.value) return
 
     try {
-      // Завантажуємо конфіг через API з cache-busting
+      // Загружаем конфиг через API с cache-busting
       const { fetchConfig } = await import('@/utils/api-config')
       const response = await fetchConfig()
       if (response.ok) {
@@ -52,7 +52,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
           users.value = config.allowedUsers
         }
       } else {
-        // Fallback: завантаження через статичний імпорт для production
+        // Fallback: загрузка через статический импорт для production
         const configModule = await import('@/data/app-config.json')
         const configData = configModule.default as { allowedUsers?: AdminUser[] }
         if (configData.allowedUsers?.length) {
@@ -60,7 +60,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
         }
       }
     } catch {
-      // Fallback: динамічний імпорт
+      // Fallback: динамический импорт
       try {
         const configModule = await import('@/data/app-config.json')
         const configData = configModule.default as { allowedUsers?: AdminUser[] }
@@ -75,7 +75,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isInitialized.value = true
   }
 
-  // Автоматична ініціалізація
+  // Автоматическая инициализация
   init()
 
   // Actions
@@ -95,7 +95,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
   }
 
   function addUser(user: Omit<AdminUser, 'id' | 'addedAt' | 'addedBy'>) {
-    // ✅ Санітизація на рівні стора (друга лінія захисту)
+    // ✅ Санитизация на уровне стора (вторая линия защиты)
     const newUser: AdminUser = {
       ...user,
       email: sanitizeEmail(user.email),
@@ -111,7 +111,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
   function updateUser(user: AdminUser) {
     const index = users.value.findIndex((u) => u.id === user.id)
     if (index >= 0) {
-      // ✅ Санітизація при оновленні
+      // ✅ Санитизация при обновлении
       users.value[index] = {
         ...user,
         email: sanitizeEmail(user.email),
@@ -141,7 +141,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isLoading.value = true
 
     try {
-      // Перезавантажуємо конфіг з файлу з cache-busting
+      // Перезагружаем конфиг из файла с cache-busting
       const { fetchConfig } = await import('@/utils/api-config')
       const response = await fetchConfig()
       if (response.ok) {
@@ -174,7 +174,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
       //   body: JSON.stringify({ users: users.value }),
       // })
 
-      // Симуляція затримки
+      // Симуляция задержки
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
       syncStatus.value = 'success'

@@ -84,7 +84,7 @@ export const useDiscountsStore = defineStore('discounts', {
           const filterLocation = state.filters.location
           const partnerLocation = partner.location
 
-          // Фильтр "ua" - украинские + глобальные онлайн (UA, UA/Київ, UA/Онлайн, Online)
+          // Фильтр "ua" - украинские + глобальные онлайн (UA, UA/Киев, UA/Онлайн, Online)
           if (filterLocation === 'ua') {
             return partnerLocation.startsWith('UA')
           }
@@ -153,23 +153,16 @@ export const useDiscountsStore = defineStore('discounts', {
         // Загружаем конфиг НАПРЯМУЮ через API (актуальные данные из R2)
         let config: AppConfig
         const apiUrl = `${getApiUrl('/api/load-config')}?t=${Date.now()}`
-        console.log('[discounts] Fetching config from:', apiUrl)
 
         try {
           const response = await fetch(apiUrl, {
             cache: 'no-store',
             headers: { 'Cache-Control': 'no-cache' },
           })
-          console.log('[discounts] Response status:', response.status, response.ok)
 
           if (response.ok) {
             config = (await response.json()) as AppConfig
-            console.log(
-              '[discounts] Loaded from API, sample partner:',
-              config.partners?.roslynka?.name,
-            )
           } else {
-            console.warn('[discounts] API failed, using static fallback')
             const configModule = await import('@/data/app-config.json')
             config = configModule.default as AppConfig
           }
@@ -208,12 +201,12 @@ export const useDiscountsStore = defineStore('discounts', {
           return {
             id: partnerConfig.id,
             slug: partnerConfig.slug,
-            // Храним оригінальний об'єкт {ua, en} — переклад відбувається в компоненті
+            // Храним оригинальный объект {ua, en} — перевод происходит в компоненте
             name: partnerConfig.name as unknown as string,
             category: categoryValue,
             location: locationValue,
             discount: {
-              // Храним оригінальний об'єкт {ua, en}
+              // Храним оригинальный объект {ua, en}
               label: partnerConfig.discount.label as unknown as string,
               description: partnerConfig.discount.description as unknown as string | undefined,
               promoCode: partnerConfig.promoCode,
@@ -222,7 +215,7 @@ export const useDiscountsStore = defineStore('discounts', {
               thumbnail: imagePath ? getImage(imagePath) : '',
               hero: imagePath ? getImage(imagePath) : undefined,
             },
-            // Храним оригінальні об'єкти {ua, en}
+            // Храним оригинальные объекты {ua, en}
             summary: partnerConfig.summary as unknown as string,
             description: partnerConfig.description as unknown as string,
             contact: {
@@ -233,14 +226,13 @@ export const useDiscountsStore = defineStore('discounts', {
               type: social.type as Partner['socials'][0]['type'],
               url: social.url,
             })),
-            // Храним оригінальний об'єкт {ua, en} — переклад відбувається в компоненті
+            // Храним оригинальный объект {ua, en} — перевод происходит в компоненте
             terms: partnerConfig.terms as unknown as string[],
             tags: partnerConfig.tags as unknown as string[] | undefined,
           }
         })
 
         this.items = partners
-        console.log('[discounts] Items updated, first partner name:', partners[0]?.name)
         this.status = 'success'
       } catch (error) {
         console.error('[discounts-store] failed to load partners', error)

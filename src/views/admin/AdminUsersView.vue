@@ -68,11 +68,11 @@ const resetForm = () => {
 }
 
 const handleSave = () => {
-  // ✅ Санітизація вводу
+  // ✅ Санитизация ввода
   const email = sanitizeEmail(formData.value.email)
   const name = sanitizeString(formData.value.name)
 
-  // ✅ Валідація email
+  // ✅ Валидация email
   if (!isValidEmail(email)) {
     alert('Невірний формат email')
     return

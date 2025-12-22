@@ -17,7 +17,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
   const isSaving = ref(false)
   const isInitialized = ref(false)
 
-  // Категорії FAQ
+  // Категории FAQ
   const faqCategories = [
     { id: 'general', label: { ua: 'Загальні', en: 'General' } },
     { id: 'promoCodes', label: { ua: 'Промокоди', en: 'Promo Codes' } },
@@ -25,14 +25,14 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     { id: 'support', label: { ua: 'Підтримка', en: 'Support' } },
   ]
 
-  // Ініціалізація з конфігу (динамічна)
+  // Инициализация из конфига (динамическая)
   async function init() {
     if (isInitialized.value) return
 
     try {
       let configFaq: FaqItem[] = []
 
-      // Завантажуємо через API з cache-busting
+      // Загружаем через API с cache-busting
       const { fetchConfig } = await import('@/utils/api-config')
       const response = await fetchConfig()
       if (response.ok) {
@@ -55,7 +55,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     isInitialized.value = true
   }
 
-  // Автоматична ініціалізація
+  // Автоматическая инициализация
   init()
 
   // Getters
@@ -66,7 +66,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
   const filteredFaqItems = computed(() => {
     let result = faqItemsList.value
 
-    // Фільтр за категорією
+    // Фильтр по категории
     if (selectedCategory.value !== 'all') {
       result = result.filter((item) => item.category === selectedCategory.value)
     }
@@ -134,7 +134,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     const index = faqItems.value.findIndex((f) => f.id === id)
     if (index >= 0) {
       faqItems.value.splice(index, 1)
-      // Оновлюємо порядок
+      // Обновляем порядок
       faqItems.value.forEach((item, idx) => {
         item.order = idx
       })
@@ -153,7 +153,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     faqItems.value[index] = faqItems.value[newIndex]!
     faqItems.value[newIndex] = temp!
 
-    // Оновлюємо порядок
+    // Обновляем порядок
     faqItems.value.forEach((item, idx) => {
       item.order = idx
     })

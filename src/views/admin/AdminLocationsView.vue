@@ -70,7 +70,7 @@ const handleFormOpen = () => {
 }
 
 const handleSave = () => {
-  // ✅ Санітизація вводу
+  // ✅ Санитизация ввода
   const generatedId = formData.value.id || generateId(formData.value.label.en)
 
   if (!generatedId) {
@@ -102,7 +102,7 @@ const handleSave = () => {
 }
 
 const generateId = (name: string): string => {
-  // Транслітерація кирилиці
+  // Транслитерация кириллицы
   const cyrillicMap: Record<string, string> = {
     а: 'a',
     б: 'b',

@@ -7,11 +7,11 @@ export interface CategoryItem {
   id: string
   label: LocalizedText
   description: LocalizedText
-  isSystem: boolean // all, online - системні, не можна видаляти
+  isSystem: boolean // all, online - системные, нельзя удалять
 }
 
 export const useAdminCategoriesStore = defineStore('adminCategories', () => {
-  // Системні категорії, які не можна видаляти
+  // Системные категории, которые нельзя удалять
   const systemCategories = ['all', 'online']
 
   // State
@@ -22,21 +22,21 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
   const isSaving = ref(false)
   const isInitialized = ref(false)
 
-  // Ініціалізація з конфігу (динамічна)
+  // Инициализация из конфига (динамическая)
   async function init() {
     if (isInitialized.value) return
 
     try {
       let configCategories: Record<string, FilterCategory> = {}
 
-      // Завантажуємо через API з cache-busting
+      // Загружаем через API с cache-busting
       const { fetchConfig } = await import('@/utils/api-config')
       const response = await fetchConfig()
       if (response.ok) {
         const config = (await response.json()) as AppConfig
         configCategories = config.filters?.categories || {}
       } else {
-        // Fallback: динамічний імпорт
+        // Fallback: динамический импорт
         const configModule = await import('@/data/app-config.json')
         const config = configModule.default as AppConfig
         configCategories = config.filters?.categories || {}
@@ -59,13 +59,13 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     isInitialized.value = true
   }
 
-  // Автоматична ініціалізація
+  // Автоматическая инициализация
   init()
 
   // Getters
   const categoriesList = computed(() => {
     return Object.values(categories.value).sort((a, b) => {
-      // Системні категорії першими
+      // Системные категории первыми
       if (a.isSystem && !b.isSystem) return -1
       if (!a.isSystem && b.isSystem) return 1
       return a.label.ua.localeCompare(b.label.ua, 'uk-UA')

@@ -7,7 +7,7 @@ export interface PartnerFormData extends Omit<PartnerConfig, 'id' | 'slug'> {
   slug?: string
 }
 
-// ✅ Санітизація локалізованого тексту
+// ✅ Санитизация локализованного текста
 function sanitizeLocalized(obj: { ua: string; en: string }): { ua: string; en: string } {
   return {
     ua: sanitizeString(obj.ua),
@@ -15,7 +15,7 @@ function sanitizeLocalized(obj: { ua: string; en: string }): { ua: string; en: s
   }
 }
 
-// ✅ Санітизація масиву локалізованих текстів
+// ✅ Санитизация массива локализованных текстов
 function sanitizeLocalizedArray(obj: { ua: string[]; en: string[] }): {
   ua: string[]
   en: string[]
@@ -45,7 +45,7 @@ export function usePartnersAdmin() {
     }
   }
 
-  // Транслітерація кирилиці для slug
+  // Транслитерация кириллицы для slug
   const cyrillicMap: Record<string, string> = {
     а: 'a',
     б: 'b',
@@ -85,7 +85,7 @@ export function usePartnersAdmin() {
     ё: 'yo',
   }
 
-  // Створення slug з назви (з транслітерацією кирилиці)
+  // Создание slug из названия (с транслитерацией кириллицы)
   const generateSlug = (name: string): string => {
     const transliterated = name
       .toLowerCase()
@@ -100,13 +100,13 @@ export function usePartnersAdmin() {
       .trim()
   }
 
-  // Створення нового партнера з санітизацією
+  // Создание нового партнера с санитизацией
   const createPartner = (formData: PartnerFormData): PartnerConfig => {
-    // Пріоритет: slug → EN назва → UA назва (з транслітерацією)
+    // Приоритет: slug → EN название → UA название (с транслитерацией)
     const slug = formData.slug || generateSlug(formData.name.en || formData.name.ua)
     const id = slug
 
-    // ✅ Санітизація всіх полів
+    // ✅ Санитизация всех полей
     const fbSocial = formData.socials.find((s) => s.type === 'facebook')
     const igSocial = formData.socials.find((s) => s.type === 'instagram')
 

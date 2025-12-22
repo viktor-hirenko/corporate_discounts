@@ -7,11 +7,11 @@ export interface LocationItem {
   id: string
   label: LocalizedText
   description: LocalizedText
-  isSystem: boolean // all, online - системні, не можна видаляти
+  isSystem: boolean // all, online - системные, нельзя удалять
 }
 
 export const useAdminLocationsStore = defineStore('adminLocations', () => {
-  // Системні локації, які не можна видаляти
+  // Системные локации, которые нельзя удалять
   const systemLocations = ['all', 'online']
 
   // State
@@ -22,19 +22,16 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
   const isSaving = ref(false)
   const isInitialized = ref(false)
 
-  // Ініціалізація з конфігу (динамічна)
+  // Инициализация из конфига (динамическая)
   async function init() {
-    console.log('[adminLocations.init] Called, isInitialized:', isInitialized.value)
     if (isInitialized.value) {
-      console.log('[adminLocations.init] Already initialized, skipping')
       return
     }
 
-    console.log('[adminLocations.init] Loading from API...')
     try {
       let configLocations: Record<string, FilterLocation> = {}
 
-      // Завантажуємо через API з cache-busting
+      // Загружаем через API с cache-busting
       const { fetchConfig } = await import('@/utils/api-config')
       const response = await fetchConfig()
       if (response.ok) {
@@ -56,22 +53,20 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
         }
       })
       locations.value = result
-      console.log('[adminLocations.init] Loaded locations:', Object.keys(result))
     } catch (e) {
       console.error('[adminLocations.init] Failed to load:', e)
     }
 
     isInitialized.value = true
-    console.log('[adminLocations.init] Completed, isInitialized:', isInitialized.value)
   }
 
-  // Автоматична ініціалізація
+  // Автоматическая инициализация
   init()
 
   // Getters
   const locationsList = computed(() => {
     return Object.values(locations.value).sort((a, b) => {
-      // Системні локації першими
+      // Системные локации первыми
       if (a.isSystem && !b.isSystem) return -1
       if (!a.isSystem && b.isSystem) return 1
       return a.label.ua.localeCompare(b.label.ua, 'uk-UA')
@@ -108,20 +103,13 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     isFormOpen.value = false
   }
 
-  // Автозбереження в файл
+  // Автосохранение в файл
   async function autoSave() {
-    console.log(
-      '[adminLocations.autoSave] Started, locations count:',
-      Object.keys(locations.value).length,
-    )
-    console.log('[adminLocations.autoSave] Location keys:', Object.keys(locations.value))
     isSaving.value = true
     try {
       const { useAdminExportStore } = await import('./adminExport')
       const exportStore = useAdminExportStore()
-      console.log('[adminLocations.autoSave] Calling exportStore.autoSave()')
       await exportStore.autoSave()
-      console.log('[adminLocations.autoSave] exportStore.autoSave() completed')
     } catch (error) {
       console.error('[adminLocations.autoSave] Failed:', error)
     } finally {
@@ -130,18 +118,12 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
   }
 
   async function saveLocation(location: LocationItem) {
-    console.log('[adminLocations] saveLocation called for:', location.id, location.label)
     locations.value[location.id] = {
       ...location,
       isSystem: systemLocations.includes(location.id),
     }
-    console.log(
-      '[adminLocations] Location added to store, total:',
-      Object.keys(locations.value).length,
-    )
     closeForm()
     await autoSave()
-    console.log('[adminLocations] autoSave completed')
   }
 
   async function deleteLocation(id: string) {

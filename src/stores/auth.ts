@@ -69,18 +69,18 @@ export const useAuthStore = defineStore('auth', {
         }
         const payload = JSON.parse(atob(parts[1]))
 
-        // ✅ Перевірка whitelist — чи email дозволений
+        // ✅ Проверка whitelist — разрешен ли email
         const usersStore = useAdminUsersStore()
-        // Чекаємо ініціалізацію стора (динамічне завантаження)
+        // Ждем инициализацию стора (динамическая загрузка)
         await usersStore.init()
 
         if (!usersStore.isEmailAllowed(payload.email)) {
           console.warn('[auth-store] email not in whitelist:', payload.email)
-          throw new Error('Доступ заборонено. Ваш email не в списку дозволених.')
+          throw new Error('Доступ запрещен. Ваш email не в списке разрешенных.')
         }
 
-        // Google JWT може містити picture в різних полях
-        // Перевіряємо декілька можливих варіантів
+        // Google JWT может содержать picture в разных полях
+        // Проверяем несколько возможных вариантов
         const pictureUrl = payload.picture || payload.avatar_url || payload.photo || null
 
         this.user = {
@@ -91,10 +91,10 @@ export const useAuthStore = defineStore('auth', {
         this.token = credential
         this.isAuthenticated = true
 
-        // Зберігаємо в localStorage
+        // Сохраняем в localStorage
         this.saveToStorage()
 
-        // Оновлюємо дані останнього користувача
+        // Обновляем данные последнего пользователя
         if (this.user) {
           const lastUserData = {
             name: this.user.name,
