@@ -136,6 +136,7 @@ export const useAuthStore = defineStore('auth', {
             name: this.user.name,
             email: this.user.email,
             picture: this.user.picture,
+            token: this.token, // ✅ Сохраняем токен для "Продовжити"
           }
           localStorage.setItem(LAST_USER_KEY, JSON.stringify(lastUserData))
         }
@@ -149,48 +150,59 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async loginWithEmail(email: string, name: string): Promise<void> {
-      // При логине через email сохраняем picture и token из storage, если есть
-      const lastUser = this.getLastUser()
-
-      // Пытаемся восстановить существующий токен из storage
+      // При логине через email восстанавливаем данные из LAST_USER_KEY
+      // (включая токен, который сохраняется при logout)
       let existingToken: string | null = null
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) {
+      let existingPicture: string | null = null
+
+      const lastUserStored = localStorage.getItem(LAST_USER_KEY)
+      if (lastUserStored) {
         try {
-          const parsed = JSON.parse(stored)
+          const parsed = JSON.parse(lastUserStored)
           existingToken = parsed.token ?? null
+          existingPicture = parsed.picture ?? null
         } catch {
           existingToken = null
+          existingPicture = null
         }
+      }
+
+      // Если токена нет — выдаём предупреждение (пользователю нужно логиниться через Google)
+      if (!existingToken) {
+        console.warn(
+          '[auth-store] No token found for email login, user needs to re-authenticate via Google',
+        )
       }
 
       this.user = {
         email,
         name,
-        picture: lastUser?.picture || null,
+        picture: existingPicture,
       }
-      // Сохраняем существующий токен, если он есть (для продолжения сессии)
+      // Восстанавливаем токен из LAST_USER_KEY
       this.token = existingToken
       this.isAuthenticated = true
 
       this.saveToStorage()
 
-      // Обновляем данные последнего пользователя
+      // Обновляем данные последнего пользователя (сохраняем токен!)
       const lastUserData = {
         name: this.user.name,
         email: this.user.email,
         picture: this.user.picture,
+        token: this.token,
       }
       localStorage.setItem(LAST_USER_KEY, JSON.stringify(lastUserData))
     },
 
     logout(): void {
-      // Сохраняем данные пользователя для отображения на странице логина
+      // Сохраняем данные пользователя И токен для возможности "Продовжити"
       if (this.user) {
         const lastUserData = {
           name: this.user.name,
           email: this.user.email,
           picture: this.user.picture,
+          token: this.token, // ✅ Сохраняем токен для "Продовжити"
         }
         localStorage.setItem(LAST_USER_KEY, JSON.stringify(lastUserData))
       }

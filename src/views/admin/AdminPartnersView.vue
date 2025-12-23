@@ -9,6 +9,7 @@ const store = useAdminPartnersStore()
 const authStore = useAuthStore()
 
 const deleteConfirmSlug = ref<string | null>(null)
+const deleteConfirmName = ref<string>('')
 
 // Get displayable image URL from path
 const getImageUrl = (path: string): string => {
@@ -56,19 +57,22 @@ const handleDuplicate = (partner: PartnerConfig) => {
   store.duplicatePartner(partner)
 }
 
-const handleDeleteClick = (slug: string) => {
-  deleteConfirmSlug.value = slug
+const handleDeleteClick = (partner: PartnerConfig) => {
+  deleteConfirmSlug.value = partner.slug
+  deleteConfirmName.value = partner.name.ua
 }
 
 const handleDeleteConfirm = () => {
   if (deleteConfirmSlug.value) {
     store.deletePartner(deleteConfirmSlug.value)
     deleteConfirmSlug.value = null
+    deleteConfirmName.value = ''
   }
 }
 
 const handleDeleteCancel = () => {
   deleteConfirmSlug.value = null
+  deleteConfirmName.value = ''
 }
 
 const handleExport = () => {
@@ -220,7 +224,7 @@ const openPartnerPage = (slug: string) => {
                 <button
                   class="btn-icon btn-icon--danger"
                   title="Видалити"
-                  @click="handleDeleteClick(partner.slug)"
+                  @click="handleDeleteClick(partner)"
                 >
                   <i class="fas fa-trash"></i>
                 </button>
@@ -249,7 +253,7 @@ const openPartnerPage = (slug: string) => {
           <div class="modal__body">
             <p>Ви впевнені, що хочете видалити цього партнера?</p>
             <p>
-              <strong>{{ deleteConfirmSlug }}</strong>
+              <strong>{{ deleteConfirmName }}</strong>
             </p>
           </div>
           <div class="modal__footer">

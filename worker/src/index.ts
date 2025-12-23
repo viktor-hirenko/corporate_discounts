@@ -410,7 +410,8 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
     await env.R2_BUCKET.put(key, arrayBuffer, {
       httpMetadata: {
         contentType: file.type,
-        cacheControl: 'public, max-age=31536000',
+        // ✅ Уменьшили кэш до 1 часа (3600s) чтобы обновления изображений отображались быстрее
+        cacheControl: 'public, max-age=3600',
       },
     })
 

@@ -2,7 +2,6 @@
 import { ref, reactive, computed, watch } from 'vue'
 import type { PartnerConfig } from '@/types/app-config'
 import { useAdminCategoriesStore } from '@/stores/adminCategories'
-import { useAdminLocationsStore } from '@/stores/adminLocations'
 import { sanitizeString, sanitizeEmail, sanitizeUrl } from '@/utils/sanitize'
 import { uploadPartnerImage } from '@/utils/api-config'
 
@@ -25,7 +24,6 @@ const emit = defineEmits<{
 }>()
 
 const categoriesStore = useAdminCategoriesStore()
-const locationsStore = useAdminLocationsStore()
 
 const isEditing = computed(() => !!props.partner)
 
@@ -167,7 +165,10 @@ const handleImageUpload = async (event: Event) => {
     const result = await uploadPartnerImage(file, slug)
 
     if (result.success && result.imagePath) {
-      formData.image = result.imagePath
+      // ✅ Добавляем cache-busting параметр, чтобы браузер загрузил новое изображение
+      // Убираем старый параметр ?t=... если есть
+      const basePath = result.imagePath.split('?')[0]
+      formData.image = `${basePath}?t=${Date.now()}`
       uploadSuccess.value = true
       uploadError.value = null
     } else {
@@ -178,6 +179,8 @@ const handleImageUpload = async (event: Event) => {
     console.error('Upload error:', error)
   } finally {
     isUploading.value = false
+    // ✅ Сбрасываем input, чтобы можно было выбрать тот же файл повторно
+    target.value = ''
   }
 }
 
@@ -188,17 +191,6 @@ const categoryOptions = computed(() => {
     .map((cat) => ({
       ua: cat.label.ua,
       en: cat.label.en,
-    }))
-    .sort((a, b) => a.ua.localeCompare(b.ua, 'uk-UA'))
-})
-
-// Locations from admin store (reactive - updates when new locations added)
-const locationOptions = computed(() => {
-  return locationsStore.locationsList
-    .filter((loc) => loc.id !== 'all' && loc.id !== 'online')
-    .map((loc) => ({
-      ua: loc.label.ua,
-      en: loc.label.en,
     }))
     .sort((a, b) => a.ua.localeCompare(b.ua, 'uk-UA'))
 })
@@ -364,17 +356,6 @@ const handleCategoryChange = (lang: 'ua' | 'en', value: string) => {
     formData.category[otherLang] = found[otherLang]
   }
 }
-
-// Location change handler
-const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
-  formData.location[lang] = value
-  // Auto-fill other language
-  const found = locationOptions.value.find((l) => l[lang] === value)
-  if (found) {
-    const otherLang = lang === 'ua' ? 'en' : 'ua'
-    formData.location[otherLang] = found[otherLang]
-  }
-}
 </script>
 
 <template>
@@ -481,31 +462,25 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <div class="form-row">
           <div class="form-group">
             <label for="partner-location-ua">Локація (UA) *</label>
-            <select
+            <input
               id="partner-location-ua"
-              :value="formData.location.ua"
+              v-model="formData.location.ua"
+              type="text"
               required
-              @change="handleLocationChange('ua', ($event.target as HTMLSelectElement).value)"
-            >
-              <option value="">Оберіть локацію</option>
-              <option v-for="loc in locationOptions" :key="loc.ua" :value="loc.ua">
-                {{ loc.ua }}
-              </option>
-            </select>
+              placeholder="UA/Київ, LT/Рига, Online"
+            />
+            <span class="form-hint">Формат: UA/Місто, PL/Місто, Online</span>
           </div>
           <div class="form-group">
             <label for="partner-location-en">Локація (EN) *</label>
-            <select
+            <input
               id="partner-location-en"
-              :value="formData.location.en"
+              v-model="formData.location.en"
+              type="text"
               required
-              @change="handleLocationChange('en', ($event.target as HTMLSelectElement).value)"
-            >
-              <option value="">Select location</option>
-              <option v-for="loc in locationOptions" :key="loc.en" :value="loc.en">
-                {{ loc.en }}
-              </option>
-            </select>
+              placeholder="UA/Kyiv, LT/Riga, Online"
+            />
+            <span class="form-hint">Format: UA/City, PL/City, Online</span>
           </div>
         </div>
       </section>
@@ -863,6 +838,12 @@ $accent-color: rgb(115 103 240);
   textarea {
     resize: vertical;
     min-height: to-rem(60);
+  }
+
+  .form-hint {
+    font-size: to-rem(11);
+    color: #9ca3af;
+    margin-top: to-rem(2);
   }
 
   &--image {
