@@ -633,6 +633,10 @@ $accent-color: rgb(115 103 240);
     padding: to-rem(20) to-rem(24);
     border-bottom: 1px solid #e5e7eb;
 
+    @include mq(null, md) {
+      padding: to-rem(16);
+    }
+
     h3 {
       font-size: to-rem(18);
       font-weight: 600;
@@ -656,6 +660,10 @@ $accent-color: rgb(115 103 240);
   &__body {
     padding: to-rem(24);
 
+    @include mq(null, md) {
+      padding: to-rem(16);
+    }
+
     p {
       margin: 0 0 to-rem(12) 0;
       color: #4b5563;
@@ -668,6 +676,16 @@ $accent-color: rgb(115 103 240);
     gap: to-rem(12);
     padding: to-rem(16) to-rem(24);
     border-top: 1px solid #e5e7eb;
+
+    @include mq(null, md) {
+      flex-direction: column-reverse;
+      padding: to-rem(16);
+
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   }
 }
 
@@ -708,5 +726,10 @@ $accent-color: rgb(115 103 240);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: to-rem(16);
+
+  @include mq(null, md) {
+    grid-template-columns: 1fr;
+    gap: to-rem(20);
+  }
 }
 </style>

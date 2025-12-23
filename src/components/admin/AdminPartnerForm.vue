@@ -548,11 +548,19 @@ $accent-color: rgb(115 103 240);
     padding: to-rem(20) to-rem(24);
     border-bottom: 1px solid #e5e7eb;
 
+    @include mq(null, md) {
+      padding: to-rem(16);
+    }
+
     h2 {
       font-size: to-rem(20);
       font-weight: 600;
       color: #1f2937;
       margin: 0;
+
+      @include mq(null, md) {
+        font-size: to-rem(18);
+      }
     }
   }
 
@@ -572,6 +580,11 @@ $accent-color: rgb(115 103 240);
     padding: to-rem(24);
     max-height: 70vh;
     overflow-y: auto;
+
+    @include mq(null, md) {
+      padding: to-rem(16);
+      max-height: 60vh;
+    }
   }
 
   &__footer {
@@ -581,11 +594,26 @@ $accent-color: rgb(115 103 240);
     padding-top: to-rem(24);
     border-top: 1px solid #e5e7eb;
     margin-top: to-rem(24);
+
+    @include mq(null, md) {
+      flex-direction: column-reverse;
+      padding-top: to-rem(16);
+      margin-top: to-rem(16);
+
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   }
 }
 
 .form-section {
   margin-bottom: to-rem(24);
+
+  @include mq(null, md) {
+    margin-bottom: to-rem(32);
+  }
 
   h3 {
     font-size: to-rem(14);
@@ -594,6 +622,10 @@ $accent-color: rgb(115 103 240);
     margin: 0 0 to-rem(16) 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+
+    @include mq(null, md) {
+      margin-bottom: to-rem(20);
+    }
   }
 }
 
@@ -601,6 +633,11 @@ $accent-color: rgb(115 103 240);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: to-rem(16);
+
+  @include mq(null, md) {
+    grid-template-columns: 1fr;
+    gap: to-rem(20);
+  }
 }
 
 .form-group {
