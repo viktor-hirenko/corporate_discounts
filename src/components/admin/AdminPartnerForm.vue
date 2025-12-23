@@ -57,9 +57,30 @@ const formData = reactive({
   tags: { ua: [''], en: [''] },
 })
 
-// Load partner data if editing
+// Deep merge helper to preserve structure and handle missing fields
+const deepMerge = <T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T => {
+  for (const key of Object.keys(source)) {
+    const sourceValue = source[key]
+    const targetValue = target[key as keyof T]
+    if (
+      sourceValue &&
+      typeof sourceValue === 'object' &&
+      !Array.isArray(sourceValue) &&
+      targetValue &&
+      typeof targetValue === 'object' &&
+      !Array.isArray(targetValue)
+    ) {
+      deepMerge(targetValue as Record<string, unknown>, sourceValue as Record<string, unknown>)
+    } else if (sourceValue !== undefined) {
+      ;(target as Record<string, unknown>)[key] = sourceValue
+    }
+  }
+  return target
+}
+
+// Load partner data if editing (use deep merge to preserve structure)
 if (props.partner) {
-  Object.assign(formData, JSON.parse(JSON.stringify(props.partner)))
+  deepMerge(formData, JSON.parse(JSON.stringify(props.partner)))
 }
 
 // Image upload state
@@ -130,7 +151,7 @@ const handleImageUpload = async (event: Event) => {
   reader.readAsDataURL(file)
 
   // Check if we have a slug to upload
-  const slug = formData.slug || generateSlug(formData.name.en || formData.name.ua)
+  const slug = formData.slug || generateSlug(formData.name?.en || formData.name?.ua)
   if (!slug) {
     uploadError.value = 'Спочатку введіть назву партнера'
     return
@@ -220,7 +241,8 @@ const cyrillicMap: Record<string, string> = {
 }
 
 // Generate slug from name (с транслитерацией кириллицы)
-const generateSlug = (name: string): string => {
+const generateSlug = (name: string | undefined): string => {
+  if (!name) return ''
   const transliterated = name
     .toLowerCase()
     .split('')
@@ -236,10 +258,10 @@ const generateSlug = (name: string): string => {
 
 // Auto-generate slug when EN name changes (приоритет EN, fallback на UA)
 watch(
-  () => formData.name.en,
+  () => formData.name?.en,
   (newNameEn) => {
     if (!isEditing.value) {
-      const nameToUse = newNameEn || formData.name.ua
+      const nameToUse = newNameEn || formData.name?.ua
       if (nameToUse) {
         formData.slug = generateSlug(nameToUse)
       }
@@ -249,9 +271,9 @@ watch(
 
 // Fallback: если EN пустой, генерируем из UA
 watch(
-  () => formData.name.ua,
+  () => formData.name?.ua,
   (newNameUa) => {
-    if (!isEditing.value && !formData.name.en && newNameUa) {
+    if (!isEditing.value && !formData.name?.en && newNameUa) {
       formData.slug = generateSlug(newNameUa)
     }
   },

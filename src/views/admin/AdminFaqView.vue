@@ -268,21 +268,41 @@ watch(
             <div class="form-row">
               <div class="form-group">
                 <label for="faq-question-ua">Питання (UA) *</label>
-                <textarea id="faq-question-ua" v-model="formData.question.ua" rows="2" required></textarea>
+                <textarea
+                  id="faq-question-ua"
+                  v-model="formData.question.ua"
+                  rows="2"
+                  required
+                ></textarea>
               </div>
               <div class="form-group">
                 <label for="faq-question-en">Питання (EN) *</label>
-                <textarea id="faq-question-en" v-model="formData.question.en" rows="2" required></textarea>
+                <textarea
+                  id="faq-question-en"
+                  v-model="formData.question.en"
+                  rows="2"
+                  required
+                ></textarea>
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label for="faq-answer-ua">Відповідь (UA) *</label>
-                <textarea id="faq-answer-ua" v-model="formData.answer.ua" rows="4" required></textarea>
+                <textarea
+                  id="faq-answer-ua"
+                  v-model="formData.answer.ua"
+                  rows="4"
+                  required
+                ></textarea>
               </div>
               <div class="form-group">
                 <label for="faq-answer-en">Відповідь (EN) *</label>
-                <textarea id="faq-answer-en" v-model="formData.answer.en" rows="4" required></textarea>
+                <textarea
+                  id="faq-answer-en"
+                  v-model="formData.answer.en"
+                  rows="4"
+                  required
+                ></textarea>
               </div>
             </div>
             <div class="modal__footer">
