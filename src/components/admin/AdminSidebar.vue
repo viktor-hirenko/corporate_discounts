@@ -274,6 +274,10 @@ $sidebar-collapsed-width: to-rem(80);
     transition: transform 0.3s ease;
     box-shadow: none;
 
+    @include mq(null, md) {
+      width: 100%;
+    }
+
     &.mobile-open {
       transform: translateX(0);
       box-shadow: 4px 0 20px rgb(0 0 0 / 15%);
