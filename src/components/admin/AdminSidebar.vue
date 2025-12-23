@@ -218,6 +218,10 @@ $sidebar-collapsed-width: to-rem(80);
     font-weight: 500;
     transition: all 0.2s ease;
 
+    @include mq(null, md) {
+      font-size: to-rem(16);
+    }
+
     i {
       width: to-rem(20);
       text-align: center;
