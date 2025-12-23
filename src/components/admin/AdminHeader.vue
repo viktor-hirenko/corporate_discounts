@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const emit = defineEmits<{
@@ -8,6 +8,7 @@ const emit = defineEmits<{
 }>()
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 
 const pageTitle = computed(() => {
@@ -53,7 +54,7 @@ const userInitial = computed(() => {
 
 const handleLogout = () => {
   authStore.logout()
-  window.location.href = '/login'
+  router.push({ name: 'login' })
 }
 </script>
 
