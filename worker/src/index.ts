@@ -157,6 +157,47 @@ export default {
         return corsResponse(await loadConfig(env), origin)
       }
 
+      // API: POST /api/upload-image - upload partner image (protected)
+      if (path === '/api/upload-image' && request.method === 'POST') {
+        // Rate limiting for upload endpoint
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        // JWT Authentication check
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        return corsResponse(await uploadImage(request, env), origin)
+      }
+
       // API: POST /api/save-config - save app-config.json (protected)
       if (path === '/api/save-config' && request.method === 'POST') {
         // Rate limiting for save endpoint
@@ -309,6 +350,90 @@ async function saveConfig(request: Request, env: Env): Promise<Response> {
   } catch (error) {
     console.error('Failed to save config:', error)
     return new Response(JSON.stringify({ error: 'Failed to save config' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+
+// =============================================================================
+// UPLOAD IMAGE (protected endpoint - requires JWT)
+// =============================================================================
+async function uploadImage(request: Request, env: Env): Promise<Response> {
+  try {
+    const formData = await request.formData()
+    const file = formData.get('file') as File | null
+    const slug = formData.get('slug') as string | null
+
+    if (!file) {
+      return new Response(JSON.stringify({ error: 'No file provided' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!slug) {
+      return new Response(JSON.stringify({ error: 'No slug provided' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+    if (!allowedTypes.includes(file.type)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid file type. Allowed: jpg, png, webp, gif' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      return new Response(JSON.stringify({ error: 'File too large. Max size: 5MB' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Determine file extension
+    const ext = file.type === 'image/webp' ? 'webp' : file.type.split('/')[1] || 'webp'
+    const filename = `${slug}.${ext}`
+    const key = `assets/images/partners/${filename}`
+
+    // Upload to R2
+    const arrayBuffer = await file.arrayBuffer()
+    await env.R2_BUCKET.put(key, arrayBuffer, {
+      httpMetadata: {
+        contentType: file.type,
+        cacheControl: 'public, max-age=31536000',
+      },
+    })
+
+    // Return the path that can be used in app-config.json (without @/ prefix for R2)
+    const imagePath = `/assets/images/partners/${filename}`
+    const publicUrl = `${env.PUBLIC_URL || ''}/${key}`
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: 'Image uploaded successfully',
+        imagePath,
+        publicUrl,
+        filename,
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    )
+  } catch (error) {
+    console.error('Failed to upload image:', error)
+    return new Response(JSON.stringify({ error: 'Failed to upload image' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     })

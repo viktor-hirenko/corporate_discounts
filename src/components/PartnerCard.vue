@@ -39,6 +39,12 @@ const discountLabel = computed(() =>
   t(props.partner.discount.label as unknown as { ua: string; en: string }),
 )
 
+// Показывать бейджик только если скидка указана
+const hasDiscount = computed(() => {
+  const label = discountLabel.value
+  return label && label.trim() !== ''
+})
+
 const categoryLabel = computed(() => {
   // Получаем категорию напрямую по ключу
   const categoryFilter =
@@ -65,7 +71,7 @@ function handleClick() {
 
 <template>
   <article class="partner-card" @click="handleClick">
-    <div class="partner-card__badge">
+    <div v-if="hasDiscount" class="partner-card__badge">
       {{ discountLabel }}
     </div>
     <div class="partner-card__content">

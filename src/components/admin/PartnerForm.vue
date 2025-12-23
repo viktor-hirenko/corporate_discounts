@@ -2,6 +2,7 @@
 import { ref, reactive, computed, watch } from 'vue'
 import { usePartnersAdmin } from '@/composables/usePartnersAdmin'
 import { useAppConfig } from '@/composables/useAppConfig'
+import { uploadPartnerImage } from '@/utils/api-config'
 import type { PartnerConfig } from '@/types/app-config'
 
 interface Props {
@@ -17,9 +18,12 @@ const emit = defineEmits<{
 const { generateSlug, createPartner, exportToJSON } = usePartnersAdmin()
 const { config } = useAppConfig()
 
-// Image preview
+// Image preview and upload state
 const imagePreview = ref<string>('')
 const imageFile = ref<File | null>(null)
+const isUploading = ref(false)
+const uploadError = ref<string | null>(null)
+const uploadSuccess = ref(false)
 
 // Form data
 const formData = reactive({
@@ -103,16 +107,48 @@ watch(
 )
 
 // Handle image upload
-const handleImageUpload = (event: Event) => {
+const handleImageUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
-  if (file) {
-    imageFile.value = file
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      imagePreview.value = e.target?.result as string
+  if (!file) return
+
+  // Reset states
+  uploadError.value = null
+  uploadSuccess.value = false
+  imageFile.value = file
+
+  // Show preview immediately
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    imagePreview.value = e.target?.result as string
+  }
+  reader.readAsDataURL(file)
+
+  // Check if we have a slug to upload
+  const slug = formData.slug || generateSlug(formData.name.en || formData.name.ua)
+  if (!slug) {
+    uploadError.value = 'Спочатку введіть назву партнера'
+    return
+  }
+
+  // Upload to server
+  isUploading.value = true
+
+  try {
+    const result = await uploadPartnerImage(file, slug)
+
+    if (result.success && result.imagePath) {
+      formData.image = result.imagePath
+      uploadSuccess.value = true
+      uploadError.value = null
+    } else {
+      uploadError.value = result.error || 'Помилка завантаження'
     }
-    reader.readAsDataURL(file)
+  } catch (error) {
+    uploadError.value = 'Помилка мережі'
+    console.error('Upload error:', error)
+  } finally {
+    isUploading.value = false
   }
 }
 
@@ -181,11 +217,28 @@ const isValid = computed(() => {
         <div class="image-upload">
           <div v-if="imagePreview" class="image-preview">
             <img :src="imagePreview" alt="Preview" />
+            <div v-if="isUploading" class="upload-overlay">
+              <i class="fas fa-spinner fa-spin"></i>
+              <span>Завантаження...</span>
+            </div>
+            <div v-else-if="uploadSuccess" class="upload-status upload-status--success">
+              <i class="fas fa-check"></i> Завантажено
+            </div>
           </div>
-          <label class="upload-btn">
-            <i class="fas fa-upload"></i> Завантажити зображення
-            <input type="file" accept="image/*" @change="handleImageUpload" />
+          <label class="upload-btn" :class="{ 'upload-btn--disabled': isUploading }">
+            <i class="fas fa-upload"></i>
+            {{ isUploading ? 'Завантаження...' : 'Завантажити зображення' }}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              :disabled="isUploading"
+              @change="handleImageUpload"
+            />
           </label>
+          <p v-if="uploadError" class="upload-error">
+            <i class="fas fa-exclamation-circle"></i> {{ uploadError }}
+          </p>
+          <p class="upload-hint">Формати: JPG, PNG, WebP, GIF. Макс. розмір: 5MB</p>
         </div>
       </div>
 
@@ -604,6 +657,7 @@ const isValid = computed(() => {
   gap: 15px;
 
   .image-preview {
+    position: relative;
     width: 200px;
     height: 200px;
     border-radius: 8px;
@@ -614,6 +668,39 @@ const isValid = computed(() => {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+  }
+
+  .upload-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 0.9rem;
+
+    i {
+      font-size: 1.5rem;
+    }
+  }
+
+  .upload-status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px;
+    font-size: 0.8rem;
+    text-align: center;
+    font-weight: 500;
+
+    &--success {
+      background: rgba(40, 167, 69, 0.9);
+      color: white;
     }
   }
 
@@ -631,13 +718,34 @@ const isValid = computed(() => {
     transition: background 0.2s;
     width: fit-content;
 
-    &:hover {
+    &:hover:not(.upload-btn--disabled) {
       background: #6258d3;
+    }
+
+    &--disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     input {
       display: none;
     }
+  }
+
+  .upload-error {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin: 0;
+
+    i {
+      margin-right: 5px;
+    }
+  }
+
+  .upload-hint {
+    color: #999;
+    font-size: 0.8rem;
+    margin: 0;
   }
 }
 

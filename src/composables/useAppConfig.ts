@@ -34,38 +34,52 @@ export function useAppConfig() {
 
   /**
    * Получить путь к изображению для динамических импортов в Vite
-   * Преобразует пути из app-config.json в валидные URL ресурсов Vite
+   * Преобразует пути из app-config.json в валидные URL ресурсов
+   *
+   * В dev mode: использует import.meta.url для Vite
+   * В production: возвращает прямой путь для R2/Worker
    */
   function getImage(path: string): string {
     if (!path) {
-      console.warn('getImage: путь пуст')
       return ''
     }
 
+    const isDev =
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+
     // Обработка путей с алиасом @/ (например, @/assets/images/partners/roslynka.webp)
     if (path.startsWith('@/')) {
-      // Убираем префикс @/ и создаем относительный путь от composables
-      // Из src/composables/ в src/assets/ = ../assets/
-      const relativePath = path.replace('@/', '../')
-      try {
-        const url = new URL(relativePath, import.meta.url).href
-        return url
-      } catch (error) {
-        console.error('getImage: Ошибка создания URL', { path, relativePath, error })
-        return path
+      if (isDev) {
+        // Dev mode: используем Vite import.meta.url
+        const relativePath = path.replace('@/', '../')
+        try {
+          const url = new URL(relativePath, import.meta.url).href
+          return url
+        } catch (error) {
+          console.error('getImage: Ошибка создания URL', { path, relativePath, error })
+          return path
+        }
+      } else {
+        // Production: преобразуем @/assets/... в /assets/...
+        return path.replace('@/', '/')
       }
     }
 
     // Обработка путей с префиксом src/ (например, src/assets/images/bot-img.svg)
     if (path.startsWith('src/')) {
-      // Из src/composables/ в src/ = ../
-      const relativePath = path.replace('src/', '../')
-      try {
-        const url = new URL(relativePath, import.meta.url).href
-        return url
-      } catch (error) {
-        console.error('getImage: Ошибка создания URL', { path, relativePath, error })
-        return path
+      if (isDev) {
+        const relativePath = path.replace('src/', '../')
+        try {
+          const url = new URL(relativePath, import.meta.url).href
+          return url
+        } catch (error) {
+          console.error('getImage: Ошибка создания URL', { path, relativePath, error })
+          return path
+        }
+      } else {
+        // Production: преобразуем src/assets/... в /assets/...
+        return path.replace('src/', '/')
       }
     }
 

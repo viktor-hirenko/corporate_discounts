@@ -4,6 +4,7 @@ import type { PartnerConfig } from '@/types/app-config'
 import { useAdminCategoriesStore } from '@/stores/adminCategories'
 import { useAdminLocationsStore } from '@/stores/adminLocations'
 import { sanitizeString, sanitizeEmail, sanitizeUrl } from '@/utils/sanitize'
+import { uploadPartnerImage } from '@/utils/api-config'
 
 // ✅ Санитизация локализованного текста
 function sanitizeLocalized(obj: { ua: string; en: string }): { ua: string; en: string } {
@@ -59,6 +60,101 @@ const formData = reactive({
 // Load partner data if editing
 if (props.partner) {
   Object.assign(formData, JSON.parse(JSON.stringify(props.partner)))
+}
+
+// Image upload state
+const isUploading = ref(false)
+const uploadError = ref<string | null>(null)
+const uploadSuccess = ref(false)
+const imagePreview = ref<string>('')
+
+// Reset image preview when partner changes (switching between edit forms)
+watch(
+  () => props.partner,
+  () => {
+    imagePreview.value = ''
+    uploadError.value = null
+    uploadSuccess.value = false
+    isUploading.value = false
+  },
+)
+
+// Get displayable image URL from path
+const getImageUrl = (path: string): string => {
+  if (!path) return ''
+  // Base64 data URL - return as is
+  if (path.startsWith('data:')) return path
+  // Already a full URL
+  if (path.startsWith('http://') || path.startsWith('https://')) return path
+  // R2 path like /assets/images/partners/...
+  if (path.startsWith('/assets/')) {
+    // On production, this path works directly
+    // On localhost, we need to use the production URL
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return `https://corporate-discounts-worker.upstars-marbella.workers.dev${path}`
+    }
+    return path
+  }
+  // Legacy @/assets path - convert to production URL
+  if (path.startsWith('@/assets/')) {
+    const cleanPath = path.replace('@/', '/')
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return `https://corporate-discounts-worker.upstars-marbella.workers.dev${cleanPath}`
+    }
+    return cleanPath
+  }
+  return path
+}
+
+// Computed property for displaying image
+const displayImageUrl = computed(() => {
+  if (imagePreview.value) return imagePreview.value
+  return getImageUrl(formData.image)
+})
+
+// Handle image file upload
+const handleImageUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  // Reset states
+  uploadError.value = null
+  uploadSuccess.value = false
+
+  // Show preview immediately
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    imagePreview.value = e.target?.result as string
+  }
+  reader.readAsDataURL(file)
+
+  // Check if we have a slug to upload
+  const slug = formData.slug || generateSlug(formData.name.en || formData.name.ua)
+  if (!slug) {
+    uploadError.value = 'Спочатку введіть назву партнера'
+    return
+  }
+
+  // Upload to server
+  isUploading.value = true
+
+  try {
+    const result = await uploadPartnerImage(file, slug)
+
+    if (result.success && result.imagePath) {
+      formData.image = result.imagePath
+      uploadSuccess.value = true
+      uploadError.value = null
+    } else {
+      uploadError.value = result.error || 'Помилка завантаження'
+    }
+  } catch (error) {
+    uploadError.value = 'Помилка мережі'
+    console.error('Upload error:', error)
+  } finally {
+    isUploading.value = false
+  }
 }
 
 // Categories from admin store (reactive - updates when new categories added)
@@ -271,22 +367,55 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <h3>Основна інформація</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>Назва (UA) *</label>
-            <input v-model="formData.name.ua" type="text" required />
+            <label for="partner-name-ua">Назва (UA) *</label>
+            <input id="partner-name-ua" v-model="formData.name.ua" type="text" required />
           </div>
           <div class="form-group">
-            <label>Назва (EN) *</label>
-            <input v-model="formData.name.en" type="text" required />
+            <label for="partner-name-en">Назва (EN) *</label>
+            <input id="partner-name-en" v-model="formData.name.en" type="text" required />
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Slug *</label>
-            <input v-model="formData.slug" type="text" :readonly="isEditing" required />
+            <label for="partner-slug">Slug *</label>
+            <input
+              id="partner-slug"
+              v-model="formData.slug"
+              type="text"
+              :readonly="isEditing"
+              required
+            />
           </div>
           <div class="form-group">
-            <label>Промокод *</label>
-            <input v-model="formData.promoCode" type="text" required />
+            <label for="partner-promo">Промокод *</label>
+            <input id="partner-promo" v-model="formData.promoCode" type="text" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group form-group--image">
+            <label for="partner-image">Зображення</label>
+            <div class="image-upload-wrapper">
+              <div v-if="displayImageUrl" class="image-preview-small">
+                <img :src="displayImageUrl" alt="Preview" />
+                <div v-if="isUploading" class="upload-overlay">
+                  <span class="spinner"></span>
+                </div>
+                <span v-else-if="uploadSuccess" class="upload-badge upload-badge--success">✓</span>
+              </div>
+              <label class="upload-btn" :class="{ 'upload-btn--disabled': isUploading }">
+                <span v-if="isUploading">Завантаження...</span>
+                <span v-else>📁 Обрати файл</span>
+                <input
+                  id="partner-image"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  :disabled="isUploading"
+                  @change="handleImageUpload"
+                />
+              </label>
+            </div>
+            <p v-if="uploadError" class="upload-error">{{ uploadError }}</p>
+            <p v-if="formData.image && !uploadError" class="upload-path">{{ formData.image }}</p>
           </div>
         </div>
       </section>
@@ -296,8 +425,9 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <h3>Категорія та локація</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>Категорія (UA) *</label>
+            <label for="partner-category-ua">Категорія (UA) *</label>
             <select
+              id="partner-category-ua"
               :value="formData.category.ua"
               required
               @change="handleCategoryChange('ua', ($event.target as HTMLSelectElement).value)"
@@ -309,8 +439,9 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
             </select>
           </div>
           <div class="form-group">
-            <label>Категорія (EN) *</label>
+            <label for="partner-category-en">Категорія (EN) *</label>
             <select
+              id="partner-category-en"
               :value="formData.category.en"
               required
               @change="handleCategoryChange('en', ($event.target as HTMLSelectElement).value)"
@@ -324,8 +455,9 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Локація (UA) *</label>
+            <label for="partner-location-ua">Локація (UA) *</label>
             <select
+              id="partner-location-ua"
               :value="formData.location.ua"
               required
               @change="handleLocationChange('ua', ($event.target as HTMLSelectElement).value)"
@@ -337,8 +469,9 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
             </select>
           </div>
           <div class="form-group">
-            <label>Локація (EN) *</label>
+            <label for="partner-location-en">Локація (EN) *</label>
             <select
+              id="partner-location-en"
               :value="formData.location.en"
               required
               @change="handleLocationChange('en', ($event.target as HTMLSelectElement).value)"
@@ -357,12 +490,22 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <h3>Знижка</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>Розмір знижки (UA)</label>
-            <input v-model="formData.discount.label.ua" type="text" placeholder="-10%" />
+            <label for="partner-discount-ua">Розмір знижки (UA)</label>
+            <input
+              id="partner-discount-ua"
+              v-model="formData.discount.label.ua"
+              type="text"
+              placeholder="-10%"
+            />
           </div>
           <div class="form-group">
-            <label>Розмір знижки (EN)</label>
-            <input v-model="formData.discount.label.en" type="text" placeholder="-10%" />
+            <label for="partner-discount-en">Розмір знижки (EN)</label>
+            <input
+              id="partner-discount-en"
+              v-model="formData.discount.label.en"
+              type="text"
+              placeholder="-10%"
+            />
           </div>
         </div>
       </section>
@@ -372,12 +515,12 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <h3>Короткий опис</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>Короткий опис (UA)</label>
-            <textarea v-model="formData.summary.ua" rows="2"></textarea>
+            <label for="partner-summary-ua">Короткий опис (UA)</label>
+            <textarea id="partner-summary-ua" v-model="formData.summary.ua" rows="2"></textarea>
           </div>
           <div class="form-group">
-            <label>Короткий опис (EN)</label>
-            <textarea v-model="formData.summary.en" rows="2"></textarea>
+            <label for="partner-summary-en">Короткий опис (EN)</label>
+            <textarea id="partner-summary-en" v-model="formData.summary.en" rows="2"></textarea>
           </div>
         </div>
       </section>
@@ -387,12 +530,20 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <h3>Повний опис</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>Опис (UA)</label>
-            <textarea v-model="formData.description.ua" rows="4"></textarea>
+            <label for="partner-description-ua">Опис (UA)</label>
+            <textarea
+              id="partner-description-ua"
+              v-model="formData.description.ua"
+              rows="4"
+            ></textarea>
           </div>
           <div class="form-group">
-            <label>Опис (EN)</label>
-            <textarea v-model="formData.description.en" rows="4"></textarea>
+            <label for="partner-description-en">Опис (EN)</label>
+            <textarea
+              id="partner-description-en"
+              v-model="formData.description.en"
+              rows="4"
+            ></textarea>
           </div>
         </div>
       </section>
@@ -402,22 +553,23 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <h3>Контакти</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>Вебсайт</label>
-            <input v-model="formData.contact.website" type="url" placeholder="https://" />
+            <label for="partner-website">Вебсайт</label>
+            <input
+              id="partner-website"
+              v-model="formData.contact.website"
+              type="url"
+              placeholder="https://"
+            />
           </div>
           <div class="form-group">
-            <label>Email</label>
-            <input v-model="formData.contact.email" type="email" />
+            <label for="partner-email">Email</label>
+            <input id="partner-email" v-model="formData.contact.email" type="email" />
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Телефон</label>
-            <input v-model="formData.contact.phone" type="tel" />
-          </div>
-          <div class="form-group">
-            <label>Зображення (URL)</label>
-            <input v-model="formData.image" type="text" placeholder="/images/partners/slug.webp" />
+            <label for="partner-phone">Телефон</label>
+            <input id="partner-phone" v-model="formData.contact.phone" type="tel" />
           </div>
         </div>
       </section>
@@ -427,17 +579,19 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <h3>Соціальні мережі</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>Facebook</label>
+            <label for="partner-facebook">Facebook</label>
             <input
+              id="partner-facebook"
               v-model="formData.socials[0]!.url"
               type="url"
               placeholder="https://facebook.com/..."
             />
           </div>
           <div class="form-group">
-            <label>Instagram</label>
+            <label for="partner-instagram">Instagram</label>
             <input
               v-if="formData.socials[1]"
+              id="partner-instagram"
               v-model="formData.socials[1].url"
               type="url"
               placeholder="https://instagram.com/..."
@@ -451,12 +605,12 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <h3>Адреса</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>Адреса (UA)</label>
-            <input v-model="formData.address.ua" type="text" />
+            <label for="partner-address-ua">Адреса (UA)</label>
+            <input id="partner-address-ua" v-model="formData.address.ua" type="text" />
           </div>
           <div class="form-group">
-            <label>Адреса (EN)</label>
-            <input v-model="formData.address.en" type="text" />
+            <label for="partner-address-en">Адреса (EN)</label>
+            <input id="partner-address-en" v-model="formData.address.en" type="text" />
           </div>
         </div>
       </section>
@@ -466,10 +620,15 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
         <h3>Умови використання</h3>
         <div class="form-row">
           <div class="form-group">
-            <label>Умови (UA)</label>
+            <label for="partner-term-ua-0">Умови (UA)</label>
             <div class="dynamic-list">
               <div v-for="(_, index) in formData.terms.ua" :key="index" class="dynamic-list__item">
-                <input v-model="formData.terms.ua[index]" type="text" placeholder="Умова" />
+                <input
+                  :id="'partner-term-ua-' + index"
+                  v-model="formData.terms.ua[index]"
+                  type="text"
+                  placeholder="Умова"
+                />
                 <button
                   type="button"
                   class="btn-remove"
@@ -490,10 +649,15 @@ const handleLocationChange = (lang: 'ua' | 'en', value: string) => {
             </div>
           </div>
           <div class="form-group">
-            <label>Умови (EN)</label>
+            <label for="partner-term-en-0">Умови (EN)</label>
             <div class="dynamic-list">
               <div v-for="(_, index) in formData.terms.en" :key="index" class="dynamic-list__item">
-                <input v-model="formData.terms.en[index]" type="text" placeholder="Term" />
+                <input
+                  :id="'partner-term-en-' + index"
+                  v-model="formData.terms.en[index]"
+                  type="text"
+                  placeholder="Term"
+                />
                 <button
                   type="button"
                   class="btn-remove"
@@ -609,23 +773,23 @@ $accent-color: rgb(115 103 240);
 }
 
 .form-section {
+  display: flex;
+  flex-direction: column;
+  gap: to-rem(16);
   margin-bottom: to-rem(24);
 
   @include mq(null, md) {
+    gap: to-rem(20);
     margin-bottom: to-rem(32);
   }
 
   h3 {
+    margin: 0;
     font-size: to-rem(14);
     font-weight: 600;
     color: #374151;
-    margin: 0 0 to-rem(16) 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-
-    @include mq(null, md) {
-      margin-bottom: to-rem(20);
-    }
   }
 }
 
@@ -674,6 +838,112 @@ $accent-color: rgb(115 103 240);
   textarea {
     resize: vertical;
     min-height: to-rem(60);
+  }
+
+  &--image {
+    .image-upload-wrapper {
+      display: flex;
+      align-items: center;
+      gap: to-rem(12);
+    }
+
+    .image-preview-small {
+      position: relative;
+      width: to-rem(48);
+      height: to-rem(48);
+      border-radius: to-rem(6);
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .upload-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .spinner {
+      width: to-rem(20);
+      height: to-rem(20);
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .upload-badge {
+      position: absolute;
+      bottom: to-rem(2);
+      right: to-rem(2);
+      width: to-rem(16);
+      height: to-rem(16);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: to-rem(10);
+
+      &--success {
+        background: #22c55e;
+        color: #fff;
+      }
+    }
+
+    .upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: to-rem(6);
+      padding: to-rem(8) to-rem(14);
+      background: $accent-color;
+      color: #fff;
+      border-radius: to-rem(6);
+      cursor: pointer;
+      font-size: to-rem(13);
+      font-weight: 500;
+      transition: background 0.2s;
+
+      &:hover:not(.upload-btn--disabled) {
+        background: darken($accent-color, 8%);
+      }
+
+      &--disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      input {
+        display: none;
+      }
+    }
+
+    .upload-error {
+      color: #dc2626;
+      font-size: to-rem(12);
+      margin: 0;
+    }
+
+    .upload-path {
+      color: #6b7280;
+      font-size: to-rem(11);
+      margin: 0;
+      word-break: break-all;
+    }
   }
 }
 

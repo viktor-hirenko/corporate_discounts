@@ -257,8 +257,9 @@ watch(
           </div>
           <form class="modal__body" @submit.prevent="handleSave">
             <div class="form-group">
-              <label>Email *</label>
+              <label for="user-email">Email *</label>
               <input
+                id="user-email"
                 v-model="formData.email"
                 type="email"
                 placeholder="user@upstars.com"
@@ -267,12 +268,17 @@ watch(
               <p class="form-hint">Google акаунт з цим email зможе авторизуватися</p>
             </div>
             <div class="form-group">
-              <label>Ім'я</label>
-              <input v-model="formData.name" type="text" placeholder="Ім'я користувача" />
+              <label for="user-name">Ім'я</label>
+              <input
+                id="user-name"
+                v-model="formData.name"
+                type="text"
+                placeholder="Ім'я користувача"
+              />
             </div>
             <div class="form-group">
-              <label>Роль</label>
-              <select v-model="formData.role">
+              <label for="user-role">Роль</label>
+              <select id="user-role" v-model="formData.role">
                 <option value="editor">Редактор</option>
                 <option value="admin">Адміністратор</option>
               </select>
@@ -688,14 +694,19 @@ $accent-color: rgb(115 103 240);
 }
 
 .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: to-rem(6);
   margin-bottom: to-rem(16);
 
+  &:last-child {
+    margin-bottom: 0;
+  }
+
   label {
-    display: block;
     font-size: to-rem(13);
     font-weight: 500;
     color: #4b5563;
-    margin-bottom: to-rem(6);
   }
 
   input,

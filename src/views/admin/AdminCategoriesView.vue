@@ -306,8 +306,9 @@ watch(
           </div>
           <form class="modal__body" @submit.prevent="handleSave">
             <div class="form-group">
-              <label>ID (slug)</label>
+              <label for="category-id">ID (slug)</label>
               <input
+                id="category-id"
                 v-model="formData.id"
                 type="text"
                 placeholder="travel, fitness, etc."
@@ -316,22 +317,22 @@ watch(
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Назва (UA) *</label>
-                <input v-model="formData.label.ua" type="text" required />
+                <label for="category-label-ua">Назва (UA) *</label>
+                <input id="category-label-ua" v-model="formData.label.ua" type="text" required />
               </div>
               <div class="form-group">
-                <label>Назва (EN) *</label>
-                <input v-model="formData.label.en" type="text" required />
+                <label for="category-label-en">Назва (EN) *</label>
+                <input id="category-label-en" v-model="formData.label.en" type="text" required />
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Опис (UA)</label>
-                <input v-model="formData.description.ua" type="text" />
+                <label for="category-description-ua">Опис (UA)</label>
+                <input id="category-description-ua" v-model="formData.description.ua" type="text" />
               </div>
               <div class="form-group">
-                <label>Опис (EN)</label>
-                <input v-model="formData.description.en" type="text" />
+                <label for="category-description-en">Опис (EN)</label>
+                <input id="category-description-en" v-model="formData.description.en" type="text" />
               </div>
             </div>
             <div class="modal__footer">
@@ -715,14 +716,19 @@ code {
 }
 
 .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: to-rem(6);
   margin-bottom: to-rem(16);
 
+  .form-row > & {
+    margin-bottom: 0;
+  }
+
   label {
-    display: block;
     font-size: to-rem(13);
     font-weight: 500;
     color: #4b5563;
-    margin-bottom: to-rem(6);
   }
 
   input {
@@ -748,10 +754,16 @@ code {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: to-rem(16);
+  margin-bottom: to-rem(16);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 
   @include mq(null, md) {
     grid-template-columns: 1fr;
     gap: to-rem(20);
+    margin-bottom: to-rem(20);
   }
 }
 </style>

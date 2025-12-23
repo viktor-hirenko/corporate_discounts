@@ -10,6 +10,29 @@ const authStore = useAuthStore()
 
 const deleteConfirmSlug = ref<string | null>(null)
 
+// Get displayable image URL from path
+const getImageUrl = (path: string): string => {
+  if (!path) return ''
+  if (path.startsWith('data:') || path.startsWith('http://') || path.startsWith('https://'))
+    return path
+  // R2 path like /assets/images/partners/...
+  if (path.startsWith('/assets/')) {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return `https://corporate-discounts-worker.upstars-marbella.workers.dev${path}`
+    }
+    return path
+  }
+  // Legacy @/assets path
+  if (path.startsWith('@/assets/')) {
+    const cleanPath = path.replace('@/', '/')
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return `https://corporate-discounts-worker.upstars-marbella.workers.dev${cleanPath}`
+    }
+    return cleanPath
+  }
+  return path
+}
+
 const handleSearch = (event: Event) => {
   const target = event.target as HTMLInputElement
   store.setSearchQuery(target.value)
@@ -148,7 +171,7 @@ const openPartnerPage = (slug: string) => {
               <div class="partner-image">
                 <img
                   v-if="partner.image"
-                  :src="partner.image"
+                  :src="getImageUrl(partner.image)"
                   :alt="partner.name.ua"
                   @error="(e: Event) => ((e.target as HTMLImageElement).style.display = 'none')"
                 />
@@ -402,7 +425,8 @@ $accent-color: rgb(115 103 240);
   &__table {
     width: 100%;
     border-collapse: collapse;
-    min-width: to-rem(900); // Minimum width to trigger scroll on mobile
+    table-layout: auto;
+    min-width: to-rem(800); // Minimum width to trigger scroll on mobile
 
     thead {
       position: sticky;
@@ -465,28 +489,23 @@ $accent-color: rgb(115 103 240);
 }
 
 .col-image {
-  width: to-rem(60);
+  width: to-rem(64);
 }
 
 .col-name {
-  min-width: to-rem(180);
+  // Занимает оставшееся пространство
 }
 
 .col-category,
-.col-location {
-  width: to-rem(120);
-}
-
-.col-promo {
-  width: to-rem(140);
+.col-location,
+.col-promo,
+.col-discount,
+.col-actions {
+  white-space: nowrap;
 }
 
 .col-discount {
-  width: to-rem(100);
-}
-
-.col-actions {
-  width: to-rem(180);
+  text-align: center;
 }
 
 .partner-image {

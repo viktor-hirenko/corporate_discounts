@@ -1,0 +1,153 @@
+// -----------------------------------------------------------------------------
+// Admin Forms - Shared styles for all admin form components
+// -----------------------------------------------------------------------------
+
+@use './utils/mixins' as *;
+@use './utils/functions' as *;
+
+// Form section with vertical gap between rows
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: to-rem(16);
+  margin-bottom: to-rem(24);
+
+  @include mq(null, md) {
+    gap: to-rem(20);
+    margin-bottom: to-rem(32);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: to-rem(14);
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+// Form row - two columns on desktop, single column on mobile
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: to-rem(16);
+
+  @include mq(null, md) {
+    grid-template-columns: 1fr;
+    gap: to-rem(20);
+  }
+}
+
+// Form group - label + input pair with proper a11y
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: to-rem(6);
+
+  label {
+    font-size: to-rem(13);
+    font-weight: 500;
+    color: #4b5563;
+    cursor: pointer;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: to-rem(10) to-rem(12);
+    border: 1px solid #e5e7eb;
+    border-radius: to-rem(6);
+    font-size: to-rem(14);
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color, #7367f0);
+    }
+
+    &:read-only {
+      background: #f9fafb;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    @include mq(null, md) {
+      min-height: to-rem(44);
+      font-size: to-rem(16); // Prevent iOS zoom on focus
+    }
+  }
+
+  select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right to-rem(12) center;
+    padding-right: to-rem(32);
+    cursor: pointer;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: to-rem(60);
+  }
+}
+
+// Dynamic list (tags, terms, etc.)
+.dynamic-list {
+  display: flex;
+  flex-direction: column;
+  gap: to-rem(8);
+
+  &__item {
+    display: flex;
+    gap: to-rem(8);
+
+    input {
+      flex: 1;
+    }
+  }
+}
+
+// Buttons
+.btn-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: to-rem(36);
+  height: to-rem(36);
+  padding: 0;
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  border-radius: to-rem(6);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #fecaca;
+  }
+}
+
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: to-rem(6);
+  padding: to-rem(8) to-rem(12);
+  background: #f3f4f6;
+  color: #4b5563;
+  border: none;
+  border-radius: to-rem(6);
+  font-size: to-rem(13);
+  cursor: pointer;
+  width: fit-content;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #e5e7eb;
+  }
+}
+

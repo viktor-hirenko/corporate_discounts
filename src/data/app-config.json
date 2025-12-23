@@ -2923,12 +2923,12 @@
         "en": "Beauty Salon"
       },
       "location": {
-        "ua": "PL/Варшава",
-        "en": "PL/Warsaw"
+        "ua": "Україна",
+        "en": "Ukraine"
       },
       "name": {
         "ua": "O.massage",
-        "en": "O.massage "
+        "en": "O.massage"
       },
       "summary": {
         "ua": "Студія масажу",
@@ -2940,8 +2940,8 @@
       },
       "discount": {
         "label": {
-          "ua": "-Спеціальна ціна",
-          "en": "-Спеціальна ціна"
+          "ua": "Спеціальна ціна",
+          "en": "Спеціальна ціна"
         },
         "description": {
           "ua": "",
@@ -4594,17 +4594,9 @@
     {
       "email": "v.hirenko@upstars.com",
       "name": "Віктор Гіренко",
-      "role": "editor",
+      "role": "admin",
       "id": "user-1765987131839",
       "addedAt": "2025-12-17",
-      "addedBy": "admin"
-    },
-    {
-      "email": "viktor.hirenko@gmail.com",
-      "name": "Віктор Гіренко",
-      "role": "editor",
-      "id": "user-1766066174325",
-      "addedAt": "2025-12-18",
       "addedBy": "admin"
     }
   ]

@@ -197,8 +197,10 @@ watch(
       <!-- Search -->
       <div class="admin-locations__filters">
         <div class="filter-group">
+          <label for="location-search" class="visually-hidden">Пошук локацій</label>
           <i class="fas fa-search"></i>
           <input
+            id="location-search"
             type="text"
             placeholder="Пошук за назвою або ID..."
             :value="store.searchQuery"
@@ -300,8 +302,9 @@ watch(
           </div>
           <form class="modal__body" @submit.prevent="handleSave">
             <div class="form-group">
-              <label>ID (slug)</label>
+              <label for="location-id">ID (slug)</label>
               <input
+                id="location-id"
                 v-model="formData.id"
                 type="text"
                 placeholder="ua, europe, online, etc."
@@ -310,22 +313,22 @@ watch(
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Назва (UA) *</label>
-                <input v-model="formData.label.ua" type="text" required />
+                <label for="location-label-ua">Назва (UA) *</label>
+                <input id="location-label-ua" v-model="formData.label.ua" type="text" required />
               </div>
               <div class="form-group">
-                <label>Назва (EN) *</label>
-                <input v-model="formData.label.en" type="text" required />
+                <label for="location-label-en">Назва (EN) *</label>
+                <input id="location-label-en" v-model="formData.label.en" type="text" required />
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Опис (UA)</label>
-                <input v-model="formData.description.ua" type="text" />
+                <label for="location-description-ua">Опис (UA)</label>
+                <input id="location-description-ua" v-model="formData.description.ua" type="text" />
               </div>
               <div class="form-group">
-                <label>Опис (EN)</label>
-                <input v-model="formData.description.en" type="text" />
+                <label for="location-description-en">Опис (EN)</label>
+                <input id="location-description-en" v-model="formData.description.en" type="text" />
               </div>
             </div>
             <div class="modal__footer">
@@ -357,6 +360,18 @@ watch(
 @use '@/styles/utils' as *;
 
 $accent-color: rgb(115 103 240);
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 .admin-locations {
   display: flex;
@@ -707,14 +722,19 @@ code {
 }
 
 .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: to-rem(6);
   margin-bottom: to-rem(16);
 
+  .form-row > & {
+    margin-bottom: 0;
+  }
+
   label {
-    display: block;
     font-size: to-rem(13);
     font-weight: 500;
     color: #4b5563;
-    margin-bottom: to-rem(6);
   }
 
   input {
@@ -740,10 +760,16 @@ code {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: to-rem(16);
+  margin-bottom: to-rem(16);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 
   @include mq(null, md) {
     grid-template-columns: 1fr;
     gap: to-rem(20);
+    margin-bottom: to-rem(20);
   }
 }
 </style>

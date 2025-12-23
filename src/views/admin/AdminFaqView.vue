@@ -258,8 +258,8 @@ watch(
           </div>
           <form class="modal__body" @submit.prevent="handleSave">
             <div class="form-group">
-              <label>Категорія *</label>
-              <select v-model="formData.category" required>
+              <label for="faq-category">Категорія *</label>
+              <select id="faq-category" v-model="formData.category" required>
                 <option v-for="cat in store.faqCategories" :key="cat.id" :value="cat.id">
                   {{ cat.label.ua }}
                 </option>
@@ -267,22 +267,22 @@ watch(
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Питання (UA) *</label>
-                <textarea v-model="formData.question.ua" rows="2" required></textarea>
+                <label for="faq-question-ua">Питання (UA) *</label>
+                <textarea id="faq-question-ua" v-model="formData.question.ua" rows="2" required></textarea>
               </div>
               <div class="form-group">
-                <label>Питання (EN) *</label>
-                <textarea v-model="formData.question.en" rows="2" required></textarea>
+                <label for="faq-question-en">Питання (EN) *</label>
+                <textarea id="faq-question-en" v-model="formData.question.en" rows="2" required></textarea>
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Відповідь (UA) *</label>
-                <textarea v-model="formData.answer.ua" rows="4" required></textarea>
+                <label for="faq-answer-ua">Відповідь (UA) *</label>
+                <textarea id="faq-answer-ua" v-model="formData.answer.ua" rows="4" required></textarea>
               </div>
               <div class="form-group">
-                <label>Відповідь (EN) *</label>
-                <textarea v-model="formData.answer.en" rows="4" required></textarea>
+                <label for="faq-answer-en">Відповідь (EN) *</label>
+                <textarea id="faq-answer-en" v-model="formData.answer.en" rows="4" required></textarea>
               </div>
             </div>
             <div class="modal__footer">
@@ -690,14 +690,19 @@ $accent-color: rgb(115 103 240);
 }
 
 .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: to-rem(6);
   margin-bottom: to-rem(16);
 
+  &:last-child {
+    margin-bottom: 0;
+  }
+
   label {
-    display: block;
     font-size: to-rem(13);
     font-weight: 500;
     color: #4b5563;
-    margin-bottom: to-rem(6);
   }
 
   input,
@@ -726,10 +731,20 @@ $accent-color: rgb(115 103 240);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: to-rem(16);
+  margin-bottom: to-rem(16);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .form-group {
+    margin-bottom: 0;
+  }
 
   @include mq(null, md) {
     grid-template-columns: 1fr;
     gap: to-rem(20);
+    margin-bottom: to-rem(20);
   }
 }
 </style>
