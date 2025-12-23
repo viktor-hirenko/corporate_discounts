@@ -55,7 +55,8 @@ body {
   }
 
   @include mq(null, md) {
-    padding: to-rem(24) to-rem(16);
+    // padding: to-rem(24) to-rem(16);
+    padding: 0;
   }
 }
 

@@ -77,8 +77,10 @@ onUnmounted(() => {
   background-color: #f8fafc;
 
   @include mq(null, md) {
-    height: calc(100dvh - 48px);
-    min-height: calc(100dvh - 48px);
+    // height: calc(100dvh - 48px);
+    // min-height: calc(100dvh - 48px);
+    height: 100dvh;
+    min-height: 100dvh;
   }
 
   &__overlay {
