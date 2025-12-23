@@ -149,14 +149,28 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async loginWithEmail(email: string, name: string): Promise<void> {
-      // При логине через email сохраняем picture из lastUser, если он есть
+      // При логине через email сохраняем picture и token из storage, если есть
       const lastUser = this.getLastUser()
+
+      // Пытаемся восстановить существующий токен из storage
+      let existingToken: string | null = null
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored)
+          existingToken = parsed.token ?? null
+        } catch {
+          existingToken = null
+        }
+      }
+
       this.user = {
         email,
         name,
-        picture: lastUser?.picture || null, // Сохраняем picture из lastUser, если есть
+        picture: lastUser?.picture || null,
       }
-      this.token = null
+      // Сохраняем существующий токен, если он есть (для продолжения сессии)
+      this.token = existingToken
       this.isAuthenticated = true
 
       this.saveToStorage()

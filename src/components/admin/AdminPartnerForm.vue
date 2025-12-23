@@ -58,7 +58,10 @@ const formData = reactive({
 })
 
 // Deep merge helper to preserve structure and handle missing fields
-const deepMerge = <T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T => {
+const deepMerge = <T extends Record<string, unknown>>(
+  target: T,
+  source: Record<string, unknown>,
+): T => {
   for (const key of Object.keys(source)) {
     const sourceValue = source[key]
     const targetValue = target[key as keyof T]
