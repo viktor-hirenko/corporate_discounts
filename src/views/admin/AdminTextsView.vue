@@ -343,7 +343,7 @@ $accent-color: rgb(115 103 240);
   }
 
   &__category {
-    font-size: to-rem(11);
+    font-size: to-rem(12);
     font-weight: 500;
     color: $accent-color;
   }
@@ -383,7 +383,7 @@ $accent-color: rgb(115 103 240);
   background: #e5e7eb;
   color: #4b5563;
   border-radius: to-rem(4);
-  font-size: to-rem(10);
+  font-size: to-rem(12);
   font-weight: 600;
   width: fit-content;
 }

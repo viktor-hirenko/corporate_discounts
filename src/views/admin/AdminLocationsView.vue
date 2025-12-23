@@ -547,7 +547,7 @@ code {
   display: inline-block;
   padding: to-rem(2) to-rem(8);
   border-radius: to-rem(10);
-  font-size: to-rem(10);
+  font-size: to-rem(12);
   font-weight: 500;
 
   &--system {

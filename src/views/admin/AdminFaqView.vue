@@ -476,13 +476,13 @@ $accent-color: rgb(115 103 240);
     background: rgba($accent-color, 0.1);
     color: $accent-color;
     border-radius: to-rem(10);
-    font-size: to-rem(11);
+    font-size: to-rem(12);
     font-weight: 500;
     margin-bottom: to-rem(8);
   }
 
   &__question {
-    font-size: to-rem(15);
+    font-size: to-rem(14);
     font-weight: 600;
     color: #1f2937;
     margin: 0 0 to-rem(8) 0;

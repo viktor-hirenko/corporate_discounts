@@ -940,7 +940,7 @@ $accent-color: rgb(115 103 240);
 
     .upload-path {
       color: #6b7280;
-      font-size: to-rem(11);
+      font-size: to-rem(12);
       margin: 0;
       word-break: break-all;
     }

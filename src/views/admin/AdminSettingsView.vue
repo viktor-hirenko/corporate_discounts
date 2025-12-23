@@ -261,7 +261,7 @@ $accent-color: rgb(115 103 240);
     padding: to-rem(2) to-rem(6);
     background: #f3f4f6;
     border-radius: to-rem(4);
-    font-size: to-rem(11);
+    font-size: to-rem(12);
   }
 }
 
