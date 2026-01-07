@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import UiButton from '@/components/UiButton.vue'
@@ -17,6 +17,9 @@ const googleButtonRef = ref<HTMLDivElement | null>(null)
 
 // Данные последнего пользователя
 const lastUser = ref<{ name: string; email: string; picture: string | null } | null>(null)
+
+// Стан для показу повідомлення про закінчення сесії
+const showSessionExpiredMessage = ref(false)
 
 // Computed
 const hasGoogleClientId = computed(() => {
@@ -49,11 +52,28 @@ async function handleContinue(): Promise<void> {
 
   try {
     isLoading.value = true
+
+    // ✅ Перевіряємо чи токен валідний
+    if (!authStore.isLastUserTokenValid()) {
+      console.log('[auth] Token expired, attempting silent refresh')
+
+      // Спробуємо silent refresh
+      try {
+        await performSilentRefresh()
+        // Якщо успішно — продовжуємо
+      } catch {
+        // Якщо не вдалось — показуємо повідомлення і кнопку Google
+        console.log('[auth] Silent refresh failed, showing Google sign-in')
+        isLoading.value = false
+        showSessionExpiredMessage.value = true
+        return
+      }
+    } else {
+      // Логиним с данными последнего пользователя
+      await authStore.loginWithEmail(lastUser.value.email, lastUser.value.name)
+    }
+
     const redirect = (route.query.redirect as string) || '/discounts'
-
-    // Логиним с данными последнего пользователя
-    await authStore.loginWithEmail(lastUser.value.email, lastUser.value.name)
-
     await router.replace(redirect)
   } catch (error) {
     console.error('[auth] Continue failed', error)
@@ -65,8 +85,8 @@ async function handleContinue(): Promise<void> {
 async function handleGoogleSignIn(response: { credential: string }): Promise<void> {
   try {
     isLoading.value = true
-    const redirect = (route.query.redirect as string) || '/discounts'
     await authStore.loginWithGoogle(response.credential)
+
     if (authStore.user) {
       lastUser.value = {
         name: authStore.user.name,
@@ -74,6 +94,11 @@ async function handleGoogleSignIn(response: { credential: string }): Promise<voi
         picture: authStore.user.picture,
       }
     }
+
+    // Скидаємо повідомлення про закінчення сесії
+    showSessionExpiredMessage.value = false
+
+    const redirect = (route.query.redirect as string) || '/discounts'
     await router.replace(redirect)
   } catch (error) {
     console.error('[auth] Google sign in failed', error)
@@ -98,6 +123,23 @@ function initGoogleButton(): void {
   document.head.appendChild(script)
 }
 
+/**
+ * Виконує silent refresh через auth store
+ * Використовує глобальну ініціалізацію GIS з main.ts
+ */
+async function performSilentRefresh(): Promise<void> {
+  try {
+    const success = await authStore.silentRefresh()
+    if (!success) {
+      showSessionExpiredMessage.value = true
+      throw new Error('Silent refresh failed')
+    }
+  } catch (error) {
+    showSessionExpiredMessage.value = true
+    throw error
+  }
+}
+
 function renderGoogleButton(): void {
   if (!googleButtonRef.value || !window.google?.accounts?.id) return
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
@@ -120,8 +162,17 @@ async function handleSwitchAccount(event: Event): Promise<void> {
   event.preventDefault()
   authStore.clearLastUser()
   lastUser.value = null
+  showSessionExpiredMessage.value = false
   setTimeout(() => initGoogleButton(), 0)
 }
+
+// ✅ Ініціалізуємо Google кнопку коли показуємо повідомлення про закінчення сесії
+watch(showSessionExpiredMessage, async (newValue) => {
+  if (newValue) {
+    await nextTick()
+    renderGoogleButton()
+  }
+})
 
 onMounted(() => {
   if (authStore.isLoggedIn) {
@@ -152,9 +203,16 @@ onMounted(() => {
           image-alt="User avatar"
         />
 
-        <!-- Кнопка "Продолжить" для распознанного пользователя -->
+        <!-- ✅ Повідомлення про закінчення сесії -->
+        <div v-if="showSessionExpiredMessage && hasUserData" class="auth-login__session-expired">
+          <p class="auth-login__session-expired-text">
+            Сесія закінчилась. Будь ласка, увійдіть знову.
+          </p>
+        </div>
+
+        <!-- Кнопка "Продолжить" для распознанного пользователя (тільки якщо токен валідний і немає повідомлення про сесію) -->
         <PrimaryButton
-          v-if="hasUserData"
+          v-if="hasUserData && !showSessionExpiredMessage"
           class="auth-login__continue"
           size="large"
           :disabled="isLoading"
@@ -168,15 +226,15 @@ onMounted(() => {
           <p class="auth-login__subtitle">{{ t(auth.signInSubtitle) }}</p>
         </div>
 
-        <!-- Google Sign-In (только когда нет данных пользователя) -->
+        <!-- Google Sign-In (коли немає даних користувача АБО сесія закінчилась) -->
         <div
-          v-if="shouldShowGoogleButton"
+          v-if="shouldShowGoogleButton || showSessionExpiredMessage"
           ref="googleButtonRef"
           class="auth-login__google-button"
         />
 
         <!-- Сменить аккаунт -->
-        <div v-if="hasUserData" class="auth-login__switch-wrapper">
+        <div v-if="hasUserData && !showSessionExpiredMessage" class="auth-login__switch-wrapper">
           <span class="auth-login__switch-text">{{ t(auth.notYou) }}</span>
           <UiButton
             class="auth-login__switch-button"
@@ -222,6 +280,22 @@ onMounted(() => {
 
   &__continue {
     width: 100%;
+  }
+
+  &__session-expired {
+    padding: to-rem(12) to-rem(16);
+    background: var(--color-warning-100, #fef3c7);
+    border: 1px solid var(--color-warning-300, #fcd34d);
+    border-radius: to-rem(8);
+    text-align: center;
+  }
+
+  &__session-expired-text {
+    margin: 0;
+    color: var(--color-warning-800, #92400e);
+    font-size: to-rem(14);
+
+    @include font-weight(semibold);
   }
 
   &__header {

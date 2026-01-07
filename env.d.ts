@@ -13,7 +13,16 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
-// Google Identity Services типы
+// Google Identity Services типи
+interface GooglePromptNotification {
+  isNotDisplayed: () => boolean
+  isSkippedMoment: () => boolean
+  isDismissedMoment: () => boolean
+  getNotDisplayedReason: () => string
+  getSkippedReason: () => string
+  getDismissedReason: () => string
+}
+
 declare global {
   interface Window {
     google?: {
@@ -38,13 +47,9 @@ declare global {
               locale?: string
             },
           ) => void
-          prompt: (
-            callback?: (notification: {
-              isNotDisplayed: boolean
-              isSkippedMoment: boolean
-              isDismissedMoment: boolean
-            }) => void,
-          ) => void
+          prompt: (callback?: (notification: GooglePromptNotification) => void) => void
+          revoke: (hint: string, callback?: () => void) => void
+          disableAutoSelect: () => void
         }
       }
     }

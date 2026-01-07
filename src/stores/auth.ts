@@ -9,21 +9,84 @@ interface AuthState {
     picture: string | null
   } | null
   token: string | null
+  /** ID таймера для проактивного refresh токена */
+  refreshTimerId: ReturnType<typeof setTimeout> | null
 }
 
 const STORAGE_KEY = 'corporate_discounts_auth'
 const LAST_USER_KEY = 'corporate_discounts_last_user'
+
+/** Буфер для проактивного оновлення токена (5 хвилин до закінчення) */
+const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000
+
+/** Глобальний callback для silent refresh (встановлюється з компонента логіну) */
+let globalRefreshCallback: (() => Promise<void>) | null = null
+
+/**
+ * Встановлює глобальний callback для silent refresh
+ * Викликається з компонента AuthLogin після ініціалізації Google Identity Services
+ */
+export function setGlobalRefreshCallback(callback: () => Promise<void>): void {
+  globalRefreshCallback = callback
+}
+
+/**
+ * Декодує JWT payload без верифікації підпису
+ */
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3 || !parts[1]) return null
+    const payload = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+    return JSON.parse(payload)
+  } catch {
+    return null
+  }
+}
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     isAuthenticated: false,
     user: null,
     token: null,
+    refreshTimerId: null,
   }),
 
   getters: {
     isLoggedIn(state): boolean {
       return state.isAuthenticated && state.user !== null
+    },
+
+    /**
+     * Повертає час закінчення токена (timestamp в мс) або null якщо токен недійсний
+     */
+    tokenExpirationTime(state): number | null {
+      if (!state.token) return null
+      const payload = decodeJwtPayload(state.token)
+      if (!payload || typeof payload.exp !== 'number') return null
+      return payload.exp * 1000
+    },
+
+    /**
+     * Перевіряє, чи закінчився токен (з буфером для проактивного оновлення)
+     */
+    isTokenExpired(): boolean {
+      const expTime = this.tokenExpirationTime
+      if (!expTime) return true
+      return expTime < Date.now() + TOKEN_REFRESH_BUFFER_MS
+    },
+
+    /**
+     * Перевіряє, чи токен дійсний (не закінчився і має правильну структуру)
+     */
+    isTokenValid(state): boolean {
+      if (!state.token) return false
+      const payload = decodeJwtPayload(state.token)
+      if (!payload) return false
+      if (typeof payload.exp !== 'number') return false
+      if (typeof payload.email !== 'string') return false
+      // Перевіряємо без буфера — чи токен взагалі діє
+      return payload.exp * 1000 > Date.now()
     },
 
     /**
@@ -85,6 +148,11 @@ export const useAuthStore = defineStore('auth', {
             this.user.picture = parsed.user.picture
             this.saveToStorage()
           }
+
+          // ✅ Запускаємо таймер refresh якщо токен валідний
+          if (this.isTokenValid) {
+            this.startTokenRefreshTimer()
+          }
         } catch (error) {
           console.error('[auth-store] failed to restore state', error)
           this.logout()
@@ -140,6 +208,9 @@ export const useAuthStore = defineStore('auth', {
           }
           localStorage.setItem(LAST_USER_KEY, JSON.stringify(lastUserData))
         }
+
+        // ✅ Запускаємо таймер для проактивного оновлення токена
+        this.startTokenRefreshTimer()
       } catch (error) {
         console.error('[auth-store] failed to login with Google', error)
         if (error instanceof Error && error.message.includes('Доступ')) {
@@ -196,6 +267,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     logout(): void {
+      // Зупиняємо таймер refresh
+      this.stopTokenRefreshTimer()
+
       // Сохраняем данные пользователя И токен для возможности "Продовжити"
       if (this.user) {
         const lastUserData = {
@@ -211,6 +285,102 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.token = null
       localStorage.removeItem(STORAGE_KEY)
+    },
+
+    /**
+     * Запускає таймер для проактивного оновлення токена
+     * Таймер спрацьовує за 5 хвилин до закінчення токена
+     */
+    startTokenRefreshTimer(): void {
+      // Зупиняємо попередній таймер якщо є
+      this.stopTokenRefreshTimer()
+
+      const expTime = this.tokenExpirationTime
+      if (!expTime) {
+        console.warn('[auth-store] Cannot start refresh timer: no token expiration time')
+        return
+      }
+
+      // Обчислюємо час до refresh (за 5 хвилин до закінчення)
+      const refreshTime = expTime - TOKEN_REFRESH_BUFFER_MS
+      const delay = refreshTime - Date.now()
+
+      if (delay <= 0) {
+        // Токен вже потребує оновлення — запускаємо негайно
+        console.log('[auth-store] Token needs immediate refresh')
+        this.silentRefresh()
+        return
+      }
+
+      console.log(
+        `[auth-store] Token refresh scheduled in ${Math.round(delay / 1000 / 60)} minutes`,
+      )
+
+      this.refreshTimerId = setTimeout(() => {
+        console.log('[auth-store] Token refresh timer triggered')
+        this.silentRefresh()
+      }, delay)
+    },
+
+    /**
+     * Зупиняє таймер refresh
+     */
+    stopTokenRefreshTimer(): void {
+      if (this.refreshTimerId) {
+        clearTimeout(this.refreshTimerId)
+        this.refreshTimerId = null
+      }
+    },
+
+    /**
+     * Silent refresh токена через Google Identity Services
+     * Повертає true якщо refresh успішний, false якщо потрібен повний re-login
+     */
+    async silentRefresh(): Promise<boolean> {
+      console.log('[auth-store] Attempting silent refresh...')
+
+      if (!globalRefreshCallback) {
+        console.warn('[auth-store] No refresh callback registered, cannot perform silent refresh')
+        return false
+      }
+
+      try {
+        await globalRefreshCallback()
+        // Якщо callback успішний, токен вже оновлений через loginWithGoogle
+        // Перезапускаємо таймер для нового токена
+        if (this.isTokenValid) {
+          this.startTokenRefreshTimer()
+          console.log('[auth-store] Silent refresh successful')
+          return true
+        }
+        return false
+      } catch (error) {
+        console.error('[auth-store] Silent refresh failed:', error)
+        return false
+      }
+    },
+
+    /**
+     * Перевіряє токен збереженого користувача і повертає чи він валідний
+     */
+    isLastUserTokenValid(): boolean {
+      const stored = localStorage.getItem(LAST_USER_KEY)
+      if (!stored) return false
+
+      try {
+        const parsed = JSON.parse(stored)
+        const token = parsed.token
+        if (!token) return false
+
+        const payload = decodeJwtPayload(token)
+        if (!payload) return false
+        if (typeof payload.exp !== 'number') return false
+
+        // Перевіряємо без буфера — чи токен взагалі діє
+        return payload.exp * 1000 > Date.now()
+      } catch {
+        return false
+      }
     },
 
     getLastUser(): { name: string; email: string; picture: string | null } | null {
