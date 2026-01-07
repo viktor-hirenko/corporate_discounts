@@ -2432,11 +2432,18 @@ $breakpoints: (
 
 ```bash
 # Development
-npm run dev              # Запуск dev сервера
+npm run dev              # Запуск dev сервера (з автосинхронізацією конфігу)
 
 # Build
 npm run build            # Збірка для production
 npm run preview          # Превью production збірки
+
+# Deployment
+npm run deploy           # Повний деплой (код БЕЗ контенту)
+npm run deploy:r2        # Деплой статичних файлів на R2
+npm run deploy:worker    # Деплой Cloudflare Worker
+npm run deploy:config    # ⚠️ Примусовий деплой конфігу (з підтвердженням)
+npm run sync:config      # Синхронізація конфігу з production
 
 # Linting
 npm run lint             # ESLint (TypeScript + Vue)
@@ -2456,6 +2463,67 @@ npm run tokens:docs      # Експорт документації токені�
 
 # Images
 npm run images:webp      # Конвертація зображень в WebP
+```
+
+### Content-Code Separation (v1.3.0+)
+
+**Проблема:** При деплої затиралися зміни контент-менеджерів в адмінці.
+
+**Рішення:** Розділення деплою коду та контенту.
+
+#### Нові скрипти
+
+**`scripts/sync-config.sh`**
+
+Завантажує актуальний `app-config.json` з production.
+
+- Автоматично виконується при `npm run dev`
+- Створює backup локального конфігу
+- Валідує завантажений JSON
+- Показує кількість партнерів
+
+**`scripts/deploy-r2.sh` (модифікований)**
+
+Деплоїть статичні файли **БЕЗ** `data/app-config.json`.
+
+- Виключає `data/app-config.json` з деплою
+- Контент оновлюється тільки через адмінку
+- Показує попередження про захист контенту
+
+**`scripts/deploy-config.sh` (новий)**
+
+Примусовий деплой конфігу з підтвердженням.
+
+- Запитує підтвердження (`yes`)
+- Показує кількість партнерів
+- Попереджає про втрату змін
+- Використовується тільки при зміні структури конфігу
+
+#### Workflow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  РОЗРОБНИК                                              │
+├─────────────────────────────────────────────────────────┤
+│  1. npm run dev       → Автосинхронізація конфігу       │
+│  2. Робить зміни в коді                                 │
+│  3. npm run deploy    → Деплой коду (контент не чіпає) │
+└─────────────────────────────────────────────────────────┘
+                          ↑↓
+┌─────────────────────────────────────────────────────────┐
+│  CLOUDFLARE R2                                          │
+│  /data/app-config.json  ← Оновлюється тільки через     │
+│                            адмінку або deploy:config   │
+└─────────────────────────────────────────────────────────┘
+                          ↑↓
+┌─────────────────────────────────────────────────────────┐
+│  КОНТЕНТ-МЕНЕДЖЕР                                       │
+├─────────────────────────────────────────────────────────┤
+│  1. Працює в адмінці                                    │
+│  2. Додає/редагує партнерів                             │
+│  3. Зміни зберігаються в R2                             │
+│  ✅ Деплої розробника НЕ затирають зміни!               │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ### Build скрипти
@@ -2506,7 +2574,106 @@ if (!googleClientId) {
 
 ---
 
-## 🔒 Авторизація
+## 🔒 Авторизація та безпека
+
+### Silent Token Refresh
+
+**Версія:** 1.3.0+
+
+**Проблема:** Google JWT токени мають обмежений термін дії (~1 година). Після закінчення токена користувач отримував помилку авторизації при спробі завантажити зображення або зберегти зміни.
+
+**Рішення:** Реалізовано автоматичне оновлення токена у фоновому режимі (Silent Token Refresh).
+
+#### Як працює
+
+1. **Проактивне оновлення:**
+   - Токен автоматично оновлюється за 5 хвилин до закінчення
+   - Таймер встановлюється при вході та після кожного оновлення
+   - Користувач не помічає процес оновлення
+
+2. **API Interceptor:**
+   - При отриманні 401 Unauthorized автоматично спробує оновити токен
+   - Після успішного оновлення повторить оригінальний запит
+   - Якщо оновлення не вдалося — виконується logout
+
+3. **Глобальна ініціалізація:**
+   - Google Identity Services ініціалізується в `main.ts`
+   - Callback для silent refresh реєструється глобально
+   - Працює на всіх сторінках застосунку
+
+#### Реалізація
+
+**`stores/auth.ts`:**
+
+```typescript
+interface AuthState {
+  // ...
+  refreshTimerId: ReturnType<typeof setTimeout> | null
+}
+
+const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000 // 5 minutes
+
+export function setGlobalRefreshCallback(callback: () => Promise<void>): void {
+  globalRefreshCallback = callback
+}
+
+// Getters
+tokenExpirationTime(): number | null // Час закінчення токена
+isTokenExpired(): boolean // Чи токен закінчився
+isTokenValid(): boolean // Чи токен валідний
+
+// Actions
+async silentRefresh(): Promise<void> // Оновлення токена
+startTokenRefreshTimer(): void // Запуск таймера
+stopTokenRefreshTimer(): void // Зупинка таймера
+```
+
+**`utils/api-config.ts`:**
+
+```typescript
+async function fetchWithAuth(url: string, options?: RequestInit): Promise<Response> {
+  // Додає Authorization header
+  // При 401 → silentRefresh() → retry
+}
+
+async function fetchMultipartWithAuth(url: string, formData: FormData): Promise<Response> {
+  // Для multipart/form-data запитів
+}
+```
+
+**`main.ts`:**
+
+```typescript
+function initGoogleIdentityServices(): void {
+  window.google.accounts.id.initialize({
+    client_id: CLIENT_ID,
+    callback: handleGoogleSignIn,
+    auto_select: true,
+  })
+  setGlobalRefreshCallback(authStore.silentRefresh)
+}
+```
+
+**`components/AuthLogin.vue`:**
+
+```typescript
+async function performSilentRefresh(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    window.google.accounts.id.prompt((notification) => {
+      // Обробка результату One Tap
+    })
+  })
+}
+```
+
+#### Переваги
+
+- ✅ Безперервна автентифікована сесія
+- ✅ Немає неочікуваних помилок авторизації
+- ✅ Автоматичне відновлення при помилках API
+- ✅ Відповідає міжнародним корпоративним стандартам
+
+---
 
 ### Система доступу
 
