@@ -121,12 +121,12 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
 
   // Перевіряємо чи токен не закінчився перед запитом
   if (authStore.isTokenExpired && !isRefreshing) {
-    console.log('[api-config] Token expired, attempting refresh before request')
     isRefreshing = true
     const refreshSuccess = await authStore.silentRefresh()
     isRefreshing = false
 
     if (!refreshSuccess) {
+      authStore.logout(true) // Редірект на /login
       throw new Error('Token expired and refresh failed')
     }
   }
@@ -141,7 +141,6 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
 
   // Якщо 401 — намагаємось refresh
   if (response.status === 401) {
-    console.log('[api-config] Received 401, attempting token refresh')
 
     // Якщо вже йде refresh — додаємо запит в чергу
     if (isRefreshing) {
@@ -172,9 +171,9 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
         }
         return fetch(url, { ...options, headers: retryHeaders })
       } else {
-        // Refresh не вдався — redirect на логін
+        // Refresh не вдався — logout з редіректом на логін
         processRefreshQueue(false)
-        console.error('[api-config] Token refresh failed, user needs to re-login')
+        authStore.logout(true) // true = редірект на /login
         throw new Error('Authentication required')
       }
     } catch (error) {
@@ -195,12 +194,12 @@ export async function fetchMultipartWithAuth(url: string, formData: FormData): P
 
   // Перевіряємо чи токен не закінчився перед запитом
   if (authStore.isTokenExpired && !isRefreshing) {
-    console.log('[api-config] Token expired, attempting refresh before upload')
     isRefreshing = true
     const refreshSuccess = await authStore.silentRefresh()
     isRefreshing = false
 
     if (!refreshSuccess) {
+      authStore.logout(true) // Редірект на /login
       throw new Error('Token expired and refresh failed')
     }
   }
@@ -213,7 +212,6 @@ export async function fetchMultipartWithAuth(url: string, formData: FormData): P
 
   // Якщо 401 — намагаємось refresh
   if (response.status === 401) {
-    console.log('[api-config] Received 401 on upload, attempting token refresh')
 
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
@@ -244,7 +242,9 @@ export async function fetchMultipartWithAuth(url: string, formData: FormData): P
           body: formData,
         })
       } else {
+        // Refresh не вдався — logout з редіректом на логін
         processRefreshQueue(false)
+        authStore.logout(true) // true = редірект на /login
         throw new Error('Authentication required')
       }
     } catch (error) {

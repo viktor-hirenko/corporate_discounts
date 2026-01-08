@@ -55,15 +55,12 @@ async function handleContinue(): Promise<void> {
 
     // ✅ Перевіряємо чи токен валідний
     if (!authStore.isLastUserTokenValid()) {
-      console.log('[auth] Token expired, attempting silent refresh')
-
       // Спробуємо silent refresh
       try {
         await performSilentRefresh()
         // Якщо успішно — продовжуємо
       } catch {
         // Якщо не вдалось — показуємо повідомлення і кнопку Google
-        console.log('[auth] Silent refresh failed, showing Google sign-in')
         isLoading.value = false
         showSessionExpiredMessage.value = true
         return
@@ -106,13 +103,24 @@ async function handleGoogleSignIn(response: { credential: string }): Promise<voi
   }
 }
 
-function initGoogleButton(): void {
-  if (!shouldShowGoogleButton.value || !googleButtonRef.value) return
+/**
+ * Завантажує Google Identity Services скрипт
+ * Викликається завжди, бо скрипт потрібен і для "Продовжити", і для кнопки Google
+ */
+function loadGoogleScript(): void {
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
   if (!CLIENT_ID) return
 
+  // Якщо скрипт вже завантажений
   if (window.google?.accounts?.id) {
     renderGoogleButton()
+    return
+  }
+
+  // Перевіряємо чи скрипт вже додається
+  const existingScript = document.querySelector('script[src*="accounts.google.com/gsi/client"]')
+  if (existingScript) {
+    existingScript.addEventListener('load', () => renderGoogleButton())
     return
   }
 
@@ -121,6 +129,11 @@ function initGoogleButton(): void {
   script.async = true
   script.onload = () => renderGoogleButton()
   document.head.appendChild(script)
+}
+
+function initGoogleButton(): void {
+  // ✅ Завжди завантажуємо скрипт — він потрібен для обох сценаріїв
+  loadGoogleScript()
 }
 
 /**
@@ -170,7 +183,8 @@ async function handleSwitchAccount(event: Event): Promise<void> {
 watch(showSessionExpiredMessage, async (newValue) => {
   if (newValue) {
     await nextTick()
-    renderGoogleButton()
+    // Спочатку переконуємось що скрипт завантажений
+    loadGoogleScript()
   }
 })
 
@@ -184,6 +198,12 @@ onMounted(() => {
   const savedLastUser = authStore.getLastUser()
   if (savedLastUser) {
     lastUser.value = savedLastUser
+
+    // ✅ Перевіряємо токен одразу при завантаженні
+    // Якщо токен невалідний — одразу показуємо повідомлення і Google кнопку
+    if (!authStore.isLastUserTokenValid()) {
+      showSessionExpiredMessage.value = true
+    }
   }
 
   initGoogleButton()

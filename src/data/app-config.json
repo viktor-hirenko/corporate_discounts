@@ -500,7 +500,7 @@
       "image": "/images/partners/roslynka.webp",
       "promoCode": "UPSTARS.ROSLYNKA",
       "contact": {
-        "website": "https://www.instagram.com/roslynka_studio_?igsh=OXp5MjZtb2FkeTR3",
+        "website": "https://www.instagram.com/roslynka_studio?igsh=MmVjZHlka3hrenlr",
         "email": "",
         "phone": ""
       },
@@ -520,7 +520,7 @@
       },
       "location": {
         "ua": "UA/Київ",
-        "en": "UA/Kyiv"
+        "en": "UA/KYIV"
       },
       "name": {
         "ua": "Roslynka10",
@@ -673,10 +673,6 @@
         "ua": "UA",
         "en": "UA"
       },
-      "address": {
-        "ua": "Вся Україна, де є готелі",
-        "en": "All Ukraine, where there are hotels"
-      },
       "name": {
         "ua": "Reikartz",
         "en": "Reikartz"
@@ -698,6 +694,10 @@
           "ua": "На проживання в мережі готелів Reikartz",
           "en": "On accommodation in the Reikartz hotel chain"
         }
+      },
+      "address": {
+        "ua": "Всі локації готелів в Україні",
+        "en": "All hotel locations in Ukraine"
       },
       "terms": {
         "ua": [
@@ -913,8 +913,7 @@
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://eurotrips.ua/",
-        "email": "",
-        "phone": ""
+        "email": ""
       },
       "socials": [
         {
@@ -927,8 +926,12 @@
         "en": "Travel"
       },
       "location": {
-        "ua": "UA/Закордон",
-        "en": "UA/Abroad"
+        "ua": "UA",
+        "en": "UA"
+      },
+      "address": {
+        "ua": "Україна/закордон",
+        "en": "Ukraine/abroad"
       },
       "name": {
         "ua": "Eurotrips",
@@ -951,10 +954,6 @@
           "ua": "на автобусний тур та 40 на будь-який авіа",
           "en": "on a bus tour and 40 on any flight"
         }
-      },
-      "address": {
-        "ua": "Україна/закордон",
-        "en": "Ukraine/abroad"
       },
       "terms": {
         "ua": [
@@ -2047,8 +2046,8 @@
         "en": "Shop"
       },
       "location": {
-        "ua": "UA/Онлайн",
-        "en": "UA/Online"
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
       },
       "name": {
         "ua": "Keep",
@@ -2107,9 +2106,7 @@
       "image": "/images/partners/gorgany.webp",
       "promoCode": "UPSTARS",
       "contact": {
-        "website": "https://www.gorgany.com/",
-        "email": "",
-        "phone": ""
+        "website": "https://www.gorgany.com/"
       },
       "socials": [
         {
@@ -2126,8 +2123,8 @@
         "en": "Shop"
       },
       "location": {
-        "ua": "UA/Онлайн",
-        "en": "UA/Online"
+        "ua": "UA/Київ",
+        "en": "UA/Kyiv"
       },
       "name": {
         "ua": "Gorgany",
@@ -2205,8 +2202,8 @@
         "en": "Shop"
       },
       "location": {
-        "ua": "UA/Онлайн",
-        "en": "UA/Online"
+        "ua": "UA/Закордон",
+        "en": "UA/Abroad"
       },
       "name": {
         "ua": "Orner",
@@ -2726,12 +2723,10 @@
         "ua": [
           "Завітайте на сайт Behelsi",
           "Перегляньте каталог і оберіть необхідні товари",
-          "Перегляньте каталог і оберіть необхідні товари",
           "Написати в директ інстаграму або зробити замовлення на сайті, вказавши промокод EUROPASSAG"
         ],
         "en": [
           "Visit the Behelsi website",
-          "Browse the catalog and choose the products you need",
           "Browse the catalog and choose the products you need",
           "Message us on Instagram Direct or place an order on the website using the promo code EUROPASSAG"
         ]
@@ -4186,8 +4181,8 @@
       },
       "discount": {
         "label": {
-          "ua": "-5%",
-          "en": "-5%"
+          "ua": "-15%",
+          "en": "-15%"
         },
         "description": {
           "ua": "",
@@ -4207,12 +4202,8 @@
         ]
       },
       "tags": {
-        "ua": [
-          ""
-        ],
-        "en": [
-          ""
-        ]
+        "ua": [],
+        "en": []
       }
     },
     "spot-school": {
@@ -4587,7 +4578,7 @@
     "total-fitness": {
       "id": "total-fitness",
       "slug": "total-fitness",
-      "image": "/images/partners/total-fitness.webp",
+      "image": "/assets/images/partners/total-fitness.png?t=1767791350278",
       "promoCode": "EUROPASS10",
       "contact": {
         "website": "https://totalfitness.com.ua/clubs/kyiv/zhylianska/",
@@ -4649,6 +4640,203 @@
         "ua": [],
         "en": []
       }
+    },
+    "finik-family": {
+      "id": "finik-family",
+      "slug": "finik-family",
+      "image": "/assets/images/partners/finik-family.png?t=1767790532612",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "https://finikfamily.ua/",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/finikfamily/"
+        }
+      ],
+      "category": {
+        "ua": "Їжа",
+        "en": "Food"
+      },
+      "location": {
+        "ua": "Online",
+        "en": "Online"
+      },
+      "name": {
+        "ua": "Finik Family",
+        "en": "Finik Family"
+      },
+      "summary": {
+        "ua": "Finik Family — cімейний концептуальний бренд сухофруктів, горіхів, авторських десертів, а також подарункових наборів, які приємно здивують смаком та естетичним пакуванням",
+        "en": ""
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-7%",
+          "en": "-7%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "",
+        "en": ""
+      },
+      "terms": {
+        "ua": [
+          "За промокодом Finik Family дарує 7% знижки на всю продукцію.",
+          "Новою Поштою (на сплачені замовлення від 2500 грн доставка безкоштовна).",
+          "Самовивіз з м. Київ.",
+          "*промокод діє тільки при замовлені на сайті"
+        ],
+        "en": []
+      },
+      "tags": {
+        "ua": [],
+        "en": []
+      }
+    },
+    "alps": {
+      "id": "alps",
+      "slug": "alps",
+      "image": "/assets/images/partners/alps.png?t=1767795542625",
+      "promoCode": "EUROPASSAGE",
+      "contact": {
+        "website": "https://alpsukraine.com/kontakty?utm_source=telegram&utm_medium=post&utm_campaign=alps",
+        "email": "alpsukraine@easyliner.eu",
+        "phone": "+380952842538"
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": "https://www.facebook.com/AlpsSouthEurope/"
+        },
+        {
+          "type": "instagram",
+          "url": "https://www.instagram.com/alpsteamukraine/?utm_medium=copy_link"
+        }
+      ],
+      "category": {
+        "ua": "Інше",
+        "en": "Other"
+      },
+      "location": {
+        "ua": "Online",
+        "en": "Online"
+      },
+      "name": {
+        "ua": "Alps",
+        "en": "Alps"
+      },
+      "summary": {
+        "ua": "ALPS - американський виробник високотехнологічних протезних рішень (лайнери, наколінники, стопи, коліна), а також засобів догляду за шкірою.",
+        "en": ""
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "-10%",
+          "en": "-10%"
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "Київ, вул. Сім’ї Прахових (Гайдара), 58\\10",
+        "en": ""
+      },
+      "terms": {
+        "ua": [
+          "зателефонуйте/напишіть менеджеру 0952842538 та вкажіть промокод EUROPASSAGE",
+          "або залиште заявку на сайті вказавши промокод в коментарях"
+        ],
+        "en": []
+      },
+      "tags": {
+        "ua": [],
+        "en": []
+      }
+    },
+    "test-partner": {
+      "id": "test-partner",
+      "slug": "test-partner",
+      "image": "/assets/images/partners/test-partner.webp?t=1767865412351",
+      "promoCode": "upstars15",
+      "contact": {
+        "website": "",
+        "email": "",
+        "phone": ""
+      },
+      "socials": [
+        {
+          "type": "facebook",
+          "url": ""
+        },
+        {
+          "type": "instagram",
+          "url": ""
+        }
+      ],
+      "category": {
+        "ua": "Здоровʼя",
+        "en": "Health"
+      },
+      "location": {
+        "ua": "UA/Львів",
+        "en": "UA/Lviv"
+      },
+      "name": {
+        "ua": "Test Partner",
+        "en": "Test Partner"
+      },
+      "summary": {
+        "ua": "",
+        "en": ""
+      },
+      "description": {
+        "ua": "",
+        "en": ""
+      },
+      "discount": {
+        "label": {
+          "ua": "",
+          "en": ""
+        },
+        "description": {
+          "ua": "",
+          "en": ""
+        }
+      },
+      "address": {
+        "ua": "",
+        "en": ""
+      },
+      "terms": {
+        "ua": [],
+        "en": []
+      },
+      "tags": {
+        "ua": [],
+        "en": []
+      }
     }
   },
   "allowedUsers": [
@@ -4681,6 +4869,14 @@
       "name": "Бик Соломія",
       "role": "editor",
       "id": "user-1767789109348",
+      "addedAt": "2026-01-07",
+      "addedBy": "admin"
+    },
+    {
+      "email": "m.honcharenko@upstars.com",
+      "name": "Гончаренко Марина",
+      "role": "editor",
+      "id": "user-1767789551013",
       "addedAt": "2026-01-07",
       "addedBy": "admin"
     }

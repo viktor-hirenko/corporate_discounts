@@ -16,6 +16,12 @@ type LoadingStatus = 'idle' | 'loading' | 'success' | 'error'
 const DEFAULT_PAGE_SIZE = 9
 const ALL_OPTION = 'all'
 
+/** Інтервал автоматичного оновлення даних (5 хвилин) */
+const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000
+
+/** ID таймера для автоматичного оновлення */
+let autoRefreshTimerId: ReturnType<typeof setInterval> | null = null
+
 const DEFAULT_FILTERS: DiscountFilters = {
   search: '',
   category: ALL_OPTION,
@@ -268,6 +274,37 @@ export const useDiscountsStore = defineStore('discounts', {
     },
     resetPage(): void {
       this.pagination.page = 1
+    },
+
+    /**
+     * Запускає автоматичне оновлення даних кожні 5 хвилин
+     * Це гарантує, що користувачі бачать актуальні дані навіть якщо сторінка відкрита тривалий час
+     */
+    startAutoRefresh(): void {
+      // Зупиняємо попередній таймер якщо є
+      this.stopAutoRefresh()
+
+      autoRefreshTimerId = setInterval(() => {
+        this.loadPartners()
+      }, AUTO_REFRESH_INTERVAL_MS)
+    },
+
+    /**
+     * Зупиняє автоматичне оновлення даних
+     */
+    stopAutoRefresh(): void {
+      if (autoRefreshTimerId) {
+        clearInterval(autoRefreshTimerId)
+        autoRefreshTimerId = null
+      }
+    },
+
+    /**
+     * Перезавантажує дані якщо вони застарілі (наприклад, при поверненні на вкладку)
+     */
+    async refreshIfNeeded(): Promise<void> {
+      // Завжди перезавантажуємо при поверненні на вкладку для гарантії актуальності
+      await this.loadPartners()
     },
   },
 })

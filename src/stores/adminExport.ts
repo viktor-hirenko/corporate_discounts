@@ -10,7 +10,7 @@ import { useAdminSettingsStore } from './adminSettings'
 import { useAdminUsersStore } from './adminUsers'
 import type { AppConfig } from '@/types/app-config'
 import staticConfigData from '@/data/app-config.json'
-import { getApiUrl, getAuthHeaders } from '@/utils/api-config'
+import { getApiUrl, getAuthHeaders, fetchWithAuth } from '@/utils/api-config'
 
 // Актуальный конфиг (загружается через API, fallback — статический)
 let currentConfig: AppConfig = staticConfigData as AppConfig
@@ -279,6 +279,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
   }
 
   // Збереження на R2 (через Cloudflare Worker)
+  // При 401 автоматично робить logout і редірект на /login
   async function saveToR2(): Promise<boolean> {
     exportStatus.value = 'exporting'
     isExporting.value = true
@@ -288,11 +289,11 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       await ensureStoresInitialized()
       const config = buildFullConfig()
 
-      const response = await fetch(getApiUrl('/api/save-config'), {
+      // Використовуємо fetchWithAuth для автоматичної обробки 401
+      const response = await fetchWithAuth(getApiUrl('/api/save-config'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...getAuthHeaders(),
         },
         body: JSON.stringify(config),
       })
@@ -313,7 +314,12 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       return true
     } catch (error) {
       console.error('[saveToR2] Error:', error)
-      exportError.value = error instanceof Error ? error.message : 'Failed to save to R2'
+      // Якщо це помилка авторизації — користувача вже редіректнуло на /login
+      if (error instanceof Error && error.message === 'Authentication required') {
+        exportError.value = 'Сесія закінчилась'
+      } else {
+        exportError.value = error instanceof Error ? error.message : 'Failed to save to R2'
+      }
       exportStatus.value = 'error'
       return false
     } finally {

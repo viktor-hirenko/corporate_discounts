@@ -36,9 +36,8 @@ function initGlobalGoogleIdentityServices(): void {
         const authStore = useAuthStore()
         try {
           await authStore.loginWithGoogle(response.credential)
-          console.log('[main] Silent refresh successful via global GIS')
-        } catch (error) {
-          console.error('[main] Silent refresh failed:', error)
+        } catch {
+          // Silent refresh failed - handled by auth store
         }
       },
       auto_select: true,
@@ -54,13 +53,10 @@ function initGlobalGoogleIdentityServices(): void {
 
         window.google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed()) {
-            console.log('[main] One Tap not displayed:', notification.getNotDisplayedReason())
             reject(new Error('Silent refresh not possible'))
           } else if (notification.isSkippedMoment()) {
-            console.log('[main] One Tap skipped:', notification.getSkippedReason())
             reject(new Error('User skipped silent refresh'))
           } else if (notification.isDismissedMoment()) {
-            console.log('[main] One Tap dismissed:', notification.getDismissedReason())
             reject(new Error('User dismissed silent refresh'))
           }
           // Успішний результат обробляється в callback initialize
@@ -72,8 +68,6 @@ function initGlobalGoogleIdentityServices(): void {
         }, 10000)
       })
     })
-
-    console.log('[main] Google Identity Services initialized for silent refresh')
   }
 
   // Завантажуємо Google Identity Services
@@ -103,7 +97,30 @@ const discountsStore = useDiscountsStore(pinia)
 
 void discountsStore.loadPartners()
 
+// ✅ Запускаємо автоматичне оновлення даних кожні 5 хвилин
+discountsStore.startAutoRefresh()
+
 // ✅ Ініціалізуємо Google Identity Services для Silent Token Refresh
 initGlobalGoogleIdentityServices()
+
+/**
+ * Обробка повернення на вкладку браузера
+ * Коли користувач повертається на вкладку — оновлюємо дані
+ */
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    void discountsStore.refreshIfNeeded()
+  }
+})
+
+/**
+ * Обробка відновлення сторінки з bfcache (Back-Forward Cache)
+ * Коли браузер відновлює сторінку з кешу — перезавантажуємо дані
+ */
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    void discountsStore.loadPartners()
+  }
+})
 
 app.mount('#app')

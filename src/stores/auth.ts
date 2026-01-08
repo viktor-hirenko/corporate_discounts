@@ -16,8 +16,15 @@ interface AuthState {
 const STORAGE_KEY = 'corporate_discounts_auth'
 const LAST_USER_KEY = 'corporate_discounts_last_user'
 
-/** Буфер для проактивного оновлення токена (5 хвилин до закінчення) */
-const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000
+/**
+ * Буфер для проактивного оновлення токена
+ * Токен Google живе 60 хвилин.
+ *
+ * PRODUCTION: 5 * 60 * 1000 (5 хвилин) — розлогін через ~55 хвилин
+ * ТЕСТ: 59 * 60 * 1000 (59 хвилин) — розлогін через ~1 хвилину
+ */
+const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000 // ← PRODUCTION
+// const TOKEN_REFRESH_BUFFER_MS = 59 * 60 * 1000 // ← ТЕСТ (1 хвилина)
 
 /** Глобальний callback для silent refresh (встановлюється з компонента логіну) */
 let globalRefreshCallback: (() => Promise<void>) | null = null
@@ -266,7 +273,11 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem(LAST_USER_KEY, JSON.stringify(lastUserData))
     },
 
-    logout(): void {
+    /**
+     * Разлогинивает пользователя
+     * @param redirectToLogin - если true, редиректит на страницу логина (по умолчанию false)
+     */
+    logout(redirectToLogin: boolean = false): void {
       // Зупиняємо таймер refresh
       this.stopTokenRefreshTimer()
 
@@ -285,6 +296,11 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.token = null
       localStorage.removeItem(STORAGE_KEY)
+
+      // Редірект на сторінку логіну (тільки якщо явно вказано)
+      if (redirectToLogin && !window.location.hash.includes('/login')) {
+        window.location.href = window.location.origin + window.location.pathname + '#/login'
+      }
     },
 
     /**
@@ -307,17 +323,11 @@ export const useAuthStore = defineStore('auth', {
 
       if (delay <= 0) {
         // Токен вже потребує оновлення — запускаємо негайно
-        console.log('[auth-store] Token needs immediate refresh')
         this.silentRefresh()
         return
       }
 
-      console.log(
-        `[auth-store] Token refresh scheduled in ${Math.round(delay / 1000 / 60)} minutes`,
-      )
-
       this.refreshTimerId = setTimeout(() => {
-        console.log('[auth-store] Token refresh timer triggered')
         this.silentRefresh()
       }, delay)
     },
@@ -337,10 +347,7 @@ export const useAuthStore = defineStore('auth', {
      * Повертає true якщо refresh успішний, false якщо потрібен повний re-login
      */
     async silentRefresh(): Promise<boolean> {
-      console.log('[auth-store] Attempting silent refresh...')
-
       if (!globalRefreshCallback) {
-        console.warn('[auth-store] No refresh callback registered, cannot perform silent refresh')
         return false
       }
 
@@ -350,12 +357,10 @@ export const useAuthStore = defineStore('auth', {
         // Перезапускаємо таймер для нового токена
         if (this.isTokenValid) {
           this.startTokenRefreshTimer()
-          console.log('[auth-store] Silent refresh successful')
           return true
         }
         return false
-      } catch (error) {
-        console.error('[auth-store] Silent refresh failed:', error)
+      } catch {
         return false
       }
     },
@@ -376,8 +381,9 @@ export const useAuthStore = defineStore('auth', {
         if (!payload) return false
         if (typeof payload.exp !== 'number') return false
 
-        // Перевіряємо без буфера — чи токен взагалі діє
-        return payload.exp * 1000 > Date.now()
+        // ✅ Перевіряємо З БУФЕРОМ — так само як isTokenExpired
+        // Щоб уникнути циклу: logout → "Продовжити" → знову logout
+        return payload.exp * 1000 > Date.now() + TOKEN_REFRESH_BUFFER_MS
       } catch {
         return false
       }

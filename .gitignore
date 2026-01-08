@@ -44,3 +44,6 @@ worker/wrangler.toml
 # Environment files with secrets
 .env.local
 .env.production
+
+# Config backups
+*.backup.*
