@@ -226,7 +226,10 @@ export const useDiscountsStore = defineStore('discounts', {
               url: social.url,
             })),
             // Храним оригинальный объект {ua, en} — перевод происходит в компоненте
-            terms: partnerConfig.terms as unknown as string[],
+            terms: partnerConfig.terms as unknown as {
+              ua: string[]
+              en: string[]
+            } as unknown as string[],
             tags: partnerConfig.tags as unknown as string[] | undefined,
           }
         })

@@ -2724,15 +2724,15 @@
       },
       "terms": {
         "ua": [
-          "Завітайте на сайт Behelsi;",
-          "Перегляньте каталог і оберіть необхідні товари;",
-          "Перегляньте каталог і оберіть необхідні товари;",
+          "Завітайте на сайт Behelsi",
+          "Перегляньте каталог і оберіть необхідні товари",
+          "Перегляньте каталог і оберіть необхідні товари",
           "Написати в директ інстаграму або зробити замовлення на сайті, вказавши промокод EUROPASSAG"
         ],
         "en": [
-          "Visit the Behelsi website;",
-          "Browse the catalog and choose the products you need;",
-          "Browse the catalog and choose the products you need;",
+          "Visit the Behelsi website",
+          "Browse the catalog and choose the products you need",
+          "Browse the catalog and choose the products you need",
           "Message us on Instagram Direct or place an order on the website using the promo code EUROPASSAG"
         ]
       },
@@ -2926,8 +2926,8 @@
         "en": "Beauty Salon"
       },
       "location": {
-        "ua": "Україна",
-        "en": "Ukraine"
+        "ua": "PL/Варшава",
+        "en": "PL/Warsaw"
       },
       "name": {
         "ua": "O.massage",
