@@ -913,7 +913,8 @@
       "promoCode": "UPSTARS",
       "contact": {
         "website": "https://eurotrips.ua/",
-        "email": ""
+        "email": "",
+        "phone": ""
       },
       "socials": [
         {
@@ -926,12 +927,8 @@
         "en": "Travel"
       },
       "location": {
-        "ua": "UA",
-        "en": "UA"
-      },
-      "address": {
-        "ua": "Україна/закордон",
-        "en": "Ukraine/abroad"
+        "ua": "UA/Закордон",
+        "en": "UA/Abroad"
       },
       "name": {
         "ua": "Eurotrips",
@@ -954,6 +951,10 @@
           "ua": "на автобусний тур та 40 на будь-який авіа",
           "en": "on a bus tour and 40 on any flight"
         }
+      },
+      "address": {
+        "ua": "Україна/закордон",
+        "en": "Ukraine/abroad"
       },
       "terms": {
         "ua": [
@@ -2046,8 +2047,8 @@
         "en": "Shop"
       },
       "location": {
-        "ua": "UA/Київ",
-        "en": "UA/Kyiv"
+        "ua": "UA/Онлайн",
+        "en": "UA/Online"
       },
       "name": {
         "ua": "Keep",
@@ -2106,7 +2107,9 @@
       "image": "/images/partners/gorgany.webp",
       "promoCode": "UPSTARS",
       "contact": {
-        "website": "https://www.gorgany.com/"
+        "website": "https://www.gorgany.com/",
+        "email": "",
+        "phone": ""
       },
       "socials": [
         {
@@ -2123,8 +2126,8 @@
         "en": "Shop"
       },
       "location": {
-        "ua": "UA/Київ",
-        "en": "UA/Kyiv"
+        "ua": "UA/Онлайн",
+        "en": "UA/Online"
       },
       "name": {
         "ua": "Gorgany",
@@ -2202,8 +2205,8 @@
         "en": "Shop"
       },
       "location": {
-        "ua": "UA/Закордон",
-        "en": "UA/Abroad"
+        "ua": "UA/Онлайн",
+        "en": "UA/Online"
       },
       "name": {
         "ua": "Orner",

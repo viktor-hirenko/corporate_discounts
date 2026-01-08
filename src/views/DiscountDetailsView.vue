@@ -624,6 +624,11 @@ $container-max-width: calc(1312px);
     text-decoration: none;
     transition: opacity 0.2s ease;
 
+    // Дозволяємо переносити довгі URL
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+
     @include line-height(relaxed);
     @include font-weight(regular);
 
