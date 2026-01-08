@@ -4,12 +4,147 @@ export interface Env {
   R2_BUCKET: R2Bucket
   BUCKET_NAME: string
   PUBLIC_URL: string
+  // External R2 bucket (discounts.upstars.com)
+  EXTERNAL_BUCKET_NAME: string
+  EXTERNAL_R2_ENDPOINT: string
   // Google OAuth credentials (optional, auth handled client-side)
   GOOGLE_CLIENT_ID?: string
   GOOGLE_CLIENT_SECRET?: string
-  // AWS credentials for R2 (if using AWS SDK)
+  // AWS credentials for external R2 bucket (S3 API)
   AWS_ACCESS_KEY_ID?: string
   AWS_SECRET_ACCESS_KEY?: string
+}
+
+// =============================================================================
+// S3 CLIENT (AWS Signature V4 for external R2 bucket)
+// =============================================================================
+
+async function hmacSha256(key: ArrayBuffer, message: string): Promise<ArrayBuffer> {
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    key,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  )
+  return crypto.subtle.sign('HMAC', cryptoKey, new TextEncoder().encode(message))
+}
+
+async function sha256(message: string | ArrayBuffer): Promise<string> {
+  const data = typeof message === 'string' ? new TextEncoder().encode(message) : message
+  const hash = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+function toHex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+async function getSignatureKey(
+  secretKey: string,
+  dateStamp: string,
+  region: string,
+  service: string,
+): Promise<ArrayBuffer> {
+  const kDate = await hmacSha256(new TextEncoder().encode('AWS4' + secretKey), dateStamp)
+  const kRegion = await hmacSha256(kDate, region)
+  const kService = await hmacSha256(kRegion, service)
+  return hmacSha256(kService, 'aws4_request')
+}
+
+interface S3RequestOptions {
+  method: 'GET' | 'PUT' | 'DELETE'
+  key: string
+  body?: string | ArrayBuffer
+  contentType?: string
+}
+
+async function s3Request(env: Env, options: S3RequestOptions): Promise<Response> {
+  const { method, key, body, contentType } = options
+
+  if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY) {
+    throw new Error('AWS credentials not configured')
+  }
+
+  const endpoint = env.EXTERNAL_R2_ENDPOINT
+  const bucketName = env.EXTERNAL_BUCKET_NAME
+  const region = 'auto'
+  const service = 's3'
+
+  // Parse endpoint to get host
+  const endpointUrl = new URL(endpoint)
+  const host = `${bucketName}.${endpointUrl.host}`
+  const url = `https://${host}/${key}`
+
+  const now = new Date()
+  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '')
+  const dateStamp = amzDate.slice(0, 8)
+
+  // Calculate payload hash
+  const payloadHash = body ? await sha256(body) : await sha256('')
+
+  // Canonical headers
+  const headers: Record<string, string> = {
+    host: host,
+    'x-amz-date': amzDate,
+    'x-amz-content-sha256': payloadHash,
+  }
+
+  if (contentType) {
+    headers['content-type'] = contentType
+  }
+
+  const signedHeaders = Object.keys(headers).sort().join(';')
+  const canonicalHeaders = Object.keys(headers)
+    .sort()
+    .map((k) => `${k}:${headers[k]}\n`)
+    .join('')
+
+  // Canonical request
+  const canonicalRequest = [
+    method,
+    '/' + key,
+    '',
+    canonicalHeaders,
+    signedHeaders,
+    payloadHash,
+  ].join('\n')
+
+  const canonicalRequestHash = await sha256(canonicalRequest)
+
+  // String to sign
+  const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`
+  const stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalRequestHash].join(
+    '\n',
+  )
+
+  // Calculate signature
+  const signingKey = await getSignatureKey(env.AWS_SECRET_ACCESS_KEY, dateStamp, region, service)
+  const signature = toHex(await hmacSha256(signingKey, stringToSign))
+
+  // Authorization header
+  const authorization = `AWS4-HMAC-SHA256 Credential=${env.AWS_ACCESS_KEY_ID}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
+
+  // Make request
+  const requestHeaders: Record<string, string> = {
+    Authorization: authorization,
+    'x-amz-date': amzDate,
+    'x-amz-content-sha256': payloadHash,
+  }
+
+  if (contentType) {
+    requestHeaders['Content-Type'] = contentType
+  }
+
+  return fetch(url, {
+    method,
+    headers: requestHeaders,
+    body: body || undefined,
+  })
 }
 
 // =============================================================================
@@ -106,7 +241,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cache-Control, Pragma',
     'Access-Control-Max-Age': '86400',
   }
 }
@@ -281,9 +416,37 @@ export default {
 
 // =============================================================================
 // LOAD CONFIG (public endpoint)
+// Uses S3 API to read from external bucket (discounts.upstars.com)
 // =============================================================================
 async function loadConfig(env: Env): Promise<Response> {
   try {
+    // Try external bucket first (via S3 API)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, {
+          method: 'GET',
+          key: 'data/app-config.json',
+        })
+
+        if (s3Response.ok) {
+          const config = await s3Response.text()
+          return new Response(config, {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              Pragma: 'no-cache',
+              Expires: '0',
+            },
+          })
+        }
+        console.error('S3 request failed:', s3Response.status, await s3Response.text())
+      } catch (s3Error) {
+        console.error('S3 request error:', s3Error)
+      }
+    }
+
+    // Fallback to local R2 bucket
     const object = await env.R2_BUCKET.get('data/app-config.json')
 
     if (!object) {
@@ -315,6 +478,7 @@ async function loadConfig(env: Env): Promise<Response> {
 
 // =============================================================================
 // SAVE CONFIG (protected endpoint - requires JWT)
+// Uses S3 API to write to external bucket (discounts.upstars.com)
 // =============================================================================
 async function saveConfig(request: Request, env: Env): Promise<Response> {
   try {
@@ -328,8 +492,39 @@ async function saveConfig(request: Request, env: Env): Promise<Response> {
       })
     }
 
-    // Save to R2
-    await env.R2_BUCKET.put('data/app-config.json', JSON.stringify(config, null, 2), {
+    const configJson = JSON.stringify(config, null, 2)
+
+    // Try external bucket first (via S3 API)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, {
+          method: 'PUT',
+          key: 'data/app-config.json',
+          body: configJson,
+          contentType: 'application/json',
+        })
+
+        if (s3Response.ok) {
+          return new Response(
+            JSON.stringify({
+              success: true,
+              message: 'Config saved successfully to external bucket',
+              timestamp: new Date().toISOString(),
+            }),
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          )
+        }
+        console.error('S3 save failed:', s3Response.status, await s3Response.text())
+      } catch (s3Error) {
+        console.error('S3 save error:', s3Error)
+      }
+    }
+
+    // Fallback to local R2 bucket
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
       httpMetadata: {
         contentType: 'application/json',
         cacheControl: 'public, max-age=0, must-revalidate',
@@ -358,6 +553,7 @@ async function saveConfig(request: Request, env: Env): Promise<Response> {
 
 // =============================================================================
 // UPLOAD IMAGE (protected endpoint - requires JWT)
+// Uses S3 API to upload to external bucket (discounts.upstars.com)
 // =============================================================================
 async function uploadImage(request: Request, env: Env): Promise<Response> {
   try {
@@ -403,21 +599,55 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
     // Determine file extension
     const ext = file.type === 'image/webp' ? 'webp' : file.type.split('/')[1] || 'webp'
     const filename = `${slug}.${ext}`
-    const key = `assets/images/partners/${filename}`
+    const key = `images/partners/${filename}`
 
-    // Upload to R2
     const arrayBuffer = await file.arrayBuffer()
-    await env.R2_BUCKET.put(key, arrayBuffer, {
+
+    // Try external bucket first (via S3 API)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, {
+          method: 'PUT',
+          key: key,
+          body: arrayBuffer,
+          contentType: file.type,
+        })
+
+        if (s3Response.ok) {
+          const imagePath = `/images/partners/${filename}`
+          const publicUrl = `${env.PUBLIC_URL}/${key}`
+
+          return new Response(
+            JSON.stringify({
+              success: true,
+              message: 'Image uploaded successfully to external bucket',
+              imagePath,
+              publicUrl,
+              filename,
+            }),
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          )
+        }
+        console.error('S3 upload failed:', s3Response.status, await s3Response.text())
+      } catch (s3Error) {
+        console.error('S3 upload error:', s3Error)
+      }
+    }
+
+    // Fallback to local R2 bucket
+    const localKey = `assets/images/partners/${filename}`
+    await env.R2_BUCKET.put(localKey, arrayBuffer, {
       httpMetadata: {
         contentType: file.type,
-        // ✅ Уменьшили кэш до 1 часа (3600s) чтобы обновления изображений отображались быстрее
         cacheControl: 'public, max-age=3600',
       },
     })
 
-    // Return the path that can be used in app-config.json (without @/ prefix for R2)
     const imagePath = `/assets/images/partners/${filename}`
-    const publicUrl = `${env.PUBLIC_URL || ''}/${key}`
+    const publicUrl = `${env.PUBLIC_URL || ''}/${localKey}`
 
     return new Response(
       JSON.stringify({
