@@ -195,8 +195,7 @@ export const useDiscountsStore = defineStore('discounts', {
           const categoryValue = (categoryKey || ukrainianCategory) as PartnerCategory
 
           // Локацию оставляем украинской (т.к. это физические адреса)
-          const locationValue = (partnerConfig.location.ua ||
-            partnerConfig.location) as PartnerLocation
+          const locationValue = partnerConfig.location as unknown as PartnerLocation
 
           return {
             id: partnerConfig.id,

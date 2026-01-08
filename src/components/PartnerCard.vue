@@ -10,7 +10,7 @@ interface Props {
 
 const props = defineProps<Props>()
 const router = useRouter()
-const { t, getPartnerLocalizedData, filters, getImage, config } = useAppConfig()
+const { t, filters } = useAppConfig()
 
 const imageLoadError = ref(false)
 
@@ -52,14 +52,9 @@ const categoryLabel = computed(() => {
   return categoryFilter ? t(categoryFilter.label) : props.partner.category
 })
 
-const locationLabel = computed(() => {
-  // Берем оригинальную локацию из конфига и локализуем напрямую
-  const partnerConfig = config.value.partners[props.partner.slug]
-  if (partnerConfig && partnerConfig.location) {
-    return t(partnerConfig.location)
-  }
-  return props.partner.location
-})
+const locationLabel = computed(() =>
+  t(props.partner.location as unknown as { ua: string; en: string }),
+)
 
 function handleClick() {
   router.push({
