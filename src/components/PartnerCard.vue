@@ -56,6 +56,10 @@ const locationLabel = computed(() =>
   t(props.partner.location as unknown as { ua: string; en: string }),
 )
 
+const summaryText = computed(() =>
+  t(props.partner.summary as unknown as { ua: string; en: string }),
+)
+
 function handleClick() {
   router.push({
     name: 'discount-details',
@@ -100,6 +104,7 @@ function handleClick() {
           <span class="partner-card__location">#{{ locationLabel }}</span>
         </div>
         <h3 class="partner-card__title">{{ partnerName }}</h3>
+        <p v-if="summaryText" class="partner-card__summary">{{ summaryText }}</p>
       </div>
     </div>
   </article>
@@ -214,6 +219,17 @@ function handleClick() {
     @include mq(null, lg) {
       font-size: to-rem(20);
     }
+  }
+
+  &__summary {
+    overflow: hidden;
+    color: var(--color-neutral-400, #81818e);
+    font-size: to-rem(16);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    @include line-height(relaxed);
+    @include font-weight(regular);
   }
 }
 </style>
