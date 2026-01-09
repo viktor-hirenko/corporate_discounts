@@ -92,6 +92,31 @@ const hasPartnerImage = computed(() => {
   )
 })
 
+// Перевірка наявності промокоду
+const hasPromoCode = computed(() => {
+  const code = partner.value?.discount.promoCode
+  return code && code.trim() !== '' && code !== '-'
+})
+
+// Динамічний заголовок CTA
+const ctaTitle = computed(() => {
+  if (hasPromoCode.value) {
+    return t(pages.discountDetails.cta.title)
+  }
+  return '' // Не показуємо заголовок без промокоду
+})
+
+// Динамічний опис CTA
+const ctaDescription = computed(() => {
+  if (hasPromoCode.value) {
+    return t(pages.discountDetails.cta.description)
+  }
+  // Текст без промокоду (мультиязичний)
+  return uiStore.locale === 'en'
+    ? 'Visit the company website to learn more'
+    : 'Відвідати сайт компанії, дізнатись більше'
+})
+
 function handleImageError() {
   imageLoadError.value = true
 }
@@ -304,11 +329,13 @@ onUnmounted(() => {
     </div>
 
     <!-- Call to Action -->
-    <div class="discount-details__cta">
+    <div class="discount-details__cta" :class="{ 'discount-details__cta--no-title': !ctaTitle }">
       <div class="discount-details__cta-content">
-        <h2 class="discount-details__cta-title">{{ t(pages.discountDetails.cta.title) }}</h2>
+        <h2 v-if="ctaTitle" class="discount-details__cta-title">
+          {{ ctaTitle }}
+        </h2>
         <p class="discount-details__cta-description">
-          {{ t(pages.discountDetails.cta.description) }}
+          {{ ctaDescription }}
         </p>
       </div>
 
@@ -706,6 +733,13 @@ $container-max-width: calc(1312px);
     @include mq(null, lg) {
       padding: to-rem(32) to-rem(24);
       gap: to-rem(24);
+    }
+
+    // Коли немає заголовку - центруємо контент горизонтально
+    &--no-title {
+      .discount-details__cta-content {
+        text-align: center;
+      }
     }
   }
 
