@@ -10,7 +10,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: var(--color-secondary-400, #01001f);
+  color: var(--color-secondary-600, #01001f);
   font-family: inherit;
   text-decoration: none;
   cursor: pointer;
@@ -21,12 +21,12 @@
 
   // Hover state (не для active и disabled)
   &:hover:not(&--active, :disabled, &--disabled) {
-    color: var(--color-secondary-300, #7367f0);
+    color: var(--color-secondary-300, #928fec);
   }
 
   // Active state (текущая страница/выбранный элемент)
   &--active {
-    color: var(--color-secondary-400, #7367f0);
+    color: #5535be;
     cursor: default;
   }
 

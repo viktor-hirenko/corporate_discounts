@@ -71,7 +71,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
       result = result.filter((item) => item.category === selectedCategory.value)
     }
 
-    // Пошук
+    // Поиск
     if (searchQuery.value) {
       const query = searchQuery.value.toLowerCase()
       result = result.filter(
@@ -104,7 +104,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     isFormOpen.value = false
   }
 
-  // Автозбереження в файл
+  // Автосохранение в файл
   async function autoSave() {
     isSaving.value = true
     try {

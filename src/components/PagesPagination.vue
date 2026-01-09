@@ -244,34 +244,29 @@ function handleNext() {
   }
 
   &__page {
-    display: flex;
     min-width: to-rem(32);
     height: to-rem(32);
-    padding: 0;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    background: none;
-    color: var(--color-secondary-400, #01001f);
     font-size: to-rem(16);
-    transition: opacity 0.2s ease;
-    cursor: pointer;
 
     @include line-height(relaxed);
     @include font-family(primary);
     @include font-weight(extrabold);
 
-    &:disabled {
-      cursor: default;
-    }
-
-    &:hover:not(&--active, :disabled) {
-      opacity: 0.8;
-    }
-
     &--active {
-      color: var(--color-secondary-400, #5535be);
-      cursor: default;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: to-rem(4);
+        width: 50%;
+        height: to-rem(2);
+        background-color: #5535be;
+        border-radius: to-rem(1);
+        pointer-events: none;
+      }
     }
   }
 }

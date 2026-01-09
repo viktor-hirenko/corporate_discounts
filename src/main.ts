@@ -1,4 +1,4 @@
-// ✅ HTTPS редирект для production (безпека)
+// ✅ HTTPS редирект для production (безопасность)
 if (
   import.meta.env.PROD &&
   window.location.protocol === 'http:' &&
@@ -19,8 +19,8 @@ import { useAuthStore, setGlobalRefreshCallback } from './stores/auth'
 import { useDiscountsStore } from './stores/discounts'
 
 /**
- * Ініціалізація Google Identity Services для Silent Token Refresh
- * Виконується глобально для підтримки автоматичного оновлення токенів на всіх сторінках
+ * Инициализация Google Identity Services для Silent Token Refresh
+ * Выполняется глобально для поддержки автоматического обновления токенов на всех страницах
  */
 function initGlobalGoogleIdentityServices(): void {
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
@@ -32,7 +32,7 @@ function initGlobalGoogleIdentityServices(): void {
     window.google.accounts.id.initialize({
       client_id: CLIENT_ID,
       callback: async (response: { credential: string }) => {
-        // При успішному silent refresh оновлюємо токен
+        // При успешном silent refresh обновляем токен
         const authStore = useAuthStore()
         try {
           await authStore.loginWithGoogle(response.credential)
@@ -43,7 +43,7 @@ function initGlobalGoogleIdentityServices(): void {
       auto_select: true,
     })
 
-    // Реєструємо глобальний callback для silent refresh
+    // Регистрируем глобальный callback для silent refresh
     setGlobalRefreshCallback(async () => {
       return new Promise((resolve, reject) => {
         if (!window.google?.accounts?.id) {
@@ -59,7 +59,7 @@ function initGlobalGoogleIdentityServices(): void {
           } else if (notification.isDismissedMoment()) {
             reject(new Error('User dismissed silent refresh'))
           }
-          // Успішний результат обробляється в callback initialize
+          // Успешный результат обрабатывается в callback initialize
         })
 
         // Timeout для silent refresh (10 секунд)
@@ -70,7 +70,7 @@ function initGlobalGoogleIdentityServices(): void {
     })
   }
 
-  // Завантажуємо Google Identity Services
+  // Загружаем Google Identity Services
   if (window.google?.accounts?.id) {
     initGIS()
   } else {
@@ -97,15 +97,15 @@ const discountsStore = useDiscountsStore(pinia)
 
 void discountsStore.loadPartners()
 
-// ✅ Запускаємо автоматичне оновлення даних кожні 5 хвилин
+// ✅ Запускаем автоматическое обновление данных каждые 5 минут
 discountsStore.startAutoRefresh()
 
-// ✅ Ініціалізуємо Google Identity Services для Silent Token Refresh
+// ✅ Инициализируем Google Identity Services для Silent Token Refresh
 initGlobalGoogleIdentityServices()
 
 /**
- * Обробка повернення на вкладку браузера
- * Коли користувач повертається на вкладку — оновлюємо дані
+ * Обработка возвращения на вкладку браузера
+ * Когда пользователь возвращается на вкладку — обновляем данные
  */
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
@@ -114,8 +114,8 @@ document.addEventListener('visibilitychange', () => {
 })
 
 /**
- * Обробка відновлення сторінки з bfcache (Back-Forward Cache)
- * Коли браузер відновлює сторінку з кешу — перезавантажуємо дані
+ * Обработка восстановления страницы из bfcache (Back-Forward Cache)
+ * Когда браузер восстанавливает страницу из кеша — перезагружаем данные
  */
 window.addEventListener('pageshow', (event) => {
   if (event.persisted) {

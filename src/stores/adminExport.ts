@@ -199,7 +199,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     } as AppConfig
   }
 
-  // Зберегти в локальний файл (через Vite dev server API)
+  // Сохранить в локальный файл (через Vite dev server API)
   async function saveToLocalFile(): Promise<boolean> {
     isSaving.value = true
     exportError.value = null
@@ -257,7 +257,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     }
   }
 
-  // Експорт в JSON файл
+  // Экспорт в JSON файл
   async function exportToFile() {
     try {
       await ensureStoresInitialized()
@@ -278,8 +278,8 @@ export const useAdminExportStore = defineStore('adminExport', () => {
     }
   }
 
-  // Збереження на R2 (через Cloudflare Worker)
-  // При 401 автоматично робить logout і редірект на /login
+  // Сохранение на R2 (через Cloudflare Worker)
+  // При 401 автоматически делает logout и редирект на /login
   async function saveToR2(): Promise<boolean> {
     exportStatus.value = 'exporting'
     isExporting.value = true
@@ -289,7 +289,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       await ensureStoresInitialized()
       const config = buildFullConfig()
 
-      // Використовуємо fetchWithAuth для автоматичної обробки 401
+      // Используем fetchWithAuth для автоматической обработки 401
       const response = await fetchWithAuth(getApiUrl('/api/save-config'), {
         method: 'POST',
         headers: {
@@ -314,9 +314,9 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       return true
     } catch (error) {
       console.error('[saveToR2] Error:', error)
-      // Якщо це помилка авторизації — користувача вже редіректнуло на /login
+      // Если это ошибка авторизации — пользователя уже редиректнуло на /login
       if (error instanceof Error && error.message === 'Authentication required') {
-        exportError.value = 'Сесія закінчилась'
+        exportError.value = 'Сессия закончилась'
       } else {
         exportError.value = error instanceof Error ? error.message : 'Failed to save to R2'
       }

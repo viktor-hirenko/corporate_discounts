@@ -16,10 +16,10 @@ type LoadingStatus = 'idle' | 'loading' | 'success' | 'error'
 const DEFAULT_PAGE_SIZE = 9
 const ALL_OPTION = 'all'
 
-/** Інтервал автоматичного оновлення даних (5 хвилин) */
+/** Интервал автоматического обновления данных (5 минут) */
 const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000
 
-/** ID таймера для автоматичного оновлення */
+/** ID таймера для автоматического обновления */
 let autoRefreshTimerId: ReturnType<typeof setInterval> | null = null
 
 const DEFAULT_FILTERS: DiscountFilters = {
@@ -200,7 +200,7 @@ export const useDiscountsStore = defineStore('discounts', {
 
           const categoryValue = (categoryKey || ukrainianCategory) as PartnerCategory
 
-          // Витягуємо українське значення локації (фізичні адреси)
+          // Извлекаем украинское значение локации (физические адреса)
           const locationValue = (
             typeof partnerConfig.location === 'string'
               ? partnerConfig.location
@@ -249,7 +249,7 @@ export const useDiscountsStore = defineStore('discounts', {
       } catch (error) {
         console.error('[discounts-store] failed to load partners', error)
         this.status = 'error'
-        this.error = 'Не вдалося завантажити партнерів. Спробуйте ще раз пізніше.'
+        this.error = 'Не удалось загрузить партнёров. Попробуйте ещё раз позже.'
       }
     },
     setSearch(search: string): void {
@@ -277,11 +277,11 @@ export const useDiscountsStore = defineStore('discounts', {
     },
 
     /**
-     * Запускає автоматичне оновлення даних кожні 5 хвилин
-     * Це гарантує, що користувачі бачать актуальні дані навіть якщо сторінка відкрита тривалий час
+     * Запускает автоматическое обновление данных каждые 5 минут
+     * Это гарантирует, что пользователи видят актуальные данные даже если страница открыта длительное время
      */
     startAutoRefresh(): void {
-      // Зупиняємо попередній таймер якщо є
+      // Останавливаем предыдущий таймер если есть
       this.stopAutoRefresh()
 
       autoRefreshTimerId = setInterval(() => {
@@ -290,7 +290,7 @@ export const useDiscountsStore = defineStore('discounts', {
     },
 
     /**
-     * Зупиняє автоматичне оновлення даних
+     * Останавливает автоматическое обновление данных
      */
     stopAutoRefresh(): void {
       if (autoRefreshTimerId) {
@@ -300,10 +300,10 @@ export const useDiscountsStore = defineStore('discounts', {
     },
 
     /**
-     * Перезавантажує дані якщо вони застарілі (наприклад, при поверненні на вкладку)
+     * Перезагружает данные если они устарели (например, при возвращении на вкладку)
      */
     async refreshIfNeeded(): Promise<void> {
-      // Завжди перезавантажуємо при поверненні на вкладку для гарантії актуальності
+      // Всегда перезагружаем при возвращении на вкладку для гарантии актуальности
       await this.loadPartners()
     },
   },

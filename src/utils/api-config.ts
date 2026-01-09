@@ -7,10 +7,10 @@ import { useAuthStore } from '@/stores/auth'
 
 const WORKER_URL = 'https://corporate-discounts-worker.upstars-marbella.workers.dev'
 
-/** Прапорець для запобігання рекурсивному refresh */
+/** Флаг для предотвращения рекурсивного refresh */
 let isRefreshing = false
 
-/** Черга запитів, що очікують на refresh */
+/** Очередь запросов, ожидающих refresh */
 let refreshQueue: Array<{
   resolve: (value: Response) => void
   reject: (error: Error) => void
@@ -99,7 +99,7 @@ export function getAuthHeadersForUpload(): Record<string, string> {
 }
 
 /**
- * Обробляє чергу запитів після успішного refresh
+ * Обрабатывает очередь запросов после успешного refresh
  */
 function processRefreshQueue(success: boolean): void {
   refreshQueue.forEach(({ resolve, reject, retryFn }) => {
@@ -113,25 +113,25 @@ function processRefreshQueue(success: boolean): void {
 }
 
 /**
- * Fetch з автоматичним refresh токена при 401
- * Якщо сервер повертає 401, намагається оновити токен і повторити запит
+ * Fetch с автоматическим refresh токена при 401
+ * Если сервер возвращает 401, пытается обновить токен и повторить запрос
  */
 export async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
   const authStore = useAuthStore()
 
-  // Перевіряємо чи токен не закінчився перед запитом
+  // Проверяем не истёк ли токен перед запросом
   if (authStore.isTokenExpired && !isRefreshing) {
     isRefreshing = true
     const refreshSuccess = await authStore.silentRefresh()
     isRefreshing = false
 
     if (!refreshSuccess) {
-      authStore.logout(true) // Редірект на /login
+      authStore.logout(true) // Редирект на /login
       throw new Error('Token expired and refresh failed')
     }
   }
 
-  // Додаємо актуальний токен
+  // Добавляем актуальный токен
   const headers = {
     ...options.headers,
     ...getAuthHeaders(),
@@ -139,10 +139,10 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
 
   const response = await fetch(url, { ...options, headers })
 
-  // Якщо 401 — намагаємось refresh
+  // Если 401 — пытаемся refresh
   if (response.status === 401) {
 
-    // Якщо вже йде refresh — додаємо запит в чергу
+    // Если уже идёт refresh — добавляем запрос в очередь
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         refreshQueue.push({
@@ -161,19 +161,19 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
       isRefreshing = false
 
       if (refreshSuccess) {
-        // Обробляємо чергу
+        // Обрабатываем очередь
         processRefreshQueue(true)
 
-        // Повторюємо оригінальний запит з новим токеном
+        // Повторяем оригинальный запрос с новым токеном
         const retryHeaders = {
           ...options.headers,
           ...getAuthHeaders(),
         }
         return fetch(url, { ...options, headers: retryHeaders })
       } else {
-        // Refresh не вдався — logout з редіректом на логін
+        // Refresh не удался — logout с редиректом на логин
         processRefreshQueue(false)
-        authStore.logout(true) // true = редірект на /login
+        authStore.logout(true) // true = редирект на /login
         throw new Error('Authentication required')
       }
     } catch (error) {
@@ -187,19 +187,19 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
 }
 
 /**
- * Fetch для multipart запитів з автоматичним refresh токена при 401
+ * Fetch для multipart запросов с автоматическим refresh токена при 401
  */
 export async function fetchMultipartWithAuth(url: string, formData: FormData): Promise<Response> {
   const authStore = useAuthStore()
 
-  // Перевіряємо чи токен не закінчився перед запитом
+  // Проверяем не истёк ли токен перед запросом
   if (authStore.isTokenExpired && !isRefreshing) {
     isRefreshing = true
     const refreshSuccess = await authStore.silentRefresh()
     isRefreshing = false
 
     if (!refreshSuccess) {
-      authStore.logout(true) // Редірект на /login
+      authStore.logout(true) // Редирект на /login
       throw new Error('Token expired and refresh failed')
     }
   }
@@ -210,7 +210,7 @@ export async function fetchMultipartWithAuth(url: string, formData: FormData): P
     body: formData,
   })
 
-  // Якщо 401 — намагаємось refresh
+  // Если 401 — пытаемся refresh
   if (response.status === 401) {
 
     if (isRefreshing) {
@@ -242,9 +242,9 @@ export async function fetchMultipartWithAuth(url: string, formData: FormData): P
           body: formData,
         })
       } else {
-        // Refresh не вдався — logout з редіректом на логін
+        // Refresh не удался — logout с редиректом на логин
         processRefreshQueue(false)
-        authStore.logout(true) // true = редірект на /login
+        authStore.logout(true) // true = редирект на /login
         throw new Error('Authentication required')
       }
     } catch (error) {
@@ -259,7 +259,7 @@ export async function fetchMultipartWithAuth(url: string, formData: FormData): P
 
 /**
  * Загружает изображение партнера на сервер
- * Використовує fetchMultipartWithAuth для автоматичного refresh при 401
+ * Использует fetchMultipartWithAuth для автоматического refresh при 401
  */
 export async function uploadPartnerImage(
   file: File,
@@ -291,7 +291,7 @@ export async function uploadPartnerImage(
   } catch (error) {
     console.error('Failed to upload image:', error)
     if (error instanceof Error && error.message === 'Authentication required') {
-      return { success: false, error: 'Сесія закінчилась. Будь ласка, увійдіть знову.' }
+      return { success: false, error: 'Сессия закончилась. Пожалуйста, войдите снова.' }
     }
     return { success: false, error: 'Network error' }
   }

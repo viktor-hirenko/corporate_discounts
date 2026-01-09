@@ -1,10 +1,10 @@
 /**
- * Утиліти для санітизації та валідації вводу
- * Захист від XSS та ін'єкцій
+ * Утилиты для санитизации и валидации ввода
+ * Защита от XSS и инъекций
  */
 
 /**
- * Екранує HTML-сутності для запобігання XSS
+ * Экранирует HTML-сущности для предотвращения XSS
  */
 export function escapeHtml(str: string): string {
   const htmlEscapes: Record<string, string> = {
@@ -19,14 +19,14 @@ export function escapeHtml(str: string): string {
 }
 
 /**
- * Видаляє потенційно небезпечні HTML теги
+ * Удаляет потенциально опасные HTML теги
  */
 export function stripHtmlTags(str: string): string {
   return str.replace(/<[^>]*>/g, '')
 }
 
 /**
- * Санітизує рядок для безпечного використання
+ * Санитизирует строку для безопасного использования
  */
 export function sanitizeString(str: string | undefined | null): string {
   if (!str) return ''
@@ -60,7 +60,7 @@ export function sanitizeUrl(url: string): string {
 }
 
 /**
- * Санітизує об'єкт рекурсивно
+ * Санитизирует объект рекурсивно
  */
 export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
   const result = { ...obj }
@@ -106,7 +106,7 @@ export function isValidUrl(url: string): boolean {
 }
 
 /**
- * Обмежує довжину рядка
+ * Ограничивает длину строки
  */
 export function truncate(str: string, maxLength: number): string {
   if (str.length <= maxLength) return str

@@ -102,7 +102,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     isFormOpen.value = false
   }
 
-  // Автозбереження в файл
+  // Автосохранение в файл
   async function autoSave() {
     isSaving.value = true
     try {

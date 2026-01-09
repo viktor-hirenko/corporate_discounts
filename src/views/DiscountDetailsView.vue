@@ -103,7 +103,7 @@ const ctaTitle = computed(() => {
   if (hasPromoCode.value) {
     return t(pages.discountDetails.cta.title)
   }
-  return '' // Не показуємо заголовок без промокоду
+  return '' // Не показываем заголовок без промокода
 })
 
 // Динамічний опис CTA
@@ -651,7 +651,7 @@ $container-max-width: calc(1312px);
     text-decoration: none;
     transition: opacity 0.2s ease;
 
-    // Дозволяємо переносити довгі URL
+    // Разрешаем переносить длинные URL
     word-break: break-word;
     overflow-wrap: anywhere;
     hyphens: auto;
@@ -735,7 +735,7 @@ $container-max-width: calc(1312px);
       gap: to-rem(24);
     }
 
-    // Коли немає заголовку - центруємо контент горизонтально
+    // Когда нет заголовка - центрируем контент горизонтально
     &--no-title {
       .discount-details__cta-content {
         text-align: center;

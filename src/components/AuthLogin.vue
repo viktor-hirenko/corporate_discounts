@@ -18,7 +18,7 @@ const googleButtonRef = ref<HTMLDivElement | null>(null)
 // Данные последнего пользователя
 const lastUser = ref<{ name: string; email: string; picture: string | null } | null>(null)
 
-// Стан для показу повідомлення про закінчення сесії
+// Состояние для показа сообщения об окончании сессии
 const showSessionExpiredMessage = ref(false)
 
 // Computed
@@ -53,14 +53,14 @@ async function handleContinue(): Promise<void> {
   try {
     isLoading.value = true
 
-    // ✅ Перевіряємо чи токен валідний
+    // ✅ Проверяем валиден ли токен
     if (!authStore.isLastUserTokenValid()) {
-      // Спробуємо silent refresh
+      // Пробуем silent refresh
       try {
         await performSilentRefresh()
-        // Якщо успішно — продовжуємо
+        // Если успешно — продолжаем
       } catch {
-        // Якщо не вдалось — показуємо повідомлення і кнопку Google
+        // Если не удалось — показываем сообщение и кнопку Google
         isLoading.value = false
         showSessionExpiredMessage.value = true
         return
@@ -92,7 +92,7 @@ async function handleGoogleSignIn(response: { credential: string }): Promise<voi
       }
     }
 
-    // Скидаємо повідомлення про закінчення сесії
+    // Сбрасываем сообщение об окончании сессии
     showSessionExpiredMessage.value = false
 
     const redirect = (route.query.redirect as string) || '/discounts'
@@ -104,20 +104,20 @@ async function handleGoogleSignIn(response: { credential: string }): Promise<voi
 }
 
 /**
- * Завантажує Google Identity Services скрипт
- * Викликається завжди, бо скрипт потрібен і для "Продовжити", і для кнопки Google
+ * Загружает Google Identity Services скрипт
+ * Вызывается всегда, т.к. скрипт нужен и для "Продолжить", и для кнопки Google
  */
 function loadGoogleScript(): void {
   const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
   if (!CLIENT_ID) return
 
-  // Якщо скрипт вже завантажений
+  // Если скрипт уже загружен
   if (window.google?.accounts?.id) {
     renderGoogleButton()
     return
   }
 
-  // Перевіряємо чи скрипт вже додається
+  // Проверяем не добавляется ли скрипт уже
   const existingScript = document.querySelector('script[src*="accounts.google.com/gsi/client"]')
   if (existingScript) {
     existingScript.addEventListener('load', () => renderGoogleButton())
@@ -132,13 +132,13 @@ function loadGoogleScript(): void {
 }
 
 function initGoogleButton(): void {
-  // ✅ Завжди завантажуємо скрипт — він потрібен для обох сценаріїв
+  // ✅ Всегда загружаем скрипт — он нужен для обоих сценариев
   loadGoogleScript()
 }
 
 /**
- * Виконує silent refresh через auth store
- * Використовує глобальну ініціалізацію GIS з main.ts
+ * Выполняет silent refresh через auth store
+ * Использует глобальную инициализацию GIS из main.ts
  */
 async function performSilentRefresh(): Promise<void> {
   try {
@@ -179,11 +179,11 @@ async function handleSwitchAccount(event: Event): Promise<void> {
   setTimeout(() => initGoogleButton(), 0)
 }
 
-// ✅ Ініціалізуємо Google кнопку коли показуємо повідомлення про закінчення сесії
+// ✅ Инициализируем Google кнопку когда показываем сообщение об окончании сессии
 watch(showSessionExpiredMessage, async (newValue) => {
   if (newValue) {
     await nextTick()
-    // Спочатку переконуємось що скрипт завантажений
+    // Сначала убеждаемся что скрипт загружен
     loadGoogleScript()
   }
 })
@@ -199,8 +199,8 @@ onMounted(() => {
   if (savedLastUser) {
     lastUser.value = savedLastUser
 
-    // ✅ Перевіряємо токен одразу при завантаженні
-    // Якщо токен невалідний — одразу показуємо повідомлення і Google кнопку
+    // ✅ Проверяем токен сразу при загрузке
+    // Если токен невалидный — сразу показываем сообщение и Google кнопку
     if (!authStore.isLastUserTokenValid()) {
       showSessionExpiredMessage.value = true
     }
@@ -223,14 +223,14 @@ onMounted(() => {
           image-alt="User avatar"
         />
 
-        <!-- ✅ Повідомлення про закінчення сесії -->
+        <!-- ✅ Сообщение об окончании сессии -->
         <div v-if="showSessionExpiredMessage && hasUserData" class="auth-login__session-expired">
           <p class="auth-login__session-expired-text">
             Сесія закінчилась. Будь ласка, увійдіть знову.
           </p>
         </div>
 
-        <!-- Кнопка "Продолжить" для распознанного пользователя (тільки якщо токен валідний і немає повідомлення про сесію) -->
+        <!-- Кнопка "Продолжить" для распознанного пользователя (только если токен валидный и нет сообщения о сессии) -->
         <PrimaryButton
           v-if="hasUserData && !showSessionExpiredMessage"
           class="auth-login__continue"
@@ -246,7 +246,7 @@ onMounted(() => {
           <p class="auth-login__subtitle">{{ t(auth.signInSubtitle) }}</p>
         </div>
 
-        <!-- Google Sign-In (коли немає даних користувача АБО сесія закінчилась) -->
+        <!-- Google Sign-In (когда нет данных пользователя ИЛИ сессия закончилась) -->
         <div
           v-if="shouldShowGoogleButton || showSessionExpiredMessage"
           ref="googleButtonRef"

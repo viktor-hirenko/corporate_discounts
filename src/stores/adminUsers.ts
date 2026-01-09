@@ -182,7 +182,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isLoading.value = true
 
     try {
-      // В майбутньому тут буде API call до Cloudflare Worker
+      // В будущем тут будет API call к Cloudflare Worker
       // await fetch('/api/admin/users', {
       //   method: 'POST',
       //   body: JSON.stringify({ users: users.value }),
