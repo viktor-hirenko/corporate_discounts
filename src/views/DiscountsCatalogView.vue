@@ -271,17 +271,15 @@ onMounted(async () => {
     display: grid;
     justify-content: center;
     gap: to-rem(32);
-
-    // margin: to-rem(20) 0;
     grid-template-columns: repeat(3, minmax(0, to-rem(416)));
 
     @include mq(null, xl) {
       gap: to-rem(24);
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 100%));
     }
 
     @include mq(null, md) {
-      grid-template-columns: 1fr;
+      grid-template-columns: 100%;
     }
   }
 

@@ -183,6 +183,7 @@ function handleClick() {
 
   &__info {
     display: flex;
+    min-width: 0;
     padding: 0;
     flex-direction: column;
     gap: to-rem(7);
@@ -223,6 +224,7 @@ function handleClick() {
 
   &__summary {
     overflow: hidden;
+    min-width: 0;
     color: var(--color-neutral-400, #81818e);
     font-size: to-rem(16);
     white-space: nowrap;
