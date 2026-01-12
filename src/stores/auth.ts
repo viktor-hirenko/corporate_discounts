@@ -23,8 +23,7 @@ const LAST_USER_KEY = 'corporate_discounts_last_user'
  * PRODUCTION: 5 * 60 * 1000 (5 минут) — разлогин через ~55 минут
  * ТЕСТ: 59 * 60 * 1000 (59 минут) — разлогин через ~1 минуту
  */
-const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000 // ← PRODUCTION
-// const TOKEN_REFRESH_BUFFER_MS = 59 * 60 * 1000 // ← ТЕСТ (1 минута)
+const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000 // 5 минут до истечения токена
 
 /** Глобальный callback для silent refresh (устанавливается из компонента логина) */
 let globalRefreshCallback: (() => Promise<void>) | null = null
@@ -76,6 +75,7 @@ export const useAuthStore = defineStore('auth', {
 
     /**
      * Проверяет, истёк ли токен (с буфером для проактивного обновления)
+     * ВНИМАНИЕ: Этот getter кэшируется Pinia! Для проверки в setInterval используй checkTokenExpired()
      */
     isTokenExpired(): boolean {
       const expTime = this.tokenExpirationTime
@@ -140,6 +140,17 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
+    /**
+     * Проверяет, истёк ли токен (НЕ кэшируется, безопасно для setInterval)
+     */
+    checkTokenExpired(): boolean {
+      if (!this.token) return true
+      const payload = decodeJwtPayload(this.token)
+      if (!payload || typeof payload.exp !== 'number') return true
+      const expTime = payload.exp * 1000
+      return expTime < Date.now() + TOKEN_REFRESH_BUFFER_MS
+    },
+
     init(): void {
       // Восстанавливаем состояние из localStorage при инициализации
       const stored = localStorage.getItem(STORAGE_KEY)

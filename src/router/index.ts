@@ -148,6 +148,18 @@ router.beforeEach(async (to, from, next) => {
 
   // Проверка доступа к админке — только admin или editor
   if (isAdminRoute && authStore.isLoggedIn) {
+    // Проверяем валидность токена ПЕРЕД входом в админку
+    if (authStore.checkTokenExpired()) {
+      // Пытаемся silent refresh
+      const refreshSuccess = await authStore.silentRefresh()
+      if (!refreshSuccess) {
+        // Токен истёк и refresh не удался — logout и редирект на логин
+        authStore.logout()
+        next({ name: 'login', query: { redirect: to.fullPath, expired: '1' } })
+        return
+      }
+    }
+
     // Убедимся что adminUsers store инициализирован
     const { useAdminUsersStore } = await import('@/stores/adminUsers')
     const usersStore = useAdminUsersStore()

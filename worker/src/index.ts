@@ -614,15 +614,15 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
         })
 
         if (s3Response.ok) {
-          const imagePath = `/images/partners/${filename}`
-          const publicUrl = `${env.PUBLIC_URL}/${key}`
+          // Полный URL для работы и на основном сайте, и в админке
+          const imagePath = `${env.PUBLIC_URL}/images/partners/${filename}`
 
           return new Response(
             JSON.stringify({
               success: true,
               message: 'Image uploaded successfully to external bucket',
               imagePath,
-              publicUrl,
+              publicUrl: imagePath,
               filename,
             }),
             {
@@ -637,8 +637,8 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
       }
     }
 
-    // Fallback to local R2 bucket
-    const localKey = `assets/images/partners/${filename}`
+    // Fallback to local R2 bucket (используем тот же путь для консистентности)
+    const localKey = `images/partners/${filename}`
     await env.R2_BUCKET.put(localKey, arrayBuffer, {
       httpMetadata: {
         contentType: file.type,
@@ -646,15 +646,15 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
       },
     })
 
-    const imagePath = `/assets/images/partners/${filename}`
-    const publicUrl = `${env.PUBLIC_URL || ''}/${localKey}`
+    // Полный URL для работы и на основном сайте, и в админке
+    const imagePath = `${env.PUBLIC_URL}/images/partners/${filename}`
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Image uploaded successfully',
+        message: 'Image uploaded successfully to local bucket',
         imagePath,
-        publicUrl,
+        publicUrl: imagePath,
         filename,
       }),
       {
