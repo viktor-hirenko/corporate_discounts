@@ -336,13 +336,16 @@ export default {
 
         if (!isValidToken) {
           const attemptedEmail = extractEmailFromJWT(token)
-          console.log('[AUTH_FAIL]', JSON.stringify({
-            action: 'upload_image',
-            user: attemptedEmail,
-            reason: 'invalid_or_expired_token',
-            ip: clientIP,
-            timestamp: new Date().toISOString()
-          }))
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'upload_image',
+              user: attemptedEmail,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
           return corsResponse(
             new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
               status: 401,
@@ -386,13 +389,16 @@ export default {
 
         if (!isValidToken) {
           const attemptedEmail = extractEmailFromJWT(token)
-          console.log('[AUTH_FAIL]', JSON.stringify({
-            action: 'save_config',
-            user: attemptedEmail,
-            reason: 'invalid_or_expired_token',
-            ip: clientIP,
-            timestamp: new Date().toISOString()
-          }))
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'save_config',
+              user: attemptedEmail,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
           return corsResponse(
             new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
               status: 401,
@@ -512,17 +518,24 @@ async function loadConfig(env: Env): Promise<Response> {
 // SAVE CONFIG (protected endpoint - requires JWT)
 // Uses S3 API to write to external bucket (discounts.upstars.com)
 // =============================================================================
-async function saveConfig(request: Request, env: Env, userEmail: string = 'unknown'): Promise<Response> {
+async function saveConfig(
+  request: Request,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
   try {
     const config = await request.json()
 
     // Validate config structure
     if (!config || typeof config !== 'object') {
-      console.log('[SAVE_ERROR]', JSON.stringify({
-        user: userEmail,
-        error: 'invalid_config_format',
-        timestamp: new Date().toISOString()
-      }))
+      console.log(
+        '[SAVE_ERROR]',
+        JSON.stringify({
+          user: userEmail,
+          error: 'invalid_config_format',
+          timestamp: new Date().toISOString(),
+        }),
+      )
       return new Response(JSON.stringify({ error: 'Invalid config format' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -531,22 +544,29 @@ async function saveConfig(request: Request, env: Env, userEmail: string = 'unkno
 
     // Логируем сохранение с полной статистикой
     const partnersCount = config.partners ? Object.keys(config.partners).length : 0
-    const categoriesCount = config.filters?.categories ? Object.keys(config.filters.categories).length : 0
-    const locationsCount = config.filters?.locations ? Object.keys(config.filters.locations).length : 0
+    const categoriesCount = config.filters?.categories
+      ? Object.keys(config.filters.categories).length
+      : 0
+    const locationsCount = config.filters?.locations
+      ? Object.keys(config.filters.locations).length
+      : 0
     const usersCount = config.allowedUsers ? config.allowedUsers.length : 0
     const faqCount = config.pages?.faq?.items ? config.pages.faq.items.length : 0
-    
-    console.log('[SAVE]', JSON.stringify({
-      user: userEmail,
-      stats: {
-        partners: partnersCount,
-        categories: categoriesCount,
-        locations: locationsCount,
-        users: usersCount,
-        faq: faqCount
-      },
-      timestamp: new Date().toISOString()
-    }))
+
+    console.log(
+      '[SAVE]',
+      JSON.stringify({
+        user: userEmail,
+        stats: {
+          partners: partnersCount,
+          categories: categoriesCount,
+          locations: locationsCount,
+          users: usersCount,
+          faq: faqCount,
+        },
+        timestamp: new Date().toISOString(),
+      }),
+    )
 
     const configJson = JSON.stringify(config, null, 2)
 
@@ -561,11 +581,14 @@ async function saveConfig(request: Request, env: Env, userEmail: string = 'unkno
         })
 
         if (s3Response.ok) {
-          console.log('[SAVE_SUCCESS]', JSON.stringify({
-            user: userEmail,
-            destination: 'external_bucket',
-            timestamp: new Date().toISOString()
-          }))
+          console.log(
+            '[SAVE_SUCCESS]',
+            JSON.stringify({
+              user: userEmail,
+              destination: 'external_bucket',
+              timestamp: new Date().toISOString(),
+            }),
+          )
           return new Response(
             JSON.stringify({
               success: true,
@@ -579,20 +602,26 @@ async function saveConfig(request: Request, env: Env, userEmail: string = 'unkno
           )
         }
         const errorText = await s3Response.text()
-        console.log('[SAVE_ERROR]', JSON.stringify({
-          user: userEmail,
-          error: 's3_save_failed',
-          status: s3Response.status,
-          details: errorText,
-          timestamp: new Date().toISOString()
-        }))
+        console.log(
+          '[SAVE_ERROR]',
+          JSON.stringify({
+            user: userEmail,
+            error: 's3_save_failed',
+            status: s3Response.status,
+            details: errorText,
+            timestamp: new Date().toISOString(),
+          }),
+        )
       } catch (s3Error) {
-        console.log('[SAVE_ERROR]', JSON.stringify({
-          user: userEmail,
-          error: 's3_exception',
-          details: String(s3Error),
-          timestamp: new Date().toISOString()
-        }))
+        console.log(
+          '[SAVE_ERROR]',
+          JSON.stringify({
+            user: userEmail,
+            error: 's3_exception',
+            details: String(s3Error),
+            timestamp: new Date().toISOString(),
+          }),
+        )
       }
     }
 
@@ -604,11 +633,14 @@ async function saveConfig(request: Request, env: Env, userEmail: string = 'unkno
       },
     })
 
-    console.log('[SAVE_SUCCESS]', JSON.stringify({
-      user: userEmail,
-      destination: 'local_bucket',
-      timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[SAVE_SUCCESS]',
+      JSON.stringify({
+        user: userEmail,
+        destination: 'local_bucket',
+        timestamp: new Date().toISOString(),
+      }),
+    )
 
     return new Response(
       JSON.stringify({
@@ -622,12 +654,15 @@ async function saveConfig(request: Request, env: Env, userEmail: string = 'unkno
       },
     )
   } catch (error) {
-    console.log('[SAVE_ERROR]', JSON.stringify({
-      user: userEmail,
-      error: 'save_exception',
-      details: String(error),
-      timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[SAVE_ERROR]',
+      JSON.stringify({
+        user: userEmail,
+        error: 'save_exception',
+        details: String(error),
+        timestamp: new Date().toISOString(),
+      }),
+    )
     return new Response(JSON.stringify({ error: 'Failed to save config' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -639,7 +674,11 @@ async function saveConfig(request: Request, env: Env, userEmail: string = 'unkno
 // UPLOAD IMAGE (protected endpoint - requires JWT)
 // Uses S3 API to upload to external bucket (discounts.upstars.com)
 // =============================================================================
-async function uploadImage(request: Request, env: Env, userEmail: string = 'unknown'): Promise<Response> {
+async function uploadImage(
+  request: Request,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File | null
@@ -660,25 +699,31 @@ async function uploadImage(request: Request, env: Env, userEmail: string = 'unkn
     }
 
     // Логируем загрузку изображения
-    console.log('[UPLOAD]', JSON.stringify({
-      user: userEmail,
-      filename: file.name,
-      slug: slug,
-      size: file.size,
-      type: file.type,
-      timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[UPLOAD]',
+      JSON.stringify({
+        user: userEmail,
+        filename: file.name,
+        slug: slug,
+        size: file.size,
+        type: file.type,
+        timestamp: new Date().toISOString(),
+      }),
+    )
 
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
     if (!allowedTypes.includes(file.type)) {
-      console.log('[UPLOAD_ERROR]', JSON.stringify({
-        user: userEmail,
-        error: 'invalid_file_type',
-        filename: file.name,
-        type: file.type,
-        timestamp: new Date().toISOString()
-      }))
+      console.log(
+        '[UPLOAD_ERROR]',
+        JSON.stringify({
+          user: userEmail,
+          error: 'invalid_file_type',
+          filename: file.name,
+          type: file.type,
+          timestamp: new Date().toISOString(),
+        }),
+      )
       return new Response(
         JSON.stringify({ error: 'Invalid file type. Allowed: jpg, png, webp, gif' }),
         {
@@ -691,14 +736,17 @@ async function uploadImage(request: Request, env: Env, userEmail: string = 'unkn
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024
     if (file.size > maxSize) {
-      console.log('[UPLOAD_ERROR]', JSON.stringify({
-        user: userEmail,
-        error: 'file_too_large',
-        filename: file.name,
-        size: file.size,
-        maxSize: maxSize,
-        timestamp: new Date().toISOString()
-      }))
+      console.log(
+        '[UPLOAD_ERROR]',
+        JSON.stringify({
+          user: userEmail,
+          error: 'file_too_large',
+          filename: file.name,
+          size: file.size,
+          maxSize: maxSize,
+          timestamp: new Date().toISOString(),
+        }),
+      )
       return new Response(JSON.stringify({ error: 'File too large. Max size: 5MB' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -726,13 +774,16 @@ async function uploadImage(request: Request, env: Env, userEmail: string = 'unkn
           // Полный URL для работы и на основном сайте, и в админке
           const imagePath = `${env.PUBLIC_URL}/images/partners/${filename}`
 
-          console.log('[UPLOAD_SUCCESS]', JSON.stringify({
-            user: userEmail,
-            filename,
-            destination: 'external_bucket',
-            path: imagePath,
-            timestamp: new Date().toISOString()
-          }))
+          console.log(
+            '[UPLOAD_SUCCESS]',
+            JSON.stringify({
+              user: userEmail,
+              filename,
+              destination: 'external_bucket',
+              path: imagePath,
+              timestamp: new Date().toISOString(),
+            }),
+          )
 
           return new Response(
             JSON.stringify({
@@ -749,22 +800,28 @@ async function uploadImage(request: Request, env: Env, userEmail: string = 'unkn
           )
         }
         const errorText = await s3Response.text()
-        console.log('[UPLOAD_ERROR]', JSON.stringify({
-          user: userEmail,
-          error: 's3_upload_failed',
-          filename,
-          status: s3Response.status,
-          details: errorText,
-          timestamp: new Date().toISOString()
-        }))
+        console.log(
+          '[UPLOAD_ERROR]',
+          JSON.stringify({
+            user: userEmail,
+            error: 's3_upload_failed',
+            filename,
+            status: s3Response.status,
+            details: errorText,
+            timestamp: new Date().toISOString(),
+          }),
+        )
       } catch (s3Error) {
-        console.log('[UPLOAD_ERROR]', JSON.stringify({
-          user: userEmail,
-          error: 's3_exception',
-          filename,
-          details: String(s3Error),
-          timestamp: new Date().toISOString()
-        }))
+        console.log(
+          '[UPLOAD_ERROR]',
+          JSON.stringify({
+            user: userEmail,
+            error: 's3_exception',
+            filename,
+            details: String(s3Error),
+            timestamp: new Date().toISOString(),
+          }),
+        )
       }
     }
 
@@ -780,13 +837,16 @@ async function uploadImage(request: Request, env: Env, userEmail: string = 'unkn
     // Полный URL для работы и на основном сайте, и в админке
     const imagePath = `${env.PUBLIC_URL}/images/partners/${filename}`
 
-    console.log('[UPLOAD_SUCCESS]', JSON.stringify({
-      user: userEmail,
-      filename,
-      destination: 'local_bucket',
-      path: imagePath,
-      timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[UPLOAD_SUCCESS]',
+      JSON.stringify({
+        user: userEmail,
+        filename,
+        destination: 'local_bucket',
+        path: imagePath,
+        timestamp: new Date().toISOString(),
+      }),
+    )
 
     return new Response(
       JSON.stringify({
@@ -802,12 +862,15 @@ async function uploadImage(request: Request, env: Env, userEmail: string = 'unkn
       },
     )
   } catch (error) {
-    console.log('[UPLOAD_ERROR]', JSON.stringify({
-      user: userEmail,
-      error: 'upload_exception',
-      details: String(error),
-      timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[UPLOAD_ERROR]',
+      JSON.stringify({
+        user: userEmail,
+        error: 'upload_exception',
+        details: String(error),
+        timestamp: new Date().toISOString(),
+      }),
+    )
     return new Response(JSON.stringify({ error: 'Failed to upload image' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
