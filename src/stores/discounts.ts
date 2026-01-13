@@ -277,6 +277,22 @@ export const useDiscountsStore = defineStore('discounts', {
     },
 
     /**
+     * Устанавливает количество партнеров на странице
+     * Используется для адаптивной сетки: 3 колонки = 9, 2 колонки = 8, 1 колонка = 9
+     */
+    setPageSize(size: number): void {
+      const oldPageSize = this.pagination.pageSize
+      this.pagination.pageSize = size
+
+      // Пересчитываем текущую страницу, чтобы показать те же элементы
+      if (oldPageSize !== size && this.pagination.page > 1) {
+        const firstItemIndex = (this.pagination.page - 1) * oldPageSize
+        const newPage = Math.floor(firstItemIndex / size) + 1
+        this.pagination.page = Math.min(newPage, this.totalPages)
+      }
+    },
+
+    /**
      * Запускает автоматическое обновление данных каждые 5 минут
      * Это гарантирует, что пользователи видят актуальные данные даже если страница открыта длительное время
      */

@@ -70,6 +70,24 @@ const displayedRange = computed(() => store.displayedRange)
 
 const isMobile = useMediaQuery('(max-width: 767px)')
 
+// Адаптивная пагинация: количество партнеров на странице зависит от breakpoint
+// Desktop (3 колонки): 9 партнеров (3×3)
+// Tablet (2 колонки): 8 партнеров (2×4)
+// Mobile (1 колонка): 9 партнеров
+const isTablet = useMediaQuery('(max-width: 1024px)')
+const isSmallScreen = useMediaQuery('(max-width: 600px)')
+
+const adaptivePageSize = computed(() => {
+  if (isSmallScreen.value) return 9 // Mobile: 1 колонка × 9 рядов
+  if (isTablet.value) return 8 // Tablet: 2 колонки × 4 ряда
+  return 9 // Desktop: 3 колонки × 3 ряда
+})
+
+// При изменении breakpoint — обновляем pageSize в store
+watch(adaptivePageSize, (newSize) => {
+  store.setPageSize(newSize)
+}, { immediate: true })
+
 // Обновляем URL при изменении состояния store
 watch(
   [
