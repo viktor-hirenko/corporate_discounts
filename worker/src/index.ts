@@ -1768,13 +1768,20 @@ async function saveCategory(
   userEmail: string = 'unknown',
 ): Promise<Response> {
   try {
-    const data = (await request.json()) as { key: string; label: LocalizedText; description?: LocalizedText }
+    const data = (await request.json()) as {
+      key: string
+      label: LocalizedText
+      description?: LocalizedText
+    }
 
     if (!data || !data.key || !data.label) {
-      return new Response(JSON.stringify({ error: 'Invalid category format - key and label required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return new Response(
+        JSON.stringify({ error: 'Invalid category format - key and label required' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
     }
 
     let config: AppConfig = {}
@@ -1782,7 +1789,9 @@ async function saveCategory(
       try {
         const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
         if (s3Response.ok) config = (await s3Response.json()) as AppConfig
-      } catch { /* fallback */ }
+      } catch {
+        /* fallback */
+      }
     }
     if (Object.keys(config).length === 0) {
       const object = await env.R2_BUCKET.get('data/app-config.json')
@@ -1794,36 +1803,64 @@ async function saveCategory(
 
     config.filters.categories[data.key] = { label: data.label, description: data.description }
 
-    console.log('[CATEGORY_SAVE]', JSON.stringify({
-      user: userEmail, key: data.key, label: data.label.ua, timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[CATEGORY_SAVE]',
+      JSON.stringify({
+        user: userEmail,
+        key: data.key,
+        label: data.label.ua,
+        timestamp: new Date().toISOString(),
+      }),
+    )
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      const s3Response = await s3Request(env, {
+        method: 'PUT',
+        key: 'data/app-config.json',
+        body: configJson,
+        contentType: 'application/json',
+      })
       if (s3Response.ok) {
-        return new Response(JSON.stringify({ success: true, key: data.key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        return new Response(JSON.stringify({ success: true, key: data.key }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       }
     }
-    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
-    return new Response(JSON.stringify({ success: true, key: data.key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: { contentType: 'application/json' },
+    })
+    return new Response(JSON.stringify({ success: true, key: data.key }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('[CATEGORY_SAVE_ERROR]', error)
-    return new Response(JSON.stringify({ error: 'Failed to save category' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: 'Failed to save category' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
 
 // =============================================================================
 // DELETE CATEGORY (granular delete)
 // =============================================================================
-async function deleteCategory(key: string, env: Env, userEmail: string = 'unknown'): Promise<Response> {
+async function deleteCategory(
+  key: string,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
   try {
     let config: AppConfig = {}
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
       try {
         const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
         if (s3Response.ok) config = (await s3Response.json()) as AppConfig
-      } catch { /* fallback */ }
+      } catch {
+        /* fallback */
+      }
     }
     if (Object.keys(config).length === 0) {
       const object = await env.R2_BUCKET.get('data/app-config.json')
@@ -1831,25 +1868,47 @@ async function deleteCategory(key: string, env: Env, userEmail: string = 'unknow
     }
 
     if (!config.filters?.categories?.[key]) {
-      return new Response(JSON.stringify({ error: 'Category not found', key }), { status: 404, headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ error: 'Category not found', key }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     delete config.filters.categories[key]
 
-    console.log('[CATEGORY_DELETE]', JSON.stringify({ user: userEmail, key, timestamp: new Date().toISOString() }))
+    console.log(
+      '[CATEGORY_DELETE]',
+      JSON.stringify({ user: userEmail, key, timestamp: new Date().toISOString() }),
+    )
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      const s3Response = await s3Request(env, {
+        method: 'PUT',
+        key: 'data/app-config.json',
+        body: configJson,
+        contentType: 'application/json',
+      })
       if (s3Response.ok) {
-        return new Response(JSON.stringify({ success: true, key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        return new Response(JSON.stringify({ success: true, key }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       }
     }
-    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
-    return new Response(JSON.stringify({ success: true, key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: { contentType: 'application/json' },
+    })
+    return new Response(JSON.stringify({ success: true, key }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('[CATEGORY_DELETE_ERROR]', error)
-    return new Response(JSON.stringify({ error: 'Failed to delete category' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: 'Failed to delete category' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
 
@@ -1865,10 +1924,13 @@ async function saveLocation(
     const data = (await request.json()) as { key: string; label: LocalizedText }
 
     if (!data || !data.key || !data.label) {
-      return new Response(JSON.stringify({ error: 'Invalid location format - key and label required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return new Response(
+        JSON.stringify({ error: 'Invalid location format - key and label required' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
     }
 
     let config: AppConfig = {}
@@ -1876,7 +1938,9 @@ async function saveLocation(
       try {
         const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
         if (s3Response.ok) config = (await s3Response.json()) as AppConfig
-      } catch { /* fallback */ }
+      } catch {
+        /* fallback */
+      }
     }
     if (Object.keys(config).length === 0) {
       const object = await env.R2_BUCKET.get('data/app-config.json')
@@ -1888,36 +1952,64 @@ async function saveLocation(
 
     config.filters.locations[data.key] = { label: data.label }
 
-    console.log('[LOCATION_SAVE]', JSON.stringify({
-      user: userEmail, key: data.key, label: data.label.ua, timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[LOCATION_SAVE]',
+      JSON.stringify({
+        user: userEmail,
+        key: data.key,
+        label: data.label.ua,
+        timestamp: new Date().toISOString(),
+      }),
+    )
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      const s3Response = await s3Request(env, {
+        method: 'PUT',
+        key: 'data/app-config.json',
+        body: configJson,
+        contentType: 'application/json',
+      })
       if (s3Response.ok) {
-        return new Response(JSON.stringify({ success: true, key: data.key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        return new Response(JSON.stringify({ success: true, key: data.key }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       }
     }
-    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
-    return new Response(JSON.stringify({ success: true, key: data.key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: { contentType: 'application/json' },
+    })
+    return new Response(JSON.stringify({ success: true, key: data.key }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('[LOCATION_SAVE_ERROR]', error)
-    return new Response(JSON.stringify({ error: 'Failed to save location' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: 'Failed to save location' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
 
 // =============================================================================
 // DELETE LOCATION (granular delete)
 // =============================================================================
-async function deleteLocation(key: string, env: Env, userEmail: string = 'unknown'): Promise<Response> {
+async function deleteLocation(
+  key: string,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
   try {
     let config: AppConfig = {}
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
       try {
         const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
         if (s3Response.ok) config = (await s3Response.json()) as AppConfig
-      } catch { /* fallback */ }
+      } catch {
+        /* fallback */
+      }
     }
     if (Object.keys(config).length === 0) {
       const object = await env.R2_BUCKET.get('data/app-config.json')
@@ -1925,25 +2017,47 @@ async function deleteLocation(key: string, env: Env, userEmail: string = 'unknow
     }
 
     if (!config.filters?.locations?.[key]) {
-      return new Response(JSON.stringify({ error: 'Location not found', key }), { status: 404, headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ error: 'Location not found', key }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     delete config.filters.locations[key]
 
-    console.log('[LOCATION_DELETE]', JSON.stringify({ user: userEmail, key, timestamp: new Date().toISOString() }))
+    console.log(
+      '[LOCATION_DELETE]',
+      JSON.stringify({ user: userEmail, key, timestamp: new Date().toISOString() }),
+    )
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      const s3Response = await s3Request(env, {
+        method: 'PUT',
+        key: 'data/app-config.json',
+        body: configJson,
+        contentType: 'application/json',
+      })
       if (s3Response.ok) {
-        return new Response(JSON.stringify({ success: true, key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        return new Response(JSON.stringify({ success: true, key }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       }
     }
-    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
-    return new Response(JSON.stringify({ success: true, key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: { contentType: 'application/json' },
+    })
+    return new Response(JSON.stringify({ success: true, key }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('[LOCATION_DELETE_ERROR]', error)
-    return new Response(JSON.stringify({ error: 'Failed to delete location' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: 'Failed to delete location' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
 
@@ -1956,13 +2070,21 @@ async function saveFaqItem(
   userEmail: string = 'unknown',
 ): Promise<Response> {
   try {
-    const data = (await request.json()) as { id: string; question: LocalizedText; answer: LocalizedText; index?: number }
+    const data = (await request.json()) as {
+      id: string
+      question: LocalizedText
+      answer: LocalizedText
+      index?: number
+    }
 
     if (!data || !data.id || !data.question || !data.answer) {
-      return new Response(JSON.stringify({ error: 'Invalid FAQ format - id, question and answer required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return new Response(
+        JSON.stringify({ error: 'Invalid FAQ format - id, question and answer required' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
     }
 
     let config: AppConfig = {}
@@ -1970,7 +2092,9 @@ async function saveFaqItem(
       try {
         const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
         if (s3Response.ok) config = (await s3Response.json()) as AppConfig
-      } catch { /* fallback */ }
+      } catch {
+        /* fallback */
+      }
     }
     if (Object.keys(config).length === 0) {
       const object = await env.R2_BUCKET.get('data/app-config.json')
@@ -1990,36 +2114,64 @@ async function saveFaqItem(
       config.pages.faq.items.push(faqItem)
     }
 
-    console.log('[FAQ_SAVE]', JSON.stringify({
-      user: userEmail, id: data.id, question: data.question.ua?.substring(0, 50), timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[FAQ_SAVE]',
+      JSON.stringify({
+        user: userEmail,
+        id: data.id,
+        question: data.question.ua?.substring(0, 50),
+        timestamp: new Date().toISOString(),
+      }),
+    )
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      const s3Response = await s3Request(env, {
+        method: 'PUT',
+        key: 'data/app-config.json',
+        body: configJson,
+        contentType: 'application/json',
+      })
       if (s3Response.ok) {
-        return new Response(JSON.stringify({ success: true, id: data.id }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        return new Response(JSON.stringify({ success: true, id: data.id }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       }
     }
-    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
-    return new Response(JSON.stringify({ success: true, id: data.id }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: { contentType: 'application/json' },
+    })
+    return new Response(JSON.stringify({ success: true, id: data.id }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('[FAQ_SAVE_ERROR]', error)
-    return new Response(JSON.stringify({ error: 'Failed to save FAQ item' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: 'Failed to save FAQ item' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
 
 // =============================================================================
 // DELETE FAQ ITEM (granular delete)
 // =============================================================================
-async function deleteFaqItem(id: string, env: Env, userEmail: string = 'unknown'): Promise<Response> {
+async function deleteFaqItem(
+  id: string,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
   try {
     let config: AppConfig = {}
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
       try {
         const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
         if (s3Response.ok) config = (await s3Response.json()) as AppConfig
-      } catch { /* fallback */ }
+      } catch {
+        /* fallback */
+      }
     }
     if (Object.keys(config).length === 0) {
       const object = await env.R2_BUCKET.get('data/app-config.json')
@@ -2027,30 +2179,55 @@ async function deleteFaqItem(id: string, env: Env, userEmail: string = 'unknown'
     }
 
     if (!config.pages?.faq?.items) {
-      return new Response(JSON.stringify({ error: 'FAQ item not found', id }), { status: 404, headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ error: 'FAQ item not found', id }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     const index = config.pages.faq.items.findIndex((item) => item.id === id)
     if (index < 0) {
-      return new Response(JSON.stringify({ error: 'FAQ item not found', id }), { status: 404, headers: { 'Content-Type': 'application/json' } })
+      return new Response(JSON.stringify({ error: 'FAQ item not found', id }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     config.pages.faq.items.splice(index, 1)
 
-    console.log('[FAQ_DELETE]', JSON.stringify({ user: userEmail, id, timestamp: new Date().toISOString() }))
+    console.log(
+      '[FAQ_DELETE]',
+      JSON.stringify({ user: userEmail, id, timestamp: new Date().toISOString() }),
+    )
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      const s3Response = await s3Request(env, {
+        method: 'PUT',
+        key: 'data/app-config.json',
+        body: configJson,
+        contentType: 'application/json',
+      })
       if (s3Response.ok) {
-        return new Response(JSON.stringify({ success: true, id }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        return new Response(JSON.stringify({ success: true, id }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       }
     }
-    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
-    return new Response(JSON.stringify({ success: true, id }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: { contentType: 'application/json' },
+    })
+    return new Response(JSON.stringify({ success: true, id }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('[FAQ_DELETE_ERROR]', error)
-    return new Response(JSON.stringify({ error: 'Failed to delete FAQ item' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: 'Failed to delete FAQ item' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
 
@@ -2066,10 +2243,13 @@ async function saveTexts(
     const data = (await request.json()) as { page: string; texts: Record<string, unknown> }
 
     if (!data || !data.page || !data.texts) {
-      return new Response(JSON.stringify({ error: 'Invalid texts format - page and texts required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return new Response(
+        JSON.stringify({ error: 'Invalid texts format - page and texts required' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
     }
 
     let config: AppConfig = {}
@@ -2077,7 +2257,9 @@ async function saveTexts(
       try {
         const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
         if (s3Response.ok) config = (await s3Response.json()) as AppConfig
-      } catch { /* fallback */ }
+      } catch {
+        /* fallback */
+      }
     }
     if (Object.keys(config).length === 0) {
       const object = await env.R2_BUCKET.get('data/app-config.json')
@@ -2087,22 +2269,43 @@ async function saveTexts(
     if (!config.pages) config.pages = {}
     config.pages[data.page] = data.texts
 
-    console.log('[TEXTS_SAVE]', JSON.stringify({
-      user: userEmail, page: data.page, timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[TEXTS_SAVE]',
+      JSON.stringify({
+        user: userEmail,
+        page: data.page,
+        timestamp: new Date().toISOString(),
+      }),
+    )
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      const s3Response = await s3Request(env, {
+        method: 'PUT',
+        key: 'data/app-config.json',
+        body: configJson,
+        contentType: 'application/json',
+      })
       if (s3Response.ok) {
-        return new Response(JSON.stringify({ success: true, page: data.page }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        return new Response(JSON.stringify({ success: true, page: data.page }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       }
     }
-    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
-    return new Response(JSON.stringify({ success: true, page: data.page }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: { contentType: 'application/json' },
+    })
+    return new Response(JSON.stringify({ success: true, page: data.page }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('[TEXTS_SAVE_ERROR]', error)
-    return new Response(JSON.stringify({ error: 'Failed to save texts' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: 'Failed to save texts' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
 
@@ -2118,10 +2321,13 @@ async function saveUsers(
     const data = (await request.json()) as { users: string[] }
 
     if (!data || !Array.isArray(data.users)) {
-      return new Response(JSON.stringify({ error: 'Invalid users format - users array required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      return new Response(
+        JSON.stringify({ error: 'Invalid users format - users array required' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
     }
 
     let config: AppConfig = {}
@@ -2129,7 +2335,9 @@ async function saveUsers(
       try {
         const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
         if (s3Response.ok) config = (await s3Response.json()) as AppConfig
-      } catch { /* fallback */ }
+      } catch {
+        /* fallback */
+      }
     }
     if (Object.keys(config).length === 0) {
       const object = await env.R2_BUCKET.get('data/app-config.json')
@@ -2138,22 +2346,43 @@ async function saveUsers(
 
     config.allowedUsers = data.users
 
-    console.log('[USERS_SAVE]', JSON.stringify({
-      user: userEmail, count: data.users.length, timestamp: new Date().toISOString()
-    }))
+    console.log(
+      '[USERS_SAVE]',
+      JSON.stringify({
+        user: userEmail,
+        count: data.users.length,
+        timestamp: new Date().toISOString(),
+      }),
+    )
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      const s3Response = await s3Request(env, {
+        method: 'PUT',
+        key: 'data/app-config.json',
+        body: configJson,
+        contentType: 'application/json',
+      })
       if (s3Response.ok) {
-        return new Response(JSON.stringify({ success: true, count: data.users.length }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        return new Response(JSON.stringify({ success: true, count: data.users.length }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       }
     }
-    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
-    return new Response(JSON.stringify({ success: true, count: data.users.length }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: { contentType: 'application/json' },
+    })
+    return new Response(JSON.stringify({ success: true, count: data.users.length }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     console.error('[USERS_SAVE_ERROR]', error)
-    return new Response(JSON.stringify({ error: 'Failed to save users' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: 'Failed to save users' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
 
