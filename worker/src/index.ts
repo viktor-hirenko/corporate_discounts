@@ -232,6 +232,20 @@ async function verifyJWT(token: string): Promise<boolean> {
   }
 }
 
+/**
+ * Извлекает email из JWT токена для логирования
+ */
+function extractEmailFromJWT(token: string): string {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3 || !parts[1]) return 'unknown'
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+    return payload.email || 'unknown'
+  } catch {
+    return 'unknown'
+  }
+}
+
 // =============================================================================
 // CORS HEADERS
 // =============================================================================
@@ -321,6 +335,14 @@ export default {
         const isValidToken = await verifyJWT(token)
 
         if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log('[AUTH_FAIL]', JSON.stringify({
+            action: 'upload_image',
+            user: attemptedEmail,
+            reason: 'invalid_or_expired_token',
+            ip: clientIP,
+            timestamp: new Date().toISOString()
+          }))
           return corsResponse(
             new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
               status: 401,
@@ -330,7 +352,8 @@ export default {
           )
         }
 
-        return corsResponse(await uploadImage(request, env), origin)
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await uploadImage(request, env, userEmail), origin)
       }
 
       // API: POST /api/save-config - save app-config.json (protected)
@@ -362,6 +385,14 @@ export default {
         const isValidToken = await verifyJWT(token)
 
         if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log('[AUTH_FAIL]', JSON.stringify({
+            action: 'save_config',
+            user: attemptedEmail,
+            reason: 'invalid_or_expired_token',
+            ip: clientIP,
+            timestamp: new Date().toISOString()
+          }))
           return corsResponse(
             new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
               status: 401,
@@ -371,7 +402,8 @@ export default {
           )
         }
 
-        return corsResponse(await saveConfig(request, env), origin)
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await saveConfig(request, env, userEmail), origin)
       }
 
       // API: POST /auth/login or /auth/google - rate limited
@@ -480,17 +512,41 @@ async function loadConfig(env: Env): Promise<Response> {
 // SAVE CONFIG (protected endpoint - requires JWT)
 // Uses S3 API to write to external bucket (discounts.upstars.com)
 // =============================================================================
-async function saveConfig(request: Request, env: Env): Promise<Response> {
+async function saveConfig(request: Request, env: Env, userEmail: string = 'unknown'): Promise<Response> {
   try {
     const config = await request.json()
 
     // Validate config structure
     if (!config || typeof config !== 'object') {
+      console.log('[SAVE_ERROR]', JSON.stringify({
+        user: userEmail,
+        error: 'invalid_config_format',
+        timestamp: new Date().toISOString()
+      }))
       return new Response(JSON.stringify({ error: 'Invalid config format' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })
     }
+
+    // Логируем сохранение с полной статистикой
+    const partnersCount = config.partners ? Object.keys(config.partners).length : 0
+    const categoriesCount = config.filters?.categories ? Object.keys(config.filters.categories).length : 0
+    const locationsCount = config.filters?.locations ? Object.keys(config.filters.locations).length : 0
+    const usersCount = config.allowedUsers ? config.allowedUsers.length : 0
+    const faqCount = config.pages?.faq?.items ? config.pages.faq.items.length : 0
+    
+    console.log('[SAVE]', JSON.stringify({
+      user: userEmail,
+      stats: {
+        partners: partnersCount,
+        categories: categoriesCount,
+        locations: locationsCount,
+        users: usersCount,
+        faq: faqCount
+      },
+      timestamp: new Date().toISOString()
+    }))
 
     const configJson = JSON.stringify(config, null, 2)
 
@@ -505,6 +561,11 @@ async function saveConfig(request: Request, env: Env): Promise<Response> {
         })
 
         if (s3Response.ok) {
+          console.log('[SAVE_SUCCESS]', JSON.stringify({
+            user: userEmail,
+            destination: 'external_bucket',
+            timestamp: new Date().toISOString()
+          }))
           return new Response(
             JSON.stringify({
               success: true,
@@ -517,9 +578,21 @@ async function saveConfig(request: Request, env: Env): Promise<Response> {
             },
           )
         }
-        console.error('S3 save failed:', s3Response.status, await s3Response.text())
+        const errorText = await s3Response.text()
+        console.log('[SAVE_ERROR]', JSON.stringify({
+          user: userEmail,
+          error: 's3_save_failed',
+          status: s3Response.status,
+          details: errorText,
+          timestamp: new Date().toISOString()
+        }))
       } catch (s3Error) {
-        console.error('S3 save error:', s3Error)
+        console.log('[SAVE_ERROR]', JSON.stringify({
+          user: userEmail,
+          error: 's3_exception',
+          details: String(s3Error),
+          timestamp: new Date().toISOString()
+        }))
       }
     }
 
@@ -530,6 +603,12 @@ async function saveConfig(request: Request, env: Env): Promise<Response> {
         cacheControl: 'public, max-age=0, must-revalidate',
       },
     })
+
+    console.log('[SAVE_SUCCESS]', JSON.stringify({
+      user: userEmail,
+      destination: 'local_bucket',
+      timestamp: new Date().toISOString()
+    }))
 
     return new Response(
       JSON.stringify({
@@ -543,7 +622,12 @@ async function saveConfig(request: Request, env: Env): Promise<Response> {
       },
     )
   } catch (error) {
-    console.error('Failed to save config:', error)
+    console.log('[SAVE_ERROR]', JSON.stringify({
+      user: userEmail,
+      error: 'save_exception',
+      details: String(error),
+      timestamp: new Date().toISOString()
+    }))
     return new Response(JSON.stringify({ error: 'Failed to save config' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -555,7 +639,7 @@ async function saveConfig(request: Request, env: Env): Promise<Response> {
 // UPLOAD IMAGE (protected endpoint - requires JWT)
 // Uses S3 API to upload to external bucket (discounts.upstars.com)
 // =============================================================================
-async function uploadImage(request: Request, env: Env): Promise<Response> {
+async function uploadImage(request: Request, env: Env, userEmail: string = 'unknown'): Promise<Response> {
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File | null
@@ -575,9 +659,26 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
       })
     }
 
+    // Логируем загрузку изображения
+    console.log('[UPLOAD]', JSON.stringify({
+      user: userEmail,
+      filename: file.name,
+      slug: slug,
+      size: file.size,
+      type: file.type,
+      timestamp: new Date().toISOString()
+    }))
+
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
     if (!allowedTypes.includes(file.type)) {
+      console.log('[UPLOAD_ERROR]', JSON.stringify({
+        user: userEmail,
+        error: 'invalid_file_type',
+        filename: file.name,
+        type: file.type,
+        timestamp: new Date().toISOString()
+      }))
       return new Response(
         JSON.stringify({ error: 'Invalid file type. Allowed: jpg, png, webp, gif' }),
         {
@@ -590,6 +691,14 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024
     if (file.size > maxSize) {
+      console.log('[UPLOAD_ERROR]', JSON.stringify({
+        user: userEmail,
+        error: 'file_too_large',
+        filename: file.name,
+        size: file.size,
+        maxSize: maxSize,
+        timestamp: new Date().toISOString()
+      }))
       return new Response(JSON.stringify({ error: 'File too large. Max size: 5MB' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -617,6 +726,14 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
           // Полный URL для работы и на основном сайте, и в админке
           const imagePath = `${env.PUBLIC_URL}/images/partners/${filename}`
 
+          console.log('[UPLOAD_SUCCESS]', JSON.stringify({
+            user: userEmail,
+            filename,
+            destination: 'external_bucket',
+            path: imagePath,
+            timestamp: new Date().toISOString()
+          }))
+
           return new Response(
             JSON.stringify({
               success: true,
@@ -631,9 +748,23 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
             },
           )
         }
-        console.error('S3 upload failed:', s3Response.status, await s3Response.text())
+        const errorText = await s3Response.text()
+        console.log('[UPLOAD_ERROR]', JSON.stringify({
+          user: userEmail,
+          error: 's3_upload_failed',
+          filename,
+          status: s3Response.status,
+          details: errorText,
+          timestamp: new Date().toISOString()
+        }))
       } catch (s3Error) {
-        console.error('S3 upload error:', s3Error)
+        console.log('[UPLOAD_ERROR]', JSON.stringify({
+          user: userEmail,
+          error: 's3_exception',
+          filename,
+          details: String(s3Error),
+          timestamp: new Date().toISOString()
+        }))
       }
     }
 
@@ -649,6 +780,14 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
     // Полный URL для работы и на основном сайте, и в админке
     const imagePath = `${env.PUBLIC_URL}/images/partners/${filename}`
 
+    console.log('[UPLOAD_SUCCESS]', JSON.stringify({
+      user: userEmail,
+      filename,
+      destination: 'local_bucket',
+      path: imagePath,
+      timestamp: new Date().toISOString()
+    }))
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -663,7 +802,12 @@ async function uploadImage(request: Request, env: Env): Promise<Response> {
       },
     )
   } catch (error) {
-    console.error('Failed to upload image:', error)
+    console.log('[UPLOAD_ERROR]', JSON.stringify({
+      user: userEmail,
+      error: 'upload_exception',
+      details: String(error),
+      timestamp: new Date().toISOString()
+    }))
     return new Response(JSON.stringify({ error: 'Failed to upload image' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
