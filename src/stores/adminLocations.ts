@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { FilterLocation, LocalizedText, AppConfig } from '@/types/app-config'
-import { getApiUrl } from '@/utils/api-config'
+import { getApiUrl, fetchWithAuth } from '@/utils/api-config'
 
 export interface LocationItem {
   id: string
@@ -103,33 +103,60 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     isFormOpen.value = false
   }
 
-  // Автосохранение в файл
-  async function autoSave() {
+  // Granular save - save single location via API
+  async function saveLocation(location: LocationItem) {
     isSaving.value = true
     try {
-      const { useAdminExportStore } = await import('./adminExport')
-      const exportStore = useAdminExportStore()
-      await exportStore.autoSave()
+      const response = await fetchWithAuth(getApiUrl('/api/location/save'), {
+        method: 'POST',
+        body: JSON.stringify({
+          key: location.id,
+          label: location.label,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save location')
+      }
+
+      // Update local state after successful API save
+      locations.value[location.id] = {
+        ...location,
+        isSystem: systemLocations.includes(location.id),
+      }
+      closeForm()
     } catch (error) {
-      console.error('[adminLocations.autoSave] Failed:', error)
+      console.error('Failed to save location:', error)
+      throw error
     } finally {
       isSaving.value = false
     }
   }
 
-  async function saveLocation(location: LocationItem) {
-    locations.value[location.id] = {
-      ...location,
-      isSystem: systemLocations.includes(location.id),
-    }
-    closeForm()
-    await autoSave()
-  }
-
+  // Granular delete - delete single location via API
   async function deleteLocation(id: string) {
     if (systemLocations.includes(id)) return
-    delete locations.value[id]
-    await autoSave()
+
+    isSaving.value = true
+    try {
+      const response = await fetchWithAuth(getApiUrl(`/api/location/${encodeURIComponent(id)}`), {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete location')
+      }
+
+      // Update local state after successful API delete
+      delete locations.value[id]
+    } catch (error) {
+      console.error('Failed to delete location:', error)
+      throw error
+    } finally {
+      isSaving.value = false
+    }
   }
 
   function setSearchQuery(query: string) {
@@ -168,6 +195,5 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     deleteLocation,
     setSearchQuery,
     exportToJSON,
-    autoSave,
   }
 })

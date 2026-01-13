@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { sanitizeEmail, sanitizeString } from '@/utils/sanitize'
-import { getApiUrl } from '@/utils/api-config'
+import { getApiUrl, fetchWithAuth } from '@/utils/api-config'
 
 export interface AdminUser {
   id: string
@@ -94,19 +94,38 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isFormOpen.value = false
   }
 
-  // Автосохранение — аналогично партнёрам
-  async function autoSave() {
+  // Granular save - save all users via API
+  async function saveUsersToApi() {
+    isLoading.value = true
+    syncStatus.value = 'syncing'
     try {
-      const { useAdminExportStore } = await import('./adminExport')
-      const exportStore = useAdminExportStore()
-      await exportStore.autoSave()
+      const response = await fetchWithAuth(getApiUrl('/api/users/save'), {
+        method: 'POST',
+        body: JSON.stringify({
+          users: users.value,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save users')
+      }
+
+      syncStatus.value = 'success'
+      setTimeout(() => {
+        syncStatus.value = 'idle'
+      }, 3000)
     } catch (error) {
-      console.error('[adminUsers] Auto-save failed:', error)
+      console.error('Failed to save users:', error)
+      syncStatus.value = 'error'
+      throw error
+    } finally {
+      isLoading.value = false
     }
   }
 
   async function addUser(user: Omit<AdminUser, 'id' | 'addedAt' | 'addedBy'>) {
-    // ✅ Санитизация на уровне стора (вторая линия защиты)
+    // Санитизация на уровне стора (вторая линия защиты)
     const newUser: AdminUser = {
       ...user,
       email: sanitizeEmail(user.email),
@@ -117,13 +136,13 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     }
     users.value.push(newUser)
     closeForm()
-    await autoSave()
+    await saveUsersToApi()
   }
 
   async function updateUser(user: AdminUser) {
     const index = users.value.findIndex((u) => u.id === user.id)
     if (index >= 0) {
-      // ✅ Санитизация при обновлении
+      // Санитизация при обновлении
       users.value[index] = {
         ...user,
         email: sanitizeEmail(user.email),
@@ -131,7 +150,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
       }
     }
     closeForm()
-    await autoSave()
+    await saveUsersToApi()
   }
 
   async function deleteUser(id: string) {
@@ -139,7 +158,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     if (index >= 0) {
       users.value.splice(index, 1)
     }
-    await autoSave()
+    await saveUsersToApi()
   }
 
   function setSearchQuery(query: string) {
@@ -178,29 +197,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
   }
 
   async function saveToBackend() {
-    syncStatus.value = 'syncing'
-    isLoading.value = true
-
-    try {
-      // В будущем тут будет API call к Cloudflare Worker
-      // await fetch('/api/admin/users', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ users: users.value }),
-      // })
-
-      // Симуляция задержки
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      syncStatus.value = 'success'
-      setTimeout(() => {
-        syncStatus.value = 'idle'
-      }, 3000)
-    } catch (error) {
-      console.error('Failed to save users:', error)
-      syncStatus.value = 'error'
-    } finally {
-      isLoading.value = false
-    }
+    await saveUsersToApi()
   }
 
   function exportToJSON() {
@@ -233,6 +230,5 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     syncWithBackend,
     saveToBackend,
     exportToJSON,
-    autoSave,
   }
 })

@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import type { LocalizedText } from '@/types/app-config'
 import staticConfigData from '@/data/app-config.json'
 import type { AppConfig } from '@/types/app-config'
-import { fetchConfig } from '@/utils/api-config'
+import { fetchConfig, fetchWithAuth, getApiUrl } from '@/utils/api-config'
 
 // Используется для начальной инициализации, потом обновляется из API
 let config = staticConfigData as AppConfig
@@ -178,27 +178,51 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
   // Флаг сохранения
   const isSaving = ref(false)
 
-  // Автосохранение — dev: в файл, prod: в R2
-  async function autoSave() {
+  // Granular save - save page texts via API
+  async function saveText(text: TextItem) {
     isSaving.value = true
     try {
-      const { useAdminExportStore } = await import('./adminExport')
-      const exportStore = useAdminExportStore()
-      await exportStore.autoSave()
+      // Update local state first
+      const index = texts.value.findIndex((t) => t.path === text.path)
+      if (index >= 0) {
+        texts.value[index] = text
+      }
+
+      // Build the texts object for this category/page
+      const pageTexts = getTextsObject()
+
+      // Extract the page name from the path (e.g., "pages.discounts" -> "discounts")
+      const pathParts = text.category.split('.')
+      const pageName = pathParts[pathParts.length - 1]
+
+      // Get the texts for this specific page
+      let textsToSave = pageTexts
+      for (const part of pathParts) {
+        if (textsToSave && typeof textsToSave === 'object' && part in textsToSave) {
+          textsToSave = (textsToSave as Record<string, unknown>)[part] as Record<string, unknown>
+        }
+      }
+
+      const response = await fetchWithAuth(getApiUrl('/api/texts/save'), {
+        method: 'POST',
+        body: JSON.stringify({
+          page: text.category,
+          texts: textsToSave,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save texts')
+      }
+
+      closeForm()
     } catch (error) {
-      console.error('[adminTexts] Auto-save texts failed:', error)
+      console.error('Failed to save text:', error)
+      throw error
     } finally {
       isSaving.value = false
     }
-  }
-
-  async function saveText(text: TextItem) {
-    const index = texts.value.findIndex((t) => t.path === text.path)
-    if (index >= 0) {
-      texts.value[index] = text
-    }
-    closeForm()
-    await autoSave()
   }
 
   function setSearchQuery(query: string) {

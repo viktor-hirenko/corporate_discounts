@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { FaqItem, AppConfig, LocalizedText } from '@/types/app-config'
-import { getApiUrl } from '@/utils/api-config'
+import { getApiUrl, fetchWithAuth } from '@/utils/api-config'
 
 export interface FaqItemAdmin extends FaqItem {
   order: number
@@ -104,44 +104,72 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     isFormOpen.value = false
   }
 
-  // Автосохранение в файл
-  async function autoSave() {
+  // Granular save - save single FAQ item via API
+  async function saveItem(item: FaqItemAdmin) {
     isSaving.value = true
     try {
-      const { useAdminExportStore } = await import('./adminExport')
-      const exportStore = useAdminExportStore()
-      await exportStore.autoSave()
+      const response = await fetchWithAuth(getApiUrl('/api/faq/save'), {
+        method: 'POST',
+        body: JSON.stringify({
+          id: item.id,
+          question: item.question,
+          answer: item.answer,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save FAQ item')
+      }
+
+      // Update local state after successful API save
+      const existingIndex = faqItems.value.findIndex((f) => f.id === item.id)
+      if (existingIndex >= 0) {
+        faqItems.value[existingIndex] = item
+      } else {
+        item.order = faqItems.value.length
+        faqItems.value.push(item)
+      }
+      closeForm()
     } catch (error) {
-      console.error('Auto-save failed:', error)
+      console.error('Failed to save FAQ item:', error)
+      throw error
     } finally {
       isSaving.value = false
     }
   }
 
-  async function saveItem(item: FaqItemAdmin) {
-    const existingIndex = faqItems.value.findIndex((f) => f.id === item.id)
-    if (existingIndex >= 0) {
-      faqItems.value[existingIndex] = item
-    } else {
-      item.order = faqItems.value.length
-      faqItems.value.push(item)
-    }
-    closeForm()
-    await autoSave()
-  }
-
+  // Granular delete - delete single FAQ item via API
   async function deleteItem(id: string) {
-    const index = faqItems.value.findIndex((f) => f.id === id)
-    if (index >= 0) {
-      faqItems.value.splice(index, 1)
-      // Обновляем порядок
-      faqItems.value.forEach((item, idx) => {
-        item.order = idx
+    isSaving.value = true
+    try {
+      const response = await fetchWithAuth(getApiUrl(`/api/faq/${encodeURIComponent(id)}`), {
+        method: 'DELETE',
       })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete FAQ item')
+      }
+
+      // Update local state after successful API delete
+      const index = faqItems.value.findIndex((f) => f.id === id)
+      if (index >= 0) {
+        faqItems.value.splice(index, 1)
+        // Обновляем порядок
+        faqItems.value.forEach((item, idx) => {
+          item.order = idx
+        })
+      }
+    } catch (error) {
+      console.error('Failed to delete FAQ item:', error)
+      throw error
+    } finally {
+      isSaving.value = false
     }
-    await autoSave()
   }
 
+  // Move item (still uses full save for reordering)
   async function moveItem(id: string, direction: 'up' | 'down') {
     const index = faqItems.value.findIndex((f) => f.id === id)
     if (index < 0) return
@@ -157,7 +185,18 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     faqItems.value.forEach((item, idx) => {
       item.order = idx
     })
-    await autoSave()
+
+    // For reordering, we need to save all items - use adminExport
+    isSaving.value = true
+    try {
+      const { useAdminExportStore } = await import('./adminExport')
+      const exportStore = useAdminExportStore()
+      await exportStore.autoSave()
+    } catch (error) {
+      console.error('Failed to reorder FAQ items:', error)
+    } finally {
+      isSaving.value = false
+    }
   }
 
   function setSearchQuery(query: string) {
@@ -204,6 +243,5 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     setCategory,
     getCategoryLabel,
     exportToJSON,
-    autoSave,
   }
 })

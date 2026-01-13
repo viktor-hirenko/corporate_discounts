@@ -17,18 +17,24 @@ interface Partner {
   [key: string]: unknown
 }
 
+interface FaqItem {
+  id: string
+  question: LocalizedText
+  answer: LocalizedText
+}
+
 interface AppConfig {
   partners?: Record<string, Partner>
   filters?: {
     categories?: Record<string, unknown>
     locations?: Record<string, unknown>
   }
-  pages?: {
+  pages?: Record<string, unknown> & {
     faq?: {
-      items?: unknown[]
+      items?: FaqItem[]
     }
   }
-  allowedUsers?: unknown[]
+  allowedUsers?: string[]
   [key: string]: unknown
 }
 
@@ -564,6 +570,450 @@ export default {
 
         const userEmail = extractEmailFromJWT(token)
         return corsResponse(await deletePartner(slug, env, userEmail), origin)
+      }
+
+      // API: POST /api/category/save - save single category (protected)
+      if (path === '/api/category/save' && request.method === 'POST') {
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'save_category',
+              user: attemptedEmail,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await saveCategory(request, env, userEmail), origin)
+      }
+
+      // API: DELETE /api/category/:key - delete single category (protected)
+      if (path.startsWith('/api/category/') && request.method === 'DELETE') {
+        const key = path.replace('/api/category/', '')
+        if (!key) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Category key is required' }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'delete_category',
+              user: attemptedEmail,
+              key: key,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await deleteCategory(key, env, userEmail), origin)
+      }
+
+      // API: POST /api/location/save - save single location (protected)
+      if (path === '/api/location/save' && request.method === 'POST') {
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'save_location',
+              user: attemptedEmail,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await saveLocation(request, env, userEmail), origin)
+      }
+
+      // API: DELETE /api/location/:key - delete single location (protected)
+      if (path.startsWith('/api/location/') && request.method === 'DELETE') {
+        const key = path.replace('/api/location/', '')
+        if (!key) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Location key is required' }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'delete_location',
+              user: attemptedEmail,
+              key: key,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await deleteLocation(key, env, userEmail), origin)
+      }
+
+      // API: POST /api/faq/save - save single FAQ item (protected)
+      if (path === '/api/faq/save' && request.method === 'POST') {
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'save_faq',
+              user: attemptedEmail,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await saveFaqItem(request, env, userEmail), origin)
+      }
+
+      // API: DELETE /api/faq/:id - delete single FAQ item (protected)
+      if (path.startsWith('/api/faq/') && request.method === 'DELETE') {
+        const id = path.replace('/api/faq/', '')
+        if (!id) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'FAQ id is required' }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'delete_faq',
+              user: attemptedEmail,
+              id: id,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await deleteFaqItem(id, env, userEmail), origin)
+      }
+
+      // API: POST /api/texts/save - save page texts (protected)
+      if (path === '/api/texts/save' && request.method === 'POST') {
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'save_texts',
+              user: attemptedEmail,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await saveTexts(request, env, userEmail), origin)
+      }
+
+      // API: POST /api/users/save - save allowed users list (protected)
+      if (path === '/api/users/save' && request.method === 'POST') {
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'save_users',
+              user: attemptedEmail,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await saveUsers(request, env, userEmail), origin)
       }
 
       // API: POST /auth/login or /auth/google - rate limited
@@ -1306,6 +1756,404 @@ async function deletePartner(
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     })
+  }
+}
+
+// =============================================================================
+// SAVE CATEGORY (granular save)
+// =============================================================================
+async function saveCategory(
+  request: Request,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
+  try {
+    const data = (await request.json()) as { key: string; label: LocalizedText; description?: LocalizedText }
+
+    if (!data || !data.key || !data.label) {
+      return new Response(JSON.stringify({ error: 'Invalid category format - key and label required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    let config: AppConfig = {}
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
+        if (s3Response.ok) config = (await s3Response.json()) as AppConfig
+      } catch { /* fallback */ }
+    }
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) config = (await object.json()) as AppConfig
+    }
+
+    if (!config.filters) config.filters = { categories: {}, locations: {} }
+    if (!config.filters.categories) config.filters.categories = {}
+
+    config.filters.categories[data.key] = { label: data.label, description: data.description }
+
+    console.log('[CATEGORY_SAVE]', JSON.stringify({
+      user: userEmail, key: data.key, label: data.label.ua, timestamp: new Date().toISOString()
+    }))
+
+    const configJson = JSON.stringify(config, null, 2)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      if (s3Response.ok) {
+        return new Response(JSON.stringify({ success: true, key: data.key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+    }
+    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
+    return new Response(JSON.stringify({ success: true, key: data.key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+  } catch (error) {
+    console.error('[CATEGORY_SAVE_ERROR]', error)
+    return new Response(JSON.stringify({ error: 'Failed to save category' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+  }
+}
+
+// =============================================================================
+// DELETE CATEGORY (granular delete)
+// =============================================================================
+async function deleteCategory(key: string, env: Env, userEmail: string = 'unknown'): Promise<Response> {
+  try {
+    let config: AppConfig = {}
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
+        if (s3Response.ok) config = (await s3Response.json()) as AppConfig
+      } catch { /* fallback */ }
+    }
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) config = (await object.json()) as AppConfig
+    }
+
+    if (!config.filters?.categories?.[key]) {
+      return new Response(JSON.stringify({ error: 'Category not found', key }), { status: 404, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    delete config.filters.categories[key]
+
+    console.log('[CATEGORY_DELETE]', JSON.stringify({ user: userEmail, key, timestamp: new Date().toISOString() }))
+
+    const configJson = JSON.stringify(config, null, 2)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      if (s3Response.ok) {
+        return new Response(JSON.stringify({ success: true, key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+    }
+    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
+    return new Response(JSON.stringify({ success: true, key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+  } catch (error) {
+    console.error('[CATEGORY_DELETE_ERROR]', error)
+    return new Response(JSON.stringify({ error: 'Failed to delete category' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+  }
+}
+
+// =============================================================================
+// SAVE LOCATION (granular save)
+// =============================================================================
+async function saveLocation(
+  request: Request,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
+  try {
+    const data = (await request.json()) as { key: string; label: LocalizedText }
+
+    if (!data || !data.key || !data.label) {
+      return new Response(JSON.stringify({ error: 'Invalid location format - key and label required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    let config: AppConfig = {}
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
+        if (s3Response.ok) config = (await s3Response.json()) as AppConfig
+      } catch { /* fallback */ }
+    }
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) config = (await object.json()) as AppConfig
+    }
+
+    if (!config.filters) config.filters = { categories: {}, locations: {} }
+    if (!config.filters.locations) config.filters.locations = {}
+
+    config.filters.locations[data.key] = { label: data.label }
+
+    console.log('[LOCATION_SAVE]', JSON.stringify({
+      user: userEmail, key: data.key, label: data.label.ua, timestamp: new Date().toISOString()
+    }))
+
+    const configJson = JSON.stringify(config, null, 2)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      if (s3Response.ok) {
+        return new Response(JSON.stringify({ success: true, key: data.key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+    }
+    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
+    return new Response(JSON.stringify({ success: true, key: data.key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+  } catch (error) {
+    console.error('[LOCATION_SAVE_ERROR]', error)
+    return new Response(JSON.stringify({ error: 'Failed to save location' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+  }
+}
+
+// =============================================================================
+// DELETE LOCATION (granular delete)
+// =============================================================================
+async function deleteLocation(key: string, env: Env, userEmail: string = 'unknown'): Promise<Response> {
+  try {
+    let config: AppConfig = {}
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
+        if (s3Response.ok) config = (await s3Response.json()) as AppConfig
+      } catch { /* fallback */ }
+    }
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) config = (await object.json()) as AppConfig
+    }
+
+    if (!config.filters?.locations?.[key]) {
+      return new Response(JSON.stringify({ error: 'Location not found', key }), { status: 404, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    delete config.filters.locations[key]
+
+    console.log('[LOCATION_DELETE]', JSON.stringify({ user: userEmail, key, timestamp: new Date().toISOString() }))
+
+    const configJson = JSON.stringify(config, null, 2)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      if (s3Response.ok) {
+        return new Response(JSON.stringify({ success: true, key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+    }
+    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
+    return new Response(JSON.stringify({ success: true, key }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+  } catch (error) {
+    console.error('[LOCATION_DELETE_ERROR]', error)
+    return new Response(JSON.stringify({ error: 'Failed to delete location' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+  }
+}
+
+// =============================================================================
+// SAVE FAQ ITEM (granular save)
+// =============================================================================
+async function saveFaqItem(
+  request: Request,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
+  try {
+    const data = (await request.json()) as { id: string; question: LocalizedText; answer: LocalizedText; index?: number }
+
+    if (!data || !data.id || !data.question || !data.answer) {
+      return new Response(JSON.stringify({ error: 'Invalid FAQ format - id, question and answer required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    let config: AppConfig = {}
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
+        if (s3Response.ok) config = (await s3Response.json()) as AppConfig
+      } catch { /* fallback */ }
+    }
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) config = (await object.json()) as AppConfig
+    }
+
+    if (!config.pages) config.pages = {}
+    if (!config.pages.faq) config.pages.faq = { items: [] }
+    if (!config.pages.faq.items) config.pages.faq.items = []
+
+    const existingIndex = config.pages.faq.items.findIndex((item) => item.id === data.id)
+    const faqItem = { id: data.id, question: data.question, answer: data.answer }
+
+    if (existingIndex >= 0) {
+      config.pages.faq.items[existingIndex] = faqItem
+    } else {
+      config.pages.faq.items.push(faqItem)
+    }
+
+    console.log('[FAQ_SAVE]', JSON.stringify({
+      user: userEmail, id: data.id, question: data.question.ua?.substring(0, 50), timestamp: new Date().toISOString()
+    }))
+
+    const configJson = JSON.stringify(config, null, 2)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      if (s3Response.ok) {
+        return new Response(JSON.stringify({ success: true, id: data.id }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+    }
+    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
+    return new Response(JSON.stringify({ success: true, id: data.id }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+  } catch (error) {
+    console.error('[FAQ_SAVE_ERROR]', error)
+    return new Response(JSON.stringify({ error: 'Failed to save FAQ item' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+  }
+}
+
+// =============================================================================
+// DELETE FAQ ITEM (granular delete)
+// =============================================================================
+async function deleteFaqItem(id: string, env: Env, userEmail: string = 'unknown'): Promise<Response> {
+  try {
+    let config: AppConfig = {}
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
+        if (s3Response.ok) config = (await s3Response.json()) as AppConfig
+      } catch { /* fallback */ }
+    }
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) config = (await object.json()) as AppConfig
+    }
+
+    if (!config.pages?.faq?.items) {
+      return new Response(JSON.stringify({ error: 'FAQ item not found', id }), { status: 404, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    const index = config.pages.faq.items.findIndex((item) => item.id === id)
+    if (index < 0) {
+      return new Response(JSON.stringify({ error: 'FAQ item not found', id }), { status: 404, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    config.pages.faq.items.splice(index, 1)
+
+    console.log('[FAQ_DELETE]', JSON.stringify({ user: userEmail, id, timestamp: new Date().toISOString() }))
+
+    const configJson = JSON.stringify(config, null, 2)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      if (s3Response.ok) {
+        return new Response(JSON.stringify({ success: true, id }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+    }
+    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
+    return new Response(JSON.stringify({ success: true, id }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+  } catch (error) {
+    console.error('[FAQ_DELETE_ERROR]', error)
+    return new Response(JSON.stringify({ error: 'Failed to delete FAQ item' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+  }
+}
+
+// =============================================================================
+// SAVE TEXTS (granular save for page texts)
+// =============================================================================
+async function saveTexts(
+  request: Request,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
+  try {
+    const data = (await request.json()) as { page: string; texts: Record<string, unknown> }
+
+    if (!data || !data.page || !data.texts) {
+      return new Response(JSON.stringify({ error: 'Invalid texts format - page and texts required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    let config: AppConfig = {}
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
+        if (s3Response.ok) config = (await s3Response.json()) as AppConfig
+      } catch { /* fallback */ }
+    }
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) config = (await object.json()) as AppConfig
+    }
+
+    if (!config.pages) config.pages = {}
+    config.pages[data.page] = data.texts
+
+    console.log('[TEXTS_SAVE]', JSON.stringify({
+      user: userEmail, page: data.page, timestamp: new Date().toISOString()
+    }))
+
+    const configJson = JSON.stringify(config, null, 2)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      if (s3Response.ok) {
+        return new Response(JSON.stringify({ success: true, page: data.page }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+    }
+    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
+    return new Response(JSON.stringify({ success: true, page: data.page }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+  } catch (error) {
+    console.error('[TEXTS_SAVE_ERROR]', error)
+    return new Response(JSON.stringify({ error: 'Failed to save texts' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+  }
+}
+
+// =============================================================================
+// SAVE USERS (granular save for allowed users list)
+// =============================================================================
+async function saveUsers(
+  request: Request,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
+  try {
+    const data = (await request.json()) as { users: string[] }
+
+    if (!data || !Array.isArray(data.users)) {
+      return new Response(JSON.stringify({ error: 'Invalid users format - users array required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    let config: AppConfig = {}
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
+        if (s3Response.ok) config = (await s3Response.json()) as AppConfig
+      } catch { /* fallback */ }
+    }
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) config = (await object.json()) as AppConfig
+    }
+
+    config.allowedUsers = data.users
+
+    console.log('[USERS_SAVE]', JSON.stringify({
+      user: userEmail, count: data.users.length, timestamp: new Date().toISOString()
+    }))
+
+    const configJson = JSON.stringify(config, null, 2)
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      const s3Response = await s3Request(env, { method: 'PUT', key: 'data/app-config.json', body: configJson, contentType: 'application/json' })
+      if (s3Response.ok) {
+        return new Response(JSON.stringify({ success: true, count: data.users.length }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }
+    }
+    await env.R2_BUCKET.put('data/app-config.json', configJson, { httpMetadata: { contentType: 'application/json' } })
+    return new Response(JSON.stringify({ success: true, count: data.users.length }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+  } catch (error) {
+    console.error('[USERS_SAVE_ERROR]', error)
+    return new Response(JSON.stringify({ error: 'Failed to save users' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
   }
 }
 

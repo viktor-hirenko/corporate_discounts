@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { FilterCategory, LocalizedText, AppConfig } from '@/types/app-config'
-import { getApiUrl } from '@/utils/api-config'
+import { getApiUrl, fetchWithAuth } from '@/utils/api-config'
 
 export interface CategoryItem {
   id: string
@@ -102,33 +102,61 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     isFormOpen.value = false
   }
 
-  // Автосохранение в файл
-  async function autoSave() {
+  // Granular save - save single category via API
+  async function saveCategory(category: CategoryItem) {
     isSaving.value = true
     try {
-      const { useAdminExportStore } = await import('./adminExport')
-      const exportStore = useAdminExportStore()
-      await exportStore.autoSave()
+      const response = await fetchWithAuth(getApiUrl('/api/category/save'), {
+        method: 'POST',
+        body: JSON.stringify({
+          key: category.id,
+          label: category.label,
+          description: category.description,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save category')
+      }
+
+      // Update local state after successful API save
+      categories.value[category.id] = {
+        ...category,
+        isSystem: systemCategories.includes(category.id),
+      }
+      closeForm()
     } catch (error) {
-      console.error('Auto-save failed:', error)
+      console.error('Failed to save category:', error)
+      throw error
     } finally {
       isSaving.value = false
     }
   }
 
-  async function saveCategory(category: CategoryItem) {
-    categories.value[category.id] = {
-      ...category,
-      isSystem: systemCategories.includes(category.id),
-    }
-    closeForm()
-    await autoSave()
-  }
-
+  // Granular delete - delete single category via API
   async function deleteCategory(id: string) {
     if (systemCategories.includes(id)) return
-    delete categories.value[id]
-    await autoSave()
+
+    isSaving.value = true
+    try {
+      const response = await fetchWithAuth(getApiUrl(`/api/category/${encodeURIComponent(id)}`), {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete category')
+      }
+
+      // Update local state after successful API delete
+      delete categories.value[id]
+    } catch (error) {
+      console.error('Failed to delete category:', error)
+      throw error
+    } finally {
+      isSaving.value = false
+    }
   }
 
   function setSearchQuery(query: string) {
@@ -167,6 +195,5 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     deleteCategory,
     setSearchQuery,
     exportToJSON,
-    autoSave,
   }
 })
