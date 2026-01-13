@@ -82,7 +82,10 @@ async function getSignatureKey(
   region: string,
   service: string,
 ): Promise<ArrayBuffer> {
-  const kDate = await hmacSha256(new TextEncoder().encode('AWS4' + secretKey).buffer as ArrayBuffer, dateStamp)
+  const kDate = await hmacSha256(
+    new TextEncoder().encode('AWS4' + secretKey).buffer as ArrayBuffer,
+    dateStamp,
+  )
   const kRegion = await hmacSha256(kDate, region)
   const kService = await hmacSha256(kRegion, service)
   return hmacSha256(kService, 'aws4_request')
@@ -1059,7 +1062,7 @@ async function savePartner(
 
     // Load current config
     let config: AppConfig = {}
-    
+
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
       try {
         const s3Response = await s3Request(env, {
@@ -1187,7 +1190,7 @@ async function deletePartner(
   try {
     // Load current config
     let config: AppConfig = {}
-    
+
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
       try {
         const s3Response = await s3Request(env, {
@@ -1212,13 +1215,10 @@ async function deletePartner(
 
     // Check if partner exists
     if (!config.partners || !config.partners[slug]) {
-      return new Response(
-        JSON.stringify({ error: 'Partner not found', slug }),
-        {
-          status: 404,
-          headers: { 'Content-Type': 'application/json' },
-        },
-      )
+      return new Response(JSON.stringify({ error: 'Partner not found', slug }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     // Get partner name before deletion for logging
