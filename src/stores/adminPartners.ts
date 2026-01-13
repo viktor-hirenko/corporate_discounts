@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { PartnerConfig, AppConfig } from '@/types/app-config'
-import { getApiUrl } from '@/utils/api-config'
+import { getApiUrl, fetchWithAuth } from '@/utils/api-config'
 
 export const useAdminPartnersStore = defineStore('adminPartners', () => {
   // State
@@ -117,7 +117,48 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     isFormOpen.value = false
   }
 
-  // Автосохранение — dev: в файл, prod: в R2
+  // Гранулярное сохранение одного партнера
+  async function savePartnerToServer(partner: PartnerConfig): Promise<boolean> {
+    try {
+      const response = await fetchWithAuth(getApiUrl('/api/partner/save'), {
+        method: 'POST',
+        body: JSON.stringify(partner),
+      })
+      
+      if (!response.ok) {
+        const error = await response.json()
+        console.error('Failed to save partner:', error)
+        return false
+      }
+      
+      return true
+    } catch (error) {
+      console.error('Failed to save partner:', error)
+      return false
+    }
+  }
+
+  // Гранулярное удаление одного партнера
+  async function deletePartnerFromServer(slug: string): Promise<boolean> {
+    try {
+      const response = await fetchWithAuth(getApiUrl(`/api/partner/${slug}`), {
+        method: 'DELETE',
+      })
+      
+      if (!response.ok) {
+        const error = await response.json()
+        console.error('Failed to delete partner:', error)
+        return false
+      }
+      
+      return true
+    } catch (error) {
+      console.error('Failed to delete partner:', error)
+      return false
+    }
+  }
+
+  // Fallback: сохранение всего конфига (для других tabs)
   async function autoSave() {
     isSaving.value = true
     try {
@@ -132,14 +173,41 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
   }
 
   async function savePartner(partner: PartnerConfig) {
-    partners.value[partner.slug] = partner
-    closeForm()
-    await autoSave()
+    isSaving.value = true
+    try {
+      // Гранулярное сохранение — только этот партнер
+      const success = await savePartnerToServer(partner)
+      
+      if (success) {
+        // Обновляем локальный state только при успехе
+        partners.value[partner.slug] = partner
+        closeForm()
+      } else {
+        // Показать ошибку пользователю
+        console.error('Не удалось сохранить партнера')
+        alert('Помилка збереження. Спробуйте ще раз.')
+      }
+    } finally {
+      isSaving.value = false
+    }
   }
 
   async function deletePartner(slug: string) {
-    delete partners.value[slug]
-    await autoSave()
+    isSaving.value = true
+    try {
+      // Гранулярное удаление — только этот партнер
+      const success = await deletePartnerFromServer(slug)
+      
+      if (success) {
+        // Удаляем из локального state только при успехе
+        delete partners.value[slug]
+      } else {
+        console.error('Не удалось удалить партнера')
+        alert('Помилка видалення. Спробуйте ще раз.')
+      }
+    } finally {
+      isSaving.value = false
+    }
   }
 
   async function duplicatePartner(partner: PartnerConfig) {
@@ -153,8 +221,20 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
         en: `${partner.name.en} (copy)`,
       },
     }
-    partners.value[newSlug] = newPartner
-    await autoSave()
+    
+    isSaving.value = true
+    try {
+      // Гранулярное сохранение нового партнера
+      const success = await savePartnerToServer(newPartner)
+      
+      if (success) {
+        partners.value[newSlug] = newPartner
+      } else {
+        alert('Помилка копіювання. Спробуйте ще раз.')
+      }
+    } finally {
+      isSaving.value = false
+    }
   }
 
   function exportToJSON() {

@@ -1,5 +1,37 @@
 /// <reference types="@cloudflare/workers-types" />
 
+// =============================================================================
+// TYPES
+// =============================================================================
+
+interface LocalizedText {
+  ua: string
+  en: string
+}
+
+interface Partner {
+  slug: string
+  name: LocalizedText
+  updatedAt?: number
+  updatedBy?: string
+  [key: string]: unknown
+}
+
+interface AppConfig {
+  partners?: Record<string, Partner>
+  filters?: {
+    categories?: Record<string, unknown>
+    locations?: Record<string, unknown>
+  }
+  pages?: {
+    faq?: {
+      items?: unknown[]
+    }
+  }
+  allowedUsers?: unknown[]
+  [key: string]: unknown
+}
+
 export interface Env {
   R2_BUCKET: R2Bucket
   BUCKET_NAME: string
@@ -50,7 +82,7 @@ async function getSignatureKey(
   region: string,
   service: string,
 ): Promise<ArrayBuffer> {
-  const kDate = await hmacSha256(new TextEncoder().encode('AWS4' + secretKey), dateStamp)
+  const kDate = await hmacSha256(new TextEncoder().encode('AWS4' + secretKey).buffer as ArrayBuffer, dateStamp)
   const kRegion = await hmacSha256(kDate, region)
   const kService = await hmacSha256(kRegion, service)
   return hmacSha256(kService, 'aws4_request')
@@ -288,7 +320,8 @@ function corsResponse(response: Response, origin: string | null): Response {
 // MAIN HANDLER
 // =============================================================================
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
     const origin = request.headers.get('Origin')
 
     // Handle preflight requests
@@ -412,6 +445,124 @@ export default {
         return corsResponse(await saveConfig(request, env, userEmail), origin)
       }
 
+      // API: POST /api/partner/save - save single partner (protected)
+      if (path === '/api/partner/save' && request.method === 'POST') {
+        // Rate limiting
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        // JWT Authentication check
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'save_partner',
+              user: attemptedEmail,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await savePartner(request, env, userEmail), origin)
+      }
+
+      // API: DELETE /api/partner/:slug - delete single partner (protected)
+      if (path.startsWith('/api/partner/') && request.method === 'DELETE') {
+        const slug = path.replace('/api/partner/', '')
+        if (!slug) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Partner slug is required' }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        // Rate limiting
+        if (isRateLimited(clientIP, saveAttempts, MAX_SAVE_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        // JWT Authentication check
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          const attemptedEmail = extractEmailFromJWT(token)
+          console.log(
+            '[AUTH_FAIL]',
+            JSON.stringify({
+              action: 'delete_partner',
+              user: attemptedEmail,
+              slug: slug,
+              reason: 'invalid_or_expired_token',
+              ip: clientIP,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const userEmail = extractEmailFromJWT(token)
+        return corsResponse(await deletePartner(slug, env, userEmail), origin)
+      }
+
       // API: POST /auth/login or /auth/google - rate limited
       if (path.startsWith('/auth/') && request.method === 'POST') {
         if (isRateLimited(clientIP, authAttempts, MAX_AUTH_ATTEMPTS)) {
@@ -524,7 +675,7 @@ async function saveConfig(
   userEmail: string = 'unknown',
 ): Promise<Response> {
   try {
-    const config = await request.json()
+    const config = (await request.json()) as AppConfig
 
     // Validate config structure
     if (!config || typeof config !== 'object') {
@@ -872,6 +1023,286 @@ async function uploadImage(
       }),
     )
     return new Response(JSON.stringify({ error: 'Failed to upload image' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+
+// =============================================================================
+// SAVE PARTNER (granular save - only one partner)
+// Loads current config, updates one partner, saves back
+// =============================================================================
+async function savePartner(
+  request: Request,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
+  try {
+    const partner = (await request.json()) as Partner
+
+    // Validate partner structure
+    if (!partner || typeof partner !== 'object' || !partner.slug) {
+      console.log(
+        '[PARTNER_SAVE_ERROR]',
+        JSON.stringify({
+          user: userEmail,
+          error: 'invalid_partner_format',
+          timestamp: new Date().toISOString(),
+        }),
+      )
+      return new Response(JSON.stringify({ error: 'Invalid partner format - slug is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Load current config
+    let config: AppConfig = {}
+    
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, {
+          method: 'GET',
+          key: 'data/app-config.json',
+        })
+        if (s3Response.ok) {
+          config = (await s3Response.json()) as AppConfig
+        }
+      } catch {
+        // Fallback to local bucket
+      }
+    }
+
+    // Fallback: load from local R2 bucket
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) {
+        config = (await object.json()) as AppConfig
+      }
+    }
+
+    // Initialize partners object if not exists
+    if (!config.partners || typeof config.partners !== 'object') {
+      config.partners = {}
+    }
+
+    // Add metadata to partner
+    partner.updatedAt = Date.now()
+    partner.updatedBy = userEmail
+
+    // Update only this partner
+    config.partners[partner.slug] = partner
+
+    // Save config back
+    const configJson = JSON.stringify(config, null, 2)
+
+    // Log the action
+    console.log(
+      '[PARTNER_SAVE]',
+      JSON.stringify({
+        user: userEmail,
+        action: 'save',
+        slug: partner.slug,
+        name: partner.name?.ua || partner.slug,
+        timestamp: new Date().toISOString(),
+      }),
+    )
+
+    // Try external bucket first
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, {
+          method: 'PUT',
+          key: 'data/app-config.json',
+          body: configJson,
+          contentType: 'application/json',
+        })
+
+        if (s3Response.ok) {
+          return new Response(
+            JSON.stringify({
+              success: true,
+              message: 'Partner saved successfully',
+              slug: partner.slug,
+              timestamp: new Date().toISOString(),
+            }),
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          )
+        }
+      } catch (s3Error) {
+        console.error('S3 save partner error:', s3Error)
+      }
+    }
+
+    // Fallback to local R2 bucket
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: {
+        contentType: 'application/json',
+        cacheControl: 'public, max-age=0, must-revalidate',
+      },
+    })
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: 'Partner saved successfully',
+        slug: partner.slug,
+        timestamp: new Date().toISOString(),
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    )
+  } catch (error) {
+    console.log(
+      '[PARTNER_SAVE_ERROR]',
+      JSON.stringify({
+        user: userEmail,
+        error: 'save_exception',
+        details: String(error),
+        timestamp: new Date().toISOString(),
+      }),
+    )
+    return new Response(JSON.stringify({ error: 'Failed to save partner' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+
+// =============================================================================
+// DELETE PARTNER (granular delete - only one partner)
+// Loads current config, removes one partner, saves back
+// =============================================================================
+async function deletePartner(
+  slug: string,
+  env: Env,
+  userEmail: string = 'unknown',
+): Promise<Response> {
+  try {
+    // Load current config
+    let config: AppConfig = {}
+    
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, {
+          method: 'GET',
+          key: 'data/app-config.json',
+        })
+        if (s3Response.ok) {
+          config = (await s3Response.json()) as AppConfig
+        }
+      } catch {
+        // Fallback to local bucket
+      }
+    }
+
+    // Fallback: load from local R2 bucket
+    if (Object.keys(config).length === 0) {
+      const object = await env.R2_BUCKET.get('data/app-config.json')
+      if (object) {
+        config = (await object.json()) as AppConfig
+      }
+    }
+
+    // Check if partner exists
+    if (!config.partners || !config.partners[slug]) {
+      return new Response(
+        JSON.stringify({ error: 'Partner not found', slug }),
+        {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+    }
+
+    // Get partner name before deletion for logging
+    const partnerName = config.partners[slug]?.name
+
+    // Delete partner
+    delete config.partners[slug]
+
+    // Save config back
+    const configJson = JSON.stringify(config, null, 2)
+
+    // Log the action
+    console.log(
+      '[PARTNER_DELETE]',
+      JSON.stringify({
+        user: userEmail,
+        action: 'delete',
+        slug: slug,
+        name: partnerName?.ua || slug,
+        timestamp: new Date().toISOString(),
+      }),
+    )
+
+    // Try external bucket first
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const s3Response = await s3Request(env, {
+          method: 'PUT',
+          key: 'data/app-config.json',
+          body: configJson,
+          contentType: 'application/json',
+        })
+
+        if (s3Response.ok) {
+          return new Response(
+            JSON.stringify({
+              success: true,
+              message: 'Partner deleted successfully',
+              slug: slug,
+              timestamp: new Date().toISOString(),
+            }),
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          )
+        }
+      } catch (s3Error) {
+        console.error('S3 delete partner error:', s3Error)
+      }
+    }
+
+    // Fallback to local R2 bucket
+    await env.R2_BUCKET.put('data/app-config.json', configJson, {
+      httpMetadata: {
+        contentType: 'application/json',
+        cacheControl: 'public, max-age=0, must-revalidate',
+      },
+    })
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: 'Partner deleted successfully',
+        slug: slug,
+        timestamp: new Date().toISOString(),
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    )
+  } catch (error) {
+    console.log(
+      '[PARTNER_DELETE_ERROR]',
+      JSON.stringify({
+        user: userEmail,
+        error: 'delete_exception',
+        slug: slug,
+        details: String(error),
+        timestamp: new Date().toISOString(),
+      }),
+    )
+    return new Response(JSON.stringify({ error: 'Failed to delete partner' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     })
