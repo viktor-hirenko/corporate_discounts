@@ -97,6 +97,19 @@ async function getSignatureKey(
   return hmacSha256(kService, 'aws4_request')
 }
 
+// =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
+
+/**
+ * Truncate string to maxLen characters, adding "..." if truncated
+ * Used for logging long text fields
+ */
+function truncate(str: string | undefined, maxLen: number): string {
+  if (!str) return ''
+  return str.length > maxLen ? str.slice(0, maxLen) + '...' : str
+}
+
 interface S3RequestOptions {
   method: 'GET' | 'PUT' | 'DELETE'
   key: string
@@ -1540,6 +1553,9 @@ async function savePartner(
       config.partners = {}
     }
 
+    // Check if this is a new partner or update
+    const isNewPartner = !config.partners[partner.slug]
+
     // Add metadata to partner
     partner.updatedAt = Date.now()
     partner.updatedBy = userEmail
@@ -1550,15 +1566,52 @@ async function savePartner(
     // Save config back
     const configJson = JSON.stringify(config, null, 2)
 
-    // Log the action
+    // Log the action with FULL partner data for audit trail
+    const partnerData = partner as Record<string, unknown>
     console.log(
       '[PARTNER_SAVE]',
       JSON.stringify({
         user: userEmail,
-        action: 'save',
-        slug: partner.slug,
-        name: partner.name?.ua || partner.slug,
+        action: isNewPartner ? 'create' : 'update',
         timestamp: new Date().toISOString(),
+        data: {
+          slug: partner.slug,
+          name: partner.name,
+          image: partnerData.image,
+          promoCode: partnerData.promoCode,
+          category: partnerData.category,
+          location: partnerData.location,
+          discount: {
+            label: (partnerData.discount as Record<string, unknown>)?.label,
+            description: truncate(
+              ((partnerData.discount as Record<string, unknown>)?.description as Record<string, string>)?.ua,
+              200,
+            ),
+          },
+          contact: {
+            website: (partnerData.contact as Record<string, unknown>)?.website,
+            email: (partnerData.contact as Record<string, unknown>)?.email,
+            phone: (partnerData.contact as Record<string, unknown>)?.phone,
+          },
+          address: partnerData.address,
+          summary: {
+            ua: truncate((partnerData.summary as Record<string, string>)?.ua, 200),
+            en: truncate((partnerData.summary as Record<string, string>)?.en, 200),
+          },
+          description: {
+            ua: truncate((partnerData.description as Record<string, string>)?.ua, 200),
+            en: truncate((partnerData.description as Record<string, string>)?.en, 200),
+          },
+          terms: {
+            ua_count: (partnerData.terms as Record<string, string[]>)?.ua?.length || 0,
+            en_count: (partnerData.terms as Record<string, string[]>)?.en?.length || 0,
+          },
+          tags: partnerData.tags,
+          socials: (partnerData.socials as Array<{ type: string; url: string }>)?.map((s) => ({
+            type: s.type,
+            hasUrl: !!s.url,
+          })),
+        },
       }),
     )
 
@@ -1671,8 +1724,8 @@ async function deletePartner(
       })
     }
 
-    // Get partner name before deletion for logging
-    const partnerName = config.partners[slug]?.name
+    // Get partner data before deletion for logging
+    const deletedPartner = config.partners[slug] as Record<string, unknown>
 
     // Delete partner
     delete config.partners[slug]
@@ -1680,15 +1733,20 @@ async function deletePartner(
     // Save config back
     const configJson = JSON.stringify(config, null, 2)
 
-    // Log the action
+    // Log the action with deleted partner data for audit trail
     console.log(
       '[PARTNER_DELETE]',
       JSON.stringify({
         user: userEmail,
-        action: 'delete',
-        slug: slug,
-        name: partnerName?.ua || slug,
         timestamp: new Date().toISOString(),
+        deleted: {
+          slug: slug,
+          name: (deletedPartner.name as Record<string, string>)?.ua,
+          category: (deletedPartner.category as Record<string, string>)?.ua,
+          location: (deletedPartner.location as Record<string, string>)?.ua,
+          promoCode: deletedPartner.promoCode,
+          discount: ((deletedPartner.discount as Record<string, unknown>)?.label as Record<string, string>)?.ua,
+        },
       }),
     )
 
@@ -1801,15 +1859,26 @@ async function saveCategory(
     if (!config.filters) config.filters = { categories: {}, locations: {} }
     if (!config.filters.categories) config.filters.categories = {}
 
+    // Check if this is a new category or update
+    const isNewCategory = !config.filters.categories[data.key]
+
     config.filters.categories[data.key] = { label: data.label, description: data.description }
 
+    // Log the action with FULL category data for audit trail
     console.log(
       '[CATEGORY_SAVE]',
       JSON.stringify({
         user: userEmail,
-        key: data.key,
-        label: data.label.ua,
+        action: isNewCategory ? 'create' : 'update',
         timestamp: new Date().toISOString(),
+        data: {
+          id: data.key,
+          label: { ua: data.label.ua, en: data.label.en },
+          description: {
+            ua: truncate(data.description?.ua, 200),
+            en: truncate(data.description?.en, 200),
+          },
+        },
       }),
     )
 
@@ -1874,11 +1943,23 @@ async function deleteCategory(
       })
     }
 
+    // Get category data before deletion for logging
+    const deletedCategory = config.filters.categories[key] as Record<string, unknown>
+
     delete config.filters.categories[key]
 
+    // Log the action with deleted category data for audit trail
     console.log(
       '[CATEGORY_DELETE]',
-      JSON.stringify({ user: userEmail, key, timestamp: new Date().toISOString() }),
+      JSON.stringify({
+        user: userEmail,
+        timestamp: new Date().toISOString(),
+        deleted: {
+          id: key,
+          label: deletedCategory.label,
+          description: deletedCategory.description,
+        },
+      }),
     )
 
     const configJson = JSON.stringify(config, null, 2)
@@ -1950,15 +2031,22 @@ async function saveLocation(
     if (!config.filters) config.filters = { categories: {}, locations: {} }
     if (!config.filters.locations) config.filters.locations = {}
 
+    // Check if this is a new location or update
+    const isNewLocation = !config.filters.locations[data.key]
+
     config.filters.locations[data.key] = { label: data.label }
 
+    // Log the action with FULL location data for audit trail
     console.log(
       '[LOCATION_SAVE]',
       JSON.stringify({
         user: userEmail,
-        key: data.key,
-        label: data.label.ua,
+        action: isNewLocation ? 'create' : 'update',
         timestamp: new Date().toISOString(),
+        data: {
+          id: data.key,
+          label: { ua: data.label.ua, en: data.label.en },
+        },
       }),
     )
 
@@ -2023,11 +2111,22 @@ async function deleteLocation(
       })
     }
 
+    // Get location data before deletion for logging
+    const deletedLocation = config.filters.locations[key] as Record<string, unknown>
+
     delete config.filters.locations[key]
 
+    // Log the action with deleted location data for audit trail
     console.log(
       '[LOCATION_DELETE]',
-      JSON.stringify({ user: userEmail, key, timestamp: new Date().toISOString() }),
+      JSON.stringify({
+        user: userEmail,
+        timestamp: new Date().toISOString(),
+        deleted: {
+          id: key,
+          label: deletedLocation.label,
+        },
+      }),
     )
 
     const configJson = JSON.stringify(config, null, 2)
@@ -2106,6 +2205,7 @@ async function saveFaqItem(
     if (!config.pages.faq.items) config.pages.faq.items = []
 
     const existingIndex = config.pages.faq.items.findIndex((item) => item.id === data.id)
+    const isNewFaq = existingIndex < 0
     const faqItem = { id: data.id, question: data.question, answer: data.answer }
 
     if (existingIndex >= 0) {
@@ -2114,13 +2214,25 @@ async function saveFaqItem(
       config.pages.faq.items.push(faqItem)
     }
 
+    // Log the action with FULL FAQ data for audit trail
     console.log(
       '[FAQ_SAVE]',
       JSON.stringify({
         user: userEmail,
-        id: data.id,
-        question: data.question.ua?.substring(0, 50),
+        action: isNewFaq ? 'create' : 'update',
         timestamp: new Date().toISOString(),
+        data: {
+          id: data.id,
+          order: isNewFaq ? config.pages.faq.items.length - 1 : existingIndex,
+          question: {
+            ua: truncate(data.question.ua, 200),
+            en: truncate(data.question.en, 200),
+          },
+          answer: {
+            ua: truncate(data.answer.ua, 200),
+            en: truncate(data.answer.en, 200),
+          },
+        },
       }),
     )
 
@@ -2193,11 +2305,23 @@ async function deleteFaqItem(
       })
     }
 
+    // Get FAQ data before deletion for logging
+    const deletedFaq = config.pages.faq.items[index]
+
     config.pages.faq.items.splice(index, 1)
 
+    // Log the action with deleted FAQ data for audit trail
     console.log(
       '[FAQ_DELETE]',
-      JSON.stringify({ user: userEmail, id, timestamp: new Date().toISOString() }),
+      JSON.stringify({
+        user: userEmail,
+        timestamp: new Date().toISOString(),
+        deleted: {
+          id: id,
+          question: truncate(deletedFaq.question?.ua, 100),
+          answer: truncate(deletedFaq.answer?.ua, 100),
+        },
+      }),
     )
 
     const configJson = JSON.stringify(config, null, 2)
@@ -2269,12 +2393,30 @@ async function saveTexts(
     if (!config.pages) config.pages = {}
     config.pages[data.page] = data.texts
 
+    // Helper to extract text values for logging
+    const extractTextValues = (obj: Record<string, unknown>, prefix = ''): Record<string, string> => {
+      const result: Record<string, string> = {}
+      for (const [key, value] of Object.entries(obj)) {
+        const path = prefix ? `${prefix}.${key}` : key
+        if (value && typeof value === 'object' && 'ua' in value) {
+          result[path] = truncate((value as Record<string, string>).ua, 100)
+        } else if (value && typeof value === 'object' && !Array.isArray(value)) {
+          Object.assign(result, extractTextValues(value as Record<string, unknown>, path))
+        }
+      }
+      return result
+    }
+
+    // Log the action with FULL texts data for audit trail
     console.log(
       '[TEXTS_SAVE]',
       JSON.stringify({
         user: userEmail,
-        page: data.page,
         timestamp: new Date().toISOString(),
+        data: {
+          page: data.page,
+          texts: extractTextValues(data.texts),
+        },
       }),
     )
 
@@ -2344,14 +2486,28 @@ async function saveUsers(
       if (object) config = (await object.json()) as AppConfig
     }
 
+    // Get previous users for comparison
+    const previousUsers = config.allowedUsers || []
+    const newUsers = data.users
+
+    // Find added and removed users
+    const addedUsers = newUsers.filter((u: string) => !previousUsers.includes(u))
+    const removedUsers = previousUsers.filter((u: string) => !newUsers.includes(u))
+
     config.allowedUsers = data.users
 
+    // Log the action with FULL users data for audit trail
     console.log(
       '[USERS_SAVE]',
       JSON.stringify({
         user: userEmail,
-        count: data.users.length,
         timestamp: new Date().toISOString(),
+        data: {
+          totalCount: data.users.length,
+          added: addedUsers,
+          removed: removedUsers,
+          allUsers: data.users,
+        },
       }),
     )
 
