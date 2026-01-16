@@ -110,6 +110,81 @@ function truncate(str: string | undefined, maxLen: number): string {
   return str.length > maxLen ? str.slice(0, maxLen) + '...' : str
 }
 
+/**
+ * Truncate value for diff logging - handles strings, objects, arrays
+ */
+function truncateValue(value: unknown, maxLen: number = 100): unknown {
+  if (typeof value === 'string') {
+    return truncate(value, maxLen)
+  }
+  if (Array.isArray(value)) {
+    return `[${value.length} items]`
+  }
+  if (typeof value === 'object' && value !== null) {
+    const str = JSON.stringify(value)
+    if (str.length > maxLen) {
+      return str.slice(0, maxLen) + '...'
+    }
+    return value
+  }
+  return value
+}
+
+/**
+ * Compare two objects and return only the differences
+ * Returns object with changed fields in format: { "field.path": { old: "...", new: "..." } }
+ */
+function getObjectDiff(
+  oldObj: Record<string, unknown> | undefined,
+  newObj: Record<string, unknown>,
+  prefix: string = '',
+): Record<string, { old: unknown; new: unknown }> {
+  const diff: Record<string, { old: unknown; new: unknown }> = {}
+
+  // If no old object, return empty diff (will be handled as CREATE)
+  if (!oldObj) return diff
+
+  const allKeys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)])
+
+  for (const key of allKeys) {
+    const path = prefix ? `${prefix}.${key}` : key
+    const oldVal = oldObj[key]
+    const newVal = newObj[key]
+
+    // Skip internal fields
+    if (key === 'updatedAt' || key === 'updatedBy') continue
+
+    // Both are objects (not arrays) - recurse
+    if (
+      typeof oldVal === 'object' &&
+      oldVal !== null &&
+      !Array.isArray(oldVal) &&
+      typeof newVal === 'object' &&
+      newVal !== null &&
+      !Array.isArray(newVal)
+    ) {
+      const nestedDiff = getObjectDiff(
+        oldVal as Record<string, unknown>,
+        newVal as Record<string, unknown>,
+        path,
+      )
+      Object.assign(diff, nestedDiff)
+    } else {
+      // Compare values
+      const oldStr = JSON.stringify(oldVal)
+      const newStr = JSON.stringify(newVal)
+      if (oldStr !== newStr) {
+        diff[path] = {
+          old: truncateValue(oldVal),
+          new: truncateValue(newVal),
+        }
+      }
+    }
+  }
+
+  return diff
+}
+
 interface S3RequestOptions {
   method: 'GET' | 'PUT' | 'DELETE'
   key: string
@@ -1554,7 +1629,8 @@ async function savePartner(
     }
 
     // Check if this is a new partner or update
-    const isNewPartner = !config.partners[partner.slug]
+    const existingPartner = config.partners[partner.slug]
+    const isNewPartner = !existingPartner
 
     // Add metadata to partner
     partner.updatedAt = Date.now()
@@ -1566,54 +1642,41 @@ async function savePartner(
     // Save config back
     const configJson = JSON.stringify(config, null, 2)
 
-    // Log the action with FULL partner data for audit trail
-    const partnerData = partner as Record<string, unknown>
-    console.log(
-      '[PARTNER_SAVE]',
-      JSON.stringify({
-        user: userEmail,
-        action: isNewPartner ? 'create' : 'update',
-        timestamp: new Date().toISOString(),
-        data: {
+    // Log the action with diff for updates, full data for creates
+    if (isNewPartner) {
+      // CREATE - log full partner data
+      console.log(
+        '[PARTNER_CREATE]',
+        JSON.stringify({
+          user: userEmail,
+          action: 'create',
+          timestamp: new Date().toISOString(),
           slug: partner.slug,
           name: partner.name,
-          image: partnerData.image,
-          promoCode: partnerData.promoCode,
-          category: partnerData.category,
-          location: partnerData.location,
-          discount: {
-            label: (partnerData.discount as Record<string, unknown>)?.label,
-            description: truncate(
-              ((partnerData.discount as Record<string, unknown>)?.description as Record<string, string>)?.ua,
-              200,
-            ),
-          },
-          contact: {
-            website: (partnerData.contact as Record<string, unknown>)?.website,
-            email: (partnerData.contact as Record<string, unknown>)?.email,
-            phone: (partnerData.contact as Record<string, unknown>)?.phone,
-          },
-          address: partnerData.address,
-          summary: {
-            ua: truncate((partnerData.summary as Record<string, string>)?.ua, 200),
-            en: truncate((partnerData.summary as Record<string, string>)?.en, 200),
-          },
-          description: {
-            ua: truncate((partnerData.description as Record<string, string>)?.ua, 200),
-            en: truncate((partnerData.description as Record<string, string>)?.en, 200),
-          },
-          terms: {
-            ua_count: (partnerData.terms as Record<string, string[]>)?.ua?.length || 0,
-            en_count: (partnerData.terms as Record<string, string[]>)?.en?.length || 0,
-          },
-          tags: partnerData.tags,
-          socials: (partnerData.socials as Array<{ type: string; url: string }>)?.map((s) => ({
-            type: s.type,
-            hasUrl: !!s.url,
-          })),
-        },
-      }),
-    )
+        }),
+      )
+    } else {
+      // UPDATE - log only the differences
+      const changes = getObjectDiff(
+        existingPartner as Record<string, unknown>,
+        partner as Record<string, unknown>,
+      )
+      
+      // Only log if there are actual changes
+      if (Object.keys(changes).length > 0) {
+        console.log(
+          '[PARTNER_UPDATE]',
+          JSON.stringify({
+            user: userEmail,
+            action: 'update',
+            timestamp: new Date().toISOString(),
+            slug: partner.slug,
+            name: partner.name?.ua || partner.slug,
+            changes,
+          }),
+        )
+      }
+    }
 
     // Try external bucket first
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
@@ -1860,27 +1923,39 @@ async function saveCategory(
     if (!config.filters.categories) config.filters.categories = {}
 
     // Check if this is a new category or update
-    const isNewCategory = !config.filters.categories[data.key]
+    const existingCategory = config.filters.categories[data.key] as Record<string, unknown> | undefined
+    const isNewCategory = !existingCategory
 
-    config.filters.categories[data.key] = { label: data.label, description: data.description }
+    const newCategoryData = { label: data.label, description: data.description }
+    config.filters.categories[data.key] = newCategoryData
 
-    // Log the action with FULL category data for audit trail
-    console.log(
-      '[CATEGORY_SAVE]',
-      JSON.stringify({
-        user: userEmail,
-        action: isNewCategory ? 'create' : 'update',
-        timestamp: new Date().toISOString(),
-        data: {
-          id: data.key,
-          label: { ua: data.label.ua, en: data.label.en },
-          description: {
-            ua: truncate(data.description?.ua, 200),
-            en: truncate(data.description?.en, 200),
-          },
-        },
-      }),
-    )
+    // Log the action with diff for updates, basic info for creates
+    if (isNewCategory) {
+      console.log(
+        '[CATEGORY_CREATE]',
+        JSON.stringify({
+          user: userEmail,
+          action: 'create',
+          timestamp: new Date().toISOString(),
+          key: data.key,
+          label: data.label,
+        }),
+      )
+    } else {
+      const changes = getObjectDiff(existingCategory, newCategoryData as Record<string, unknown>)
+      if (Object.keys(changes).length > 0) {
+        console.log(
+          '[CATEGORY_UPDATE]',
+          JSON.stringify({
+            user: userEmail,
+            action: 'update',
+            timestamp: new Date().toISOString(),
+            key: data.key,
+            changes,
+          }),
+        )
+      }
+    }
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
@@ -2032,23 +2107,39 @@ async function saveLocation(
     if (!config.filters.locations) config.filters.locations = {}
 
     // Check if this is a new location or update
-    const isNewLocation = !config.filters.locations[data.key]
+    const existingLocation = config.filters.locations[data.key] as Record<string, unknown> | undefined
+    const isNewLocation = !existingLocation
 
-    config.filters.locations[data.key] = { label: data.label }
+    const newLocationData = { label: data.label }
+    config.filters.locations[data.key] = newLocationData
 
-    // Log the action with FULL location data for audit trail
-    console.log(
-      '[LOCATION_SAVE]',
-      JSON.stringify({
-        user: userEmail,
-        action: isNewLocation ? 'create' : 'update',
-        timestamp: new Date().toISOString(),
-        data: {
-          id: data.key,
-          label: { ua: data.label.ua, en: data.label.en },
-        },
-      }),
-    )
+    // Log the action with diff for updates, basic info for creates
+    if (isNewLocation) {
+      console.log(
+        '[LOCATION_CREATE]',
+        JSON.stringify({
+          user: userEmail,
+          action: 'create',
+          timestamp: new Date().toISOString(),
+          key: data.key,
+          label: data.label,
+        }),
+      )
+    } else {
+      const changes = getObjectDiff(existingLocation, newLocationData as Record<string, unknown>)
+      if (Object.keys(changes).length > 0) {
+        console.log(
+          '[LOCATION_UPDATE]',
+          JSON.stringify({
+            user: userEmail,
+            action: 'update',
+            timestamp: new Date().toISOString(),
+            key: data.key,
+            changes,
+          }),
+        )
+      }
+    }
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
@@ -2205,6 +2296,7 @@ async function saveFaqItem(
     if (!config.pages.faq.items) config.pages.faq.items = []
 
     const existingIndex = config.pages.faq.items.findIndex((item) => item.id === data.id)
+    const existingFaq = existingIndex >= 0 ? config.pages.faq.items[existingIndex] : undefined
     const isNewFaq = existingIndex < 0
     const faqItem = { id: data.id, question: data.question, answer: data.answer }
 
@@ -2214,27 +2306,36 @@ async function saveFaqItem(
       config.pages.faq.items.push(faqItem)
     }
 
-    // Log the action with FULL FAQ data for audit trail
-    console.log(
-      '[FAQ_SAVE]',
-      JSON.stringify({
-        user: userEmail,
-        action: isNewFaq ? 'create' : 'update',
-        timestamp: new Date().toISOString(),
-        data: {
+    // Log the action with diff for updates, basic info for creates
+    if (isNewFaq) {
+      console.log(
+        '[FAQ_CREATE]',
+        JSON.stringify({
+          user: userEmail,
+          action: 'create',
+          timestamp: new Date().toISOString(),
           id: data.id,
-          order: isNewFaq ? config.pages.faq.items.length - 1 : existingIndex,
-          question: {
-            ua: truncate(data.question.ua, 200),
-            en: truncate(data.question.en, 200),
-          },
-          answer: {
-            ua: truncate(data.answer.ua, 200),
-            en: truncate(data.answer.en, 200),
-          },
-        },
-      }),
-    )
+          question: { ua: truncate(data.question.ua, 100), en: truncate(data.question.en, 100) },
+        }),
+      )
+    } else {
+      const changes = getObjectDiff(
+        existingFaq as Record<string, unknown>,
+        faqItem as Record<string, unknown>,
+      )
+      if (Object.keys(changes).length > 0) {
+        console.log(
+          '[FAQ_UPDATE]',
+          JSON.stringify({
+            user: userEmail,
+            action: 'update',
+            timestamp: new Date().toISOString(),
+            id: data.id,
+            changes,
+          }),
+        )
+      }
+    }
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
@@ -2391,34 +2492,26 @@ async function saveTexts(
     }
 
     if (!config.pages) config.pages = {}
+    
+    // Get existing page texts for diff comparison
+    const existingTexts = config.pages[data.page] as Record<string, unknown> | undefined
     config.pages[data.page] = data.texts
 
-    // Helper to extract text values for logging
-    const extractTextValues = (obj: Record<string, unknown>, prefix = ''): Record<string, string> => {
-      const result: Record<string, string> = {}
-      for (const [key, value] of Object.entries(obj)) {
-        const path = prefix ? `${prefix}.${key}` : key
-        if (value && typeof value === 'object' && 'ua' in value) {
-          result[path] = truncate((value as Record<string, string>).ua, 100)
-        } else if (value && typeof value === 'object' && !Array.isArray(value)) {
-          Object.assign(result, extractTextValues(value as Record<string, unknown>, path))
-        }
-      }
-      return result
-    }
-
-    // Log the action with FULL texts data for audit trail
-    console.log(
-      '[TEXTS_SAVE]',
-      JSON.stringify({
-        user: userEmail,
-        timestamp: new Date().toISOString(),
-        data: {
+    // Log the action with diff - only changed text fields
+    const changes = getObjectDiff(existingTexts || {}, data.texts as Record<string, unknown>)
+    
+    if (Object.keys(changes).length > 0) {
+      console.log(
+        '[TEXTS_UPDATE]',
+        JSON.stringify({
+          user: userEmail,
+          action: 'update',
+          timestamp: new Date().toISOString(),
           page: data.page,
-          texts: extractTextValues(data.texts),
-        },
-      }),
-    )
+          changes,
+        }),
+      )
+    }
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {

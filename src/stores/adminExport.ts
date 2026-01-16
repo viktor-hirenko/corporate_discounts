@@ -318,7 +318,7 @@ export const useAdminExportStore = defineStore('adminExport', () => {
       if (error instanceof Error && error.message === 'Authentication required') {
         exportError.value = 'Сессия закончилась'
       } else {
-        exportError.value = error instanceof Error ? error.message : 'Failed to save to R2'
+      exportError.value = error instanceof Error ? error.message : 'Failed to save to R2'
       }
       exportStatus.value = 'error'
       return false

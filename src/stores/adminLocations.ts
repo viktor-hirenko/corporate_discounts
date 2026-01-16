@@ -150,7 +150,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
       }
 
       // Update local state after successful API delete
-      delete locations.value[id]
+    delete locations.value[id]
     } catch (error) {
       console.error('Failed to delete location:', error)
       throw error

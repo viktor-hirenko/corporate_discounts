@@ -123,14 +123,14 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
       }
 
       // Update local state after successful API save
-      const existingIndex = faqItems.value.findIndex((f) => f.id === item.id)
-      if (existingIndex >= 0) {
-        faqItems.value[existingIndex] = item
-      } else {
-        item.order = faqItems.value.length
-        faqItems.value.push(item)
-      }
-      closeForm()
+    const existingIndex = faqItems.value.findIndex((f) => f.id === item.id)
+    if (existingIndex >= 0) {
+      faqItems.value[existingIndex] = item
+    } else {
+      item.order = faqItems.value.length
+      faqItems.value.push(item)
+    }
+    closeForm()
     } catch (error) {
       console.error('Failed to save FAQ item:', error)
       throw error
@@ -153,14 +153,14 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
       }
 
       // Update local state after successful API delete
-      const index = faqItems.value.findIndex((f) => f.id === id)
-      if (index >= 0) {
-        faqItems.value.splice(index, 1)
-        // Обновляем порядок
-        faqItems.value.forEach((item, idx) => {
-          item.order = idx
-        })
-      }
+    const index = faqItems.value.findIndex((f) => f.id === id)
+    if (index >= 0) {
+      faqItems.value.splice(index, 1)
+      // Обновляем порядок
+      faqItems.value.forEach((item, idx) => {
+        item.order = idx
+      })
+    }
     } catch (error) {
       console.error('Failed to delete FAQ item:', error)
       throw error

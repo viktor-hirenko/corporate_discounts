@@ -124,13 +124,13 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
         method: 'POST',
         body: JSON.stringify(partner),
       })
-      
+
       if (!response.ok) {
         const error = await response.json()
         console.error('Failed to save partner:', error)
         return false
       }
-      
+
       return true
     } catch (error) {
       console.error('Failed to save partner:', error)
@@ -144,13 +144,13 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
       const response = await fetchWithAuth(getApiUrl(`/api/partner/${slug}`), {
         method: 'DELETE',
       })
-      
+
       if (!response.ok) {
         const error = await response.json()
         console.error('Failed to delete partner:', error)
         return false
       }
-      
+
       return true
     } catch (error) {
       console.error('Failed to delete partner:', error)
@@ -177,7 +177,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     try {
       // Гранулярное сохранение — только этот партнер
       const success = await savePartnerToServer(partner)
-      
+
       if (success) {
         // Обновляем локальный state только при успехе
         partners.value[partner.slug] = partner
@@ -197,7 +197,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     try {
       // Гранулярное удаление — только этот партнер
       const success = await deletePartnerFromServer(slug)
-      
+
       if (success) {
         // Удаляем из локального state только при успехе
         delete partners.value[slug]
@@ -221,12 +221,12 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
         en: `${partner.name.en} (copy)`,
       },
     }
-    
+
     isSaving.value = true
     try {
       // Гранулярное сохранение нового партнера
       const success = await savePartnerToServer(newPartner)
-      
+
       if (success) {
         partners.value[newSlug] = newPartner
       } else {

@@ -150,7 +150,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
       }
 
       // Update local state after successful API delete
-      delete categories.value[id]
+    delete categories.value[id]
     } catch (error) {
       console.error('Failed to delete category:', error)
       throw error
