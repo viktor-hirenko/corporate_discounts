@@ -79,9 +79,38 @@ const deepMerge = <T extends Record<string, unknown>>(
   return target
 }
 
+// Normalize array fields to ensure correct structure after loading
+function normalizeArrayFields() {
+  // Socials: ensure 2 elements [facebook, instagram]
+  if (!formData.socials || !Array.isArray(formData.socials)) {
+    formData.socials = [
+      { type: 'facebook', url: '' },
+      { type: 'instagram', url: '' },
+    ]
+  } else {
+    // Ensure facebook exists at index 0
+    if (!formData.socials[0]) {
+      formData.socials[0] = { type: 'facebook', url: '' }
+    }
+    // Ensure instagram exists at index 1
+    if (!formData.socials[1]) {
+      formData.socials[1] = { type: 'instagram', url: '' }
+    }
+  }
+
+  // Terms: ensure arrays exist with at least one empty element
+  if (!formData.terms?.ua?.length) formData.terms.ua = ['']
+  if (!formData.terms?.en?.length) formData.terms.en = ['']
+
+  // Tags: ensure arrays exist
+  if (!formData.tags?.ua) formData.tags.ua = ['']
+  if (!formData.tags?.en) formData.tags.en = ['']
+}
+
 // Load partner data if editing (use deep merge to preserve structure)
 if (props.partner) {
   deepMerge(formData, JSON.parse(JSON.stringify(props.partner)))
+  normalizeArrayFields()
 }
 
 // Image upload state
