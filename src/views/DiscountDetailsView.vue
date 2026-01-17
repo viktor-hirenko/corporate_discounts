@@ -240,7 +240,7 @@ onUnmounted(() => {
           <p class="discount-details__type">{{ partnerCategory }}</p>
           <h1 class="discount-details__title">{{ partnerName }}</h1>
         </div>
-        <p class="discount-details__description">{{ partnerSummary }}</p>
+        <p class="discount-details__description">{{ partnerDescription }}</p>
         <!-- <p v-if="partnerDescription" class="discount-details__description-full">
           {{ partnerDescription }}
         </p> -->
