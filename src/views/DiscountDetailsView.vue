@@ -16,10 +16,7 @@ const props = defineProps<Props>()
 const router = useRouter()
 const store = useDiscountsStore()
 const uiStore = useUiStore()
-const { t, pages, filters, images: imagesConfig } = useAppConfig()
-
-// Ensure images is reactive
-const images = computed(() => imagesConfig)
+const { t, pages, filters } = useAppConfig()
 
 const isCopied = ref(false)
 const imageLoadError = ref(false)
@@ -35,22 +32,12 @@ const partnerName = computed(() =>
   partner.value ? t(partner.value.name as unknown as { ua: string; en: string }) : '',
 )
 
-const partnerSummary = computed(() =>
-  partner.value ? t(partner.value.summary as unknown as { ua: string; en: string }) : '',
-)
-
 const partnerDescription = computed(() =>
   partner.value ? t(partner.value.description as unknown as { ua: string; en: string }) : '',
 )
 
 const discountLabel = computed(() =>
   partner.value ? t(partner.value.discount.label as unknown as { ua: string; en: string }) : '',
-)
-
-const discountDescription = computed(() =>
-  partner.value?.discount.description
-    ? t(partner.value.discount.description as unknown as { ua: string; en: string })
-    : '',
 )
 
 const partnerImage = computed(() => partner.value?.images.thumbnail || '')
@@ -92,13 +79,13 @@ const hasPartnerImage = computed(() => {
   )
 })
 
-// Перевірка наявності промокоду
+// Проверка наличия промокода
 const hasPromoCode = computed(() => {
   const code = partner.value?.discount.promoCode
   return code && code.trim() !== '' && code !== '-'
 })
 
-// Динамічний заголовок CTA
+// Динамический заголовок CTA
 const ctaTitle = computed(() => {
   if (hasPromoCode.value) {
     return t(pages.discountDetails.cta.title)
@@ -106,12 +93,12 @@ const ctaTitle = computed(() => {
   return '' // Не показываем заголовок без промокода
 })
 
-// Динамічний опис CTA
+// Динамическое описание CTA
 const ctaDescription = computed(() => {
   if (hasPromoCode.value) {
     return t(pages.discountDetails.cta.description)
   }
-  // Текст без промокоду (мультиязичний)
+  // Текст без промокода (мультиязычный)
   return uiStore.locale === 'en'
     ? 'Visit the company website to learn more'
     : 'Відвідати сайт компанії, дізнатись більше'
@@ -241,16 +228,10 @@ onUnmounted(() => {
           <h1 class="discount-details__title">{{ partnerName }}</h1>
         </div>
         <p class="discount-details__description">{{ partnerDescription }}</p>
-        <!-- <p v-if="partnerDescription" class="discount-details__description-full">
-          {{ partnerDescription }}
-        </p> -->
         <p class="discount-details__offer">
           {{ t(pages.discountDetails.offer) }}
           <span class="discount-details__offer-value">{{ discountLabel }}</span>
         </p>
-        <!-- <p v-if="discountDescription" class="discount-details__discount-description">
-          {{ discountDescription }}
-        </p> -->
 
         <div class="discount-details__promo">
           <div class="discount-details__promo-code-wrapper">
@@ -489,30 +470,6 @@ $container-max-width: calc(1312px);
 
     @include mq(null, lg) {
       @include font-weight(semibold);
-    }
-  }
-
-  &__description-full {
-    color: var(--color-secondary-600, #01001f);
-    font-size: max(to-cqw(20, $container-max-width), to-rem(16));
-
-    @include line-height(relaxed);
-    @include font-weight(regular);
-
-    @include mq(null, lg) {
-      font-size: to-rem(16);
-    }
-  }
-
-  &__discount-description {
-    color: var(--color-neutral-400, #81818e);
-    font-size: max(to-cqw(20, $container-max-width), to-rem(16));
-
-    @include line-height(relaxed);
-    @include font-weight(regular);
-
-    @include mq(null, lg) {
-      font-size: to-rem(16);
     }
   }
 

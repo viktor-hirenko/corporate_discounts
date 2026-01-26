@@ -81,21 +81,24 @@ const deepMerge = <T extends Record<string, unknown>>(
 
 // Normalize array fields to ensure correct structure after loading
 function normalizeArrayFields() {
-  // Socials: ensure 2 elements [facebook, instagram]
+  // Socials: ensure 2 elements [facebook, instagram] in correct order
   if (!formData.socials || !Array.isArray(formData.socials)) {
     formData.socials = [
       { type: 'facebook', url: '' },
       { type: 'instagram', url: '' },
     ]
   } else {
-    // Ensure facebook exists at index 0
-    if (!formData.socials[0]) {
-      formData.socials[0] = { type: 'facebook', url: '' }
+    // Find existing socials by type
+    const facebook = formData.socials.find((s) => s.type === 'facebook') || {
+      type: 'facebook',
+      url: '',
     }
-    // Ensure instagram exists at index 1
-    if (!formData.socials[1]) {
-      formData.socials[1] = { type: 'instagram', url: '' }
+    const instagram = formData.socials.find((s) => s.type === 'instagram') || {
+      type: 'instagram',
+      url: '',
     }
+    // Always set in correct order: [facebook, instagram]
+    formData.socials = [facebook, instagram]
   }
 
   // Terms: ensure arrays exist with at least one empty element
