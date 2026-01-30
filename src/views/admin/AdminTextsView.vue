@@ -32,7 +32,7 @@ const handleExport = () => {
   URL.revokeObjectURL(url)
 }
 
-// Form
+// Форма
 const formData = ref({
   path: '',
   label: '',

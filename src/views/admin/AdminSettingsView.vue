@@ -5,10 +5,10 @@ import { useAuthStore } from '@/stores/auth'
 const store = useAdminSettingsStore()
 const authStore = useAuthStore()
 
-// Google Client ID from .env (read-only)
+// Google Client ID из .env (только для чтения)
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 
-// Site URL (read-only, auto-detected)
+// URL сайта (только для чтения, определяется автоматически)
 const siteUrl = window.location.origin
 
 const handleExport = () => {

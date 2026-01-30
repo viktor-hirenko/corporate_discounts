@@ -14,7 +14,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
   // Системные категории, которые нельзя удалять
   const systemCategories = ['all', 'online']
 
-  // State
+  // Состояние
   const categories = ref<Record<string, CategoryItem>>({})
   const searchQuery = ref('')
   const editingCategory = ref<CategoryItem | null>(null)
@@ -62,7 +62,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
   // Автоматическая инициализация
   init()
 
-  // Getters
+  // Геттеры
   const categoriesList = computed(() => {
     return Object.values(categories.value).sort((a, b) => {
       // Системные категории первыми
@@ -86,7 +86,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
 
   const categoriesCount = computed(() => categoriesList.value.length)
 
-  // Actions
+  // Действия
   function openCreateForm() {
     editingCategory.value = null
     isFormOpen.value = true
@@ -102,7 +102,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     isFormOpen.value = false
   }
 
-  // Granular save - save single category via API
+  // Гранулярное сохранение - сохранение одной категории через API
   async function saveCategory(category: CategoryItem) {
     isSaving.value = true
     try {
@@ -120,7 +120,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
         throw new Error(errorData.error || 'Failed to save category')
       }
 
-      // Update local state after successful API save
+      // Обновляем локальное состояние после успешного сохранения в API
       categories.value[category.id] = {
         ...category,
         isSystem: systemCategories.includes(category.id),
@@ -134,7 +134,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
     }
   }
 
-  // Granular delete - delete single category via API
+  // Гранулярное удаление - удаление одной категории через API
   async function deleteCategory(id: string) {
     if (systemCategories.includes(id)) return
 
@@ -149,7 +149,7 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
         throw new Error(errorData.error || 'Failed to delete category')
       }
 
-      // Update local state after successful API delete
+      // Обновляем локальное состояние после успешного удаления в API
     delete categories.value[id]
     } catch (error) {
       console.error('Failed to delete category:', error)
@@ -175,18 +175,18 @@ export const useAdminCategoriesStore = defineStore('adminCategories', () => {
   }
 
   return {
-    // State
+    // Состояние
     categories,
     searchQuery,
     editingCategory,
     isFormOpen,
     isSaving,
     isInitialized,
-    // Getters
+    // Геттеры
     categoriesList,
     filteredCategories,
     categoriesCount,
-    // Actions
+    // Действия
     init,
     openCreateForm,
     openEditForm,

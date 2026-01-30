@@ -18,14 +18,14 @@ const emit = defineEmits<{
 const { generateSlug, createPartner, exportToJSON } = usePartnersAdmin()
 const { config } = useAppConfig()
 
-// Image preview and upload state
+// Состояние превью и загрузки изображения
 const imagePreview = ref<string>('')
 const imageFile = ref<File | null>(null)
 const isUploading = ref(false)
 const uploadError = ref<string | null>(null)
 const uploadSuccess = ref(false)
 
-// Form data
+// Данные формы
 const formData = reactive({
   name: { ua: '', en: '' },
   slug: '',
@@ -53,7 +53,7 @@ const formData = reactive({
   tags: { ua: [''], en: [''] },
 })
 
-// Load existing partner data if editing
+// Загрузка данных партнера при редактировании
 if (props.partner) {
   Object.assign(formData, props.partner)
   if (formData.image) {
@@ -95,7 +95,7 @@ const locationOptions = computed(() => {
     .sort((a, b) => a.value.localeCompare(b.value))
 })
 
-// Auto-generate slug from name
+// Автогенерация slug из названия
 watch(
   () => formData.name.ua,
   (newName) => {
@@ -106,32 +106,32 @@ watch(
   },
 )
 
-// Handle image upload
+// Обработка загрузки изображения
 const handleImageUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (!file) return
 
-  // Reset states
+  // Сброс состояний
   uploadError.value = null
   uploadSuccess.value = false
   imageFile.value = file
 
-  // Show preview immediately
+  // Показываем превью сразу
   const reader = new FileReader()
   reader.onload = (e) => {
     imagePreview.value = e.target?.result as string
   }
   reader.readAsDataURL(file)
 
-  // Check if we have a slug to upload
+  // Проверяем наличие slug для загрузки
   const slug = formData.slug || generateSlug(formData.name.en || formData.name.ua)
   if (!slug) {
     uploadError.value = 'Спочатку введіть назву партнера'
     return
   }
 
-  // Upload to server
+  // Загрузка на сервер
   isUploading.value = true
 
   try {
@@ -152,44 +152,44 @@ const handleImageUpload = async (event: Event) => {
   }
 }
 
-// Add new term
+// Добавить условие использования
 const addTerm = (lang: 'ua' | 'en') => {
   formData.terms[lang].push('')
 }
 
-// Remove term
+// Удалить условие использования
 const removeTerm = (lang: 'ua' | 'en', index: number) => {
   formData.terms[lang].splice(index, 1)
 }
 
-// Add new tag
+// Добавить тег
 const addTag = (lang: 'ua' | 'en') => {
   formData.tags[lang].push('')
 }
 
-// Remove tag
+// Удалить тег
 const removeTag = (lang: 'ua' | 'en', index: number) => {
   formData.tags[lang].splice(index, 1)
 }
 
-// JSON output
+// JSON вывод
 const jsonOutput = ref('')
 const showJSON = ref(false)
 
-// Save partner
+// Сохранить партнера
 const handleSave = () => {
   const partner = createPartner(formData as any)
   jsonOutput.value = exportToJSON(partner)
   showJSON.value = true
 }
 
-// Copy JSON
+// Копировать JSON
 const copyJSON = () => {
   navigator.clipboard.writeText(jsonOutput.value)
   alert('JSON скопійовано до буфера обміну!')
 }
 
-// Validation
+// Валидация
 const isValid = computed(() => {
   return (
     formData.name.ua &&

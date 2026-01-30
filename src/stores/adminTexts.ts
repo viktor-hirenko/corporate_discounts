@@ -16,7 +16,7 @@ export interface TextItem {
 }
 
 export const useAdminTextsStore = defineStore('adminTexts', () => {
-  // State
+  // Состояние
   const texts = ref<TextItem[]>([])
   const searchQuery = ref('')
   const selectedCategory = ref('all')
@@ -137,7 +137,7 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     return result
   }
 
-  // Getters
+  // Геттеры
   const textsList = computed(() => texts.value)
 
   const filteredTexts = computed(() => {
@@ -164,7 +164,7 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
 
   const textsCount = computed(() => texts.value.length)
 
-  // Actions
+  // Действия
   function openEditForm(text: TextItem) {
     editingText.value = { ...text, value: { ...text.value } }
     isFormOpen.value = true
@@ -178,24 +178,24 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
   // Флаг сохранения
   const isSaving = ref(false)
 
-  // Granular save - save page texts via API
+  // Гранулярное сохранение - сохранение текстов страницы через API
   async function saveText(text: TextItem) {
     isSaving.value = true
     try {
-      // Update local state first
+      // Сначала обновляем локальное состояние
       const index = texts.value.findIndex((t) => t.path === text.path)
       if (index >= 0) {
         texts.value[index] = text
       }
 
-      // Build the texts object for this category/page
+      // Строим объект текстов для этой категории/страницы
       const pageTexts = getTextsObject()
 
-      // Extract the page name from the path (e.g., "pages.discounts" -> "discounts")
+      // Извлекаем имя страницы из пути (например, "pages.discounts" -> "discounts")
       const pathParts = text.category.split('.')
       const pageName = pathParts[pathParts.length - 1]
 
-      // Get the texts for this specific page
+      // Получаем тексты для этой конкретной страницы
       let textsToSave = pageTexts
       for (const part of pathParts) {
         if (textsToSave && typeof textsToSave === 'object' && part in textsToSave) {
@@ -262,7 +262,7 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
   }
 
   return {
-    // State
+    // Состояние
     texts,
     searchQuery,
     selectedCategory,
@@ -271,11 +271,11 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
     textCategories,
     isInitialized,
     isSaving,
-    // Getters
+    // Геттеры
     textsList,
     filteredTexts,
     textsCount,
-    // Actions
+    // Действия
     init,
     openEditForm,
     closeForm,

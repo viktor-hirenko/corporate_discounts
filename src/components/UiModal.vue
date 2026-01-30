@@ -288,9 +288,9 @@ onUnmounted(() => {
     background-color: var(--color-primary-100);
 
     &--custom-scroll {
-      -ms-overflow-style: none; // IE/Edge
+      -ms-overflow-style: none; // IE/Edge - скрываем скроллбар
       // Скрываем нативный скроллбар для всех браузеров
-      scrollbar-width: none; // Firefox
+      scrollbar-width: none; // Firefox - скрываем скроллбар
 
       // WebKit браузеры (Chrome, Safari)
       &::-webkit-scrollbar {
@@ -371,8 +371,8 @@ onUnmounted(() => {
 
   // Скрываем нативный скроллбар когда используется кастомный
   &__content--custom-scroll &__body {
-    -ms-overflow-style: none; // IE/Edge
-    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none; // IE/Edge - скрываем скроллбар
+    scrollbar-width: none; // Firefox - скрываем скроллбар
 
     // WebKit браузеры (Chrome, Safari)
     &::-webkit-scrollbar {

@@ -38,7 +38,7 @@ async function loadCurrentConfig(): Promise<AppConfig> {
 }
 
 export const useAdminExportStore = defineStore('adminExport', () => {
-  // State
+  // Состояние
   const isExporting = ref(false)
   const isSaving = ref(false)
   const exportStatus = ref<'idle' | 'exporting' | 'success' | 'error'>('idle')
@@ -391,13 +391,13 @@ export const useAdminExportStore = defineStore('adminExport', () => {
   }
 
   return {
-    // State
+    // Состояние
     isExporting,
     isSaving,
     exportStatus,
     exportError,
     lastSaveTime,
-    // Actions
+    // Действия
     buildFullConfig,
     exportToFile,
     saveToLocalFile,

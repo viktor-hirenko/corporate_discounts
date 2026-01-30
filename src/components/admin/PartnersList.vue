@@ -19,11 +19,11 @@ const { exportAllToJSON } = usePartnersAdmin()
 const searchQuery = ref('')
 const selectedCategory = ref<string>('all')
 
-// Filter partners
+// Фильтрация партнеров
 const filteredPartners = computed(() => {
   let result = props.partners
 
-  // Search filter
+  // Фильтр по поиску
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(
@@ -34,7 +34,7 @@ const filteredPartners = computed(() => {
     )
   }
 
-  // Category filter
+  // Фильтр по категории
   if (selectedCategory.value !== 'all') {
     result = result.filter((p) => p.category.ua === selectedCategory.value)
   }
@@ -42,13 +42,13 @@ const filteredPartners = computed(() => {
   return result
 })
 
-// Get unique categories
+// Получение уникальных категорий
 const categories = computed(() => {
   const cats = new Set(props.partners.map((p) => p.category.ua))
   return Array.from(cats).sort()
 })
 
-// Export all to JSON
+// Экспорт всех в JSON
 const handleExportAll = () => {
   const json = exportAllToJSON()
   const blob = new Blob([json], { type: 'application/json' })
@@ -60,7 +60,7 @@ const handleExportAll = () => {
   URL.revokeObjectURL(url)
 }
 
-// Copy partner JSON
+// Копирование JSON партнера
 const copyPartnerJSON = (partner: PartnerConfig) => {
   const json = JSON.stringify({ [partner.slug]: partner }, null, 2)
   navigator.clipboard.writeText(json)

@@ -27,7 +27,7 @@ const categoriesStore = useAdminCategoriesStore()
 
 const isEditing = computed(() => !!props.partner)
 
-// Form data
+// Данные формы
 const formData = reactive({
   name: { ua: '', en: '' },
   slug: '',
@@ -55,7 +55,7 @@ const formData = reactive({
   tags: { ua: [''], en: [''] },
 })
 
-// Deep merge helper to preserve structure and handle missing fields
+// Глубокое слияние для сохранения структуры и обработки отсутствующих полей
 const deepMerge = <T extends Record<string, unknown>>(
   target: T,
   source: Record<string, unknown>,
@@ -79,16 +79,16 @@ const deepMerge = <T extends Record<string, unknown>>(
   return target
 }
 
-// Normalize array fields to ensure correct structure after loading
+// Нормализация массивов для корректной структуры после загрузки
 function normalizeArrayFields() {
-  // Socials: ensure 2 elements [facebook, instagram] in correct order
+  // Соцсети: гарантируем 2 элемента [facebook, instagram] в правильном порядке
   if (!formData.socials || !Array.isArray(formData.socials)) {
     formData.socials = [
       { type: 'facebook', url: '' },
       { type: 'instagram', url: '' },
     ]
   } else {
-    // Find existing socials by type
+    // Ищем существующие соцсети по типу
     const facebook = formData.socials.find((s) => s.type === 'facebook') || {
       type: 'facebook',
       url: '',
@@ -97,32 +97,32 @@ function normalizeArrayFields() {
       type: 'instagram',
       url: '',
     }
-    // Always set in correct order: [facebook, instagram]
+    // Всегда устанавливаем в правильном порядке: [facebook, instagram]
     formData.socials = [facebook, instagram]
   }
 
-  // Terms: ensure arrays exist with at least one empty element
+  // Условия: гарантируем наличие массивов с минимум одним пустым элементом
   if (!formData.terms?.ua?.length) formData.terms.ua = ['']
   if (!formData.terms?.en?.length) formData.terms.en = ['']
 
-  // Tags: ensure arrays exist
+  // Теги: гарантируем наличие массивов
   if (!formData.tags?.ua) formData.tags.ua = ['']
   if (!formData.tags?.en) formData.tags.en = ['']
 }
 
-// Load partner data if editing (use deep merge to preserve structure)
+// Загрузка данных партнера при редактировании (глубокое слияние для сохранения структуры)
 if (props.partner) {
   deepMerge(formData, JSON.parse(JSON.stringify(props.partner)))
   normalizeArrayFields()
 }
 
-// Image upload state
+// Состояние загрузки изображения
 const isUploading = ref(false)
 const uploadError = ref<string | null>(null)
 const uploadSuccess = ref(false)
 const imagePreview = ref<string>('')
 
-// Reset image preview when partner changes (switching between edit forms)
+// Сброс превью изображения при смене партнера (переключение между формами)
 watch(
   () => props.partner,
   () => {
@@ -133,23 +133,23 @@ watch(
   },
 )
 
-// Get displayable image URL from path
+// Получение отображаемого URL изображения из пути
 const getImageUrl = (path: string): string => {
   if (!path) return ''
-  // Base64 data URL - return as is
+  // Base64 data URL - возвращаем как есть
   if (path.startsWith('data:')) return path
-  // Already a full URL
+  // Уже полный URL
   if (path.startsWith('http://') || path.startsWith('https://')) return path
-  // R2 path like /assets/images/partners/...
+  // R2 путь типа /assets/images/partners/...
   if (path.startsWith('/assets/')) {
-    // On production, this path works directly
-    // On localhost, we need to use the production URL
+    // На продакшене этот путь работает напрямую
+    // На localhost нужно использовать продакшен URL
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return `https://corporate-discounts-worker.upstars-marbella.workers.dev${path}`
     }
     return path
   }
-  // Legacy @/assets path - convert to production URL
+  // Устаревший путь @/assets - конвертируем в продакшен URL
   if (path.startsWith('@/assets/')) {
     const cleanPath = path.replace('@/', '/')
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
@@ -160,37 +160,37 @@ const getImageUrl = (path: string): string => {
   return path
 }
 
-// Computed property for displaying image
+// Вычисляемое свойство для отображения изображения
 const displayImageUrl = computed(() => {
   if (imagePreview.value) return imagePreview.value
   return getImageUrl(formData.image)
 })
 
-// Handle image file upload
+// Обработка загрузки файла изображения
 const handleImageUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (!file) return
 
-  // Reset states
+  // Сброс состояний
   uploadError.value = null
   uploadSuccess.value = false
 
-  // Show preview immediately
+  // Показываем превью сразу
   const reader = new FileReader()
   reader.onload = (e) => {
     imagePreview.value = e.target?.result as string
   }
   reader.readAsDataURL(file)
 
-  // Check if we have a slug to upload
+  // Проверяем наличие slug для загрузки
   const slug = formData.slug || generateSlug(formData.name?.en || formData.name?.ua)
   if (!slug) {
     uploadError.value = 'Спочатку введіть назву партнера'
     return
   }
 
-  // Upload to server
+  // Загрузка на сервер
   isUploading.value = true
 
   try {
@@ -216,7 +216,7 @@ const handleImageUpload = async (event: Event) => {
   }
 }
 
-// Categories from admin store (reactive - updates when new categories added)
+// Категории из админ-стора (реактивные - обновляются при добавлении новых)
 const categoryOptions = computed(() => {
   return categoriesStore.categoriesList
     .filter((cat) => cat.id !== 'all' && cat.id !== 'online')
@@ -306,7 +306,7 @@ watch(
   },
 )
 
-// Terms management
+// Управление условиями использования
 const addTerm = (lang: 'ua' | 'en') => {
   formData.terms[lang].push('')
 }
@@ -315,7 +315,7 @@ const removeTerm = (lang: 'ua' | 'en', index: number) => {
   formData.terms[lang].splice(index, 1)
 }
 
-// Tags management
+// Управление тегами
 const addTag = (lang: 'ua' | 'en') => {
   formData.tags[lang].push('')
 }
@@ -324,7 +324,7 @@ const removeTag = (lang: 'ua' | 'en', index: number) => {
   formData.tags[lang].splice(index, 1)
 }
 
-// Validation
+// Валидация
 const isValid = computed(() => {
   return (
     formData.name.ua.trim() !== '' &&
@@ -378,10 +378,10 @@ const handleSave = () => {
   emit('save', partner)
 }
 
-// Category change handler
+// Обработчик изменения категории
 const handleCategoryChange = (lang: 'ua' | 'en', value: string) => {
   formData.category[lang] = value
-  // Auto-fill other language
+  // Автозаполнение другого языка
   const found = categoryOptions.value.find((c) => c[lang] === value)
   if (found) {
     const otherLang = lang === 'ua' ? 'en' : 'ua'

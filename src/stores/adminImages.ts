@@ -13,7 +13,7 @@ export interface ImageItem {
 }
 
 export const useAdminImagesStore = defineStore('adminImages', () => {
-  // State
+  // Состояние
   const images = ref<ImageItem[]>([])
   const selectedCategory = ref('all')
 
@@ -71,7 +71,7 @@ export const useAdminImagesStore = defineStore('adminImages', () => {
   // Инициализируем при создании store
   initFromConfig()
 
-  // Getters
+  // Геттеры
   const imagesList = computed(() => images.value)
 
   const filteredImages = computed(() => {
@@ -81,7 +81,7 @@ export const useAdminImagesStore = defineStore('adminImages', () => {
 
   const imagesCount = computed(() => images.value.length)
 
-  // Actions
+  // Действия
   function updateImagePath(id: string, newPath: string) {
     const index = images.value.findIndex((img) => img.id === id)
     if (index >= 0) {
@@ -109,14 +109,14 @@ export const useAdminImagesStore = defineStore('adminImages', () => {
   }
 
   return {
-    // State
+    // Состояние
     images,
     selectedCategory,
-    // Getters
+    // Геттеры
     imagesList,
     filteredImages,
     imagesCount,
-    // Actions
+    // Действия
     updateImagePath,
     setCategory,
     exportToJSON,

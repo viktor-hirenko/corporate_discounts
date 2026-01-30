@@ -17,7 +17,7 @@ const emit = defineEmits<{
 const router = useRouter()
 const authStore = useAuthStore()
 
-// Close menu on route change (mobile)
+// Закрываем меню при смене маршрута (мобильная версия)
 router.afterEach(() => {
   if (props.isMobile && props.isOpen) {
     emit('close')
@@ -272,7 +272,7 @@ $sidebar-collapsed-width: to-rem(80);
     }
   }
 
-  // Mobile styles
+  // Мобильные стили
   &.mobile {
     transform: translateX(-100%);
     transition: transform 0.3s ease;

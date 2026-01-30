@@ -13,7 +13,7 @@ export interface SettingsState {
 }
 
 export const useAdminSettingsStore = defineStore('adminSettings', () => {
-  // State
+  // Состояние
   const settings = ref<SettingsState>({
     locales: config.locales || ['ua', 'en'],
     defaultLocale: config.defaultLocale || 'ua',
@@ -23,16 +23,16 @@ export const useAdminSettingsStore = defineStore('adminSettings', () => {
 
   const isDirty = ref(false)
 
-  // Available locales
+  // Доступные локали
   const availableLocales = [
     { code: 'ua', label: 'Українська' },
     { code: 'en', label: 'English' },
   ]
 
-  // Getters
+  // Геттеры
   const currentSettings = computed(() => settings.value)
 
-  // Actions
+  // Действия
   function updateLocales(locales: Locale[]) {
     settings.value.locales = locales
     isDirty.value = true
@@ -70,13 +70,13 @@ export const useAdminSettingsStore = defineStore('adminSettings', () => {
   }
 
   return {
-    // State
+    // Состояние
     settings,
     isDirty,
     availableLocales,
-    // Getters
+    // Геттеры
     currentSettings,
-    // Actions
+    // Действия
     updateLocales,
     updateDefaultLocale,
     updateGoogleClientId,

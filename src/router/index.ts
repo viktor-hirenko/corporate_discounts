@@ -59,13 +59,13 @@ const router = createRouter({
         },
       ],
     },
-    // Legacy admin route - redirect to new admin
+    // Устаревший маршрут админки - редирект на новую админку
     {
       path: '/admin/partners-legacy',
       name: 'partners-admin-legacy',
       component: () => import('../views/PartnersAdminView.vue'),
     },
-    // New Admin Panel
+    // Новая админ-панель
     {
       path: '/admin',
       component: () => import('../layouts/AdminLayout.vue'),

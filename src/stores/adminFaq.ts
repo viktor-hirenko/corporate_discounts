@@ -8,7 +8,7 @@ export interface FaqItemAdmin extends FaqItem {
 }
 
 export const useAdminFaqStore = defineStore('adminFaq', () => {
-  // State
+  // Состояние
   const faqItems = ref<FaqItemAdmin[]>([])
   const searchQuery = ref('')
   const selectedCategory = ref('all')
@@ -58,7 +58,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
   // Автоматическая инициализация
   init()
 
-  // Getters
+  // Геттеры
   const faqItemsList = computed(() => {
     return [...faqItems.value].sort((a, b) => a.order - b.order)
   })
@@ -88,7 +88,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
 
   const faqCount = computed(() => faqItems.value.length)
 
-  // Actions
+  // Действия
   function openCreateForm() {
     editingItem.value = null
     isFormOpen.value = true
@@ -104,7 +104,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     isFormOpen.value = false
   }
 
-  // Granular save - save single FAQ item via API
+  // Гранулярное сохранение - сохранение одного FAQ элемента через API
   async function saveItem(item: FaqItemAdmin) {
     isSaving.value = true
     try {
@@ -122,7 +122,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
         throw new Error(errorData.error || 'Failed to save FAQ item')
       }
 
-      // Update local state after successful API save
+      // Обновляем локальное состояние после успешного сохранения в API
     const existingIndex = faqItems.value.findIndex((f) => f.id === item.id)
     if (existingIndex >= 0) {
       faqItems.value[existingIndex] = item
@@ -139,7 +139,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     }
   }
 
-  // Granular delete - delete single FAQ item via API
+  // Гранулярное удаление - удаление одного FAQ элемента через API
   async function deleteItem(id: string) {
     isSaving.value = true
     try {
@@ -152,7 +152,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
         throw new Error(errorData.error || 'Failed to delete FAQ item')
       }
 
-      // Update local state after successful API delete
+      // Обновляем локальное состояние после успешного удаления в API
     const index = faqItems.value.findIndex((f) => f.id === id)
     if (index >= 0) {
       faqItems.value.splice(index, 1)
@@ -169,7 +169,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     }
   }
 
-  // Move item (still uses full save for reordering)
+  // Перемещение элемента (использует полное сохранение для переупорядочивания)
   async function moveItem(id: string, direction: 'up' | 'down') {
     const index = faqItems.value.findIndex((f) => f.id === id)
     if (index < 0) return
@@ -186,7 +186,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
       item.order = idx
     })
 
-    // For reordering, we need to save all items - use adminExport
+    // Для переупорядочивания нужно сохранить все элементы - используем adminExport
     isSaving.value = true
     try {
       const { useAdminExportStore } = await import('./adminExport')
@@ -218,7 +218,7 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
   }
 
   return {
-    // State
+    // Состояние
     faqItems,
     searchQuery,
     selectedCategory,
@@ -227,11 +227,11 @@ export const useAdminFaqStore = defineStore('adminFaq', () => {
     isSaving,
     isInitialized,
     faqCategories,
-    // Getters
+    // Геттеры
     faqItemsList,
     filteredFaqItems,
     faqCount,
-    // Actions
+    // Действия
     init,
     openCreateForm,
     openEditForm,

@@ -21,7 +21,7 @@ const lastUser = ref<{ name: string; email: string; picture: string | null } | n
 // Состояние для показа сообщения об окончании сессии
 const showSessionExpiredMessage = ref(false)
 
-// Computed
+// Вычисляемые свойства
 const hasGoogleClientId = computed(() => {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
   return !!clientId && clientId !== 'your-google-client-id-here.apps.googleusercontent.com'
@@ -78,7 +78,7 @@ async function handleContinue(): Promise<void> {
   }
 }
 
-// Google Sign-In callback
+// Callback для Google Sign-In
 async function handleGoogleSignIn(response: { credential: string }): Promise<void> {
   try {
     isLoading.value = true
@@ -132,7 +132,7 @@ function loadGoogleScript(): void {
 }
 
 function initGoogleButton(): void {
-  // ✅ Всегда загружаем скрипт — он нужен для обоих сценариев
+  //  Всегда загружаем скрипт — он нужен для обоих сценариев
   loadGoogleScript()
 }
 
@@ -199,7 +199,7 @@ onMounted(() => {
   if (savedLastUser) {
     lastUser.value = savedLastUser
 
-    // ✅ Проверяем токен сразу при загрузке
+    //  Проверяем токен сразу при загрузке
     // Если токен невалидный — сразу показываем сообщение и Google кнопку
     if (!authStore.isLastUserTokenValid()) {
       showSessionExpiredMessage.value = true

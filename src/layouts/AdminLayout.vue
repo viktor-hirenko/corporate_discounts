@@ -155,13 +155,13 @@ onUnmounted(() => {
     flex-direction: column;
     margin-left: to-rem(228);
     transition: margin-left 0.3s ease;
-    min-width: 0; // Prevent flex overflow
+    min-width: 0; // Предотвращение переполнения flex
   }
 
   &__content {
     flex: 1;
     padding: to-rem(24);
-    overflow-y: auto; // Default scroll for pages without tables
+    overflow-y: auto; // Скролл по умолчанию для страниц без таблиц
     overflow-x: hidden;
   }
 
@@ -171,7 +171,7 @@ onUnmounted(() => {
     }
   }
 
-  // Mobile styles
+  // Мобильные стили
   &.mobile {
     .admin-layout__main {
       margin-left: 0;

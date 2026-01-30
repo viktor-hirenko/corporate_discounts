@@ -24,12 +24,12 @@ const pageTitle = computed(() => {
     '/admin/users': 'Користувачі',
   }
 
-  // Check for exact match first
+  // Сначала проверяем точное совпадение
   if (titles[route.path]) {
     return titles[route.path]
   }
 
-  // Check for prefix match
+  // Проверяем совпадение по префиксу
   for (const [path, title] of Object.entries(titles)) {
     if (route.path.startsWith(path) && path !== '/admin') {
       return title

@@ -332,7 +332,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-// Container max width for content areas
+// Максимальная ширина контейнера для контентных областей
 $container-max-width: calc(1312px);
 
 .discount-details {

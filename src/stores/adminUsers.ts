@@ -13,7 +13,7 @@ export interface AdminUser {
 }
 
 export const useAdminUsersStore = defineStore('adminUsers', () => {
-  // State
+  // Состояние
   const users = ref<AdminUser[]>([])
   const isInitialized = ref(false)
   const searchQuery = ref('')
@@ -22,7 +22,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
   const isLoading = ref(false)
   const syncStatus = ref<'idle' | 'syncing' | 'success' | 'error'>('idle')
 
-  // Getters
+  // Геттеры
   const usersList = computed(() => {
     return [...users.value].sort((a, b) => a.email.localeCompare(b.email))
   })
@@ -78,7 +78,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
   // Автоматическая инициализация
   init()
 
-  // Actions
+  // Действия
   function openCreateForm() {
     editingUser.value = null
     isFormOpen.value = true
@@ -94,7 +94,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isFormOpen.value = false
   }
 
-  // Granular save - save all users via API
+  // Гранулярное сохранение - сохранение всех пользователей через API
   async function saveUsersToApi() {
     isLoading.value = true
     syncStatus.value = 'syncing'
@@ -205,7 +205,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
   }
 
   return {
-    // State
+    // Состояние
     users,
     searchQuery,
     editingUser,
@@ -213,11 +213,11 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isLoading,
     syncStatus,
     isInitialized,
-    // Getters
+    // Геттеры
     usersList,
     filteredUsers,
     usersCount,
-    // Actions
+    // Действия
     init,
     openCreateForm,
     openEditForm,

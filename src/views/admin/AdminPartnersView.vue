@@ -11,19 +11,19 @@ const authStore = useAuthStore()
 const deleteConfirmSlug = ref<string | null>(null)
 const deleteConfirmName = ref<string>('')
 
-// Get displayable image URL from path
+// Получение отображаемого URL изображения из пути
 const getImageUrl = (path: string): string => {
   if (!path) return ''
   if (path.startsWith('data:') || path.startsWith('http://') || path.startsWith('https://'))
     return path
-  // R2 path like /assets/images/partners/...
+  // R2 путь типа /assets/images/partners/...
   if (path.startsWith('/assets/')) {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return `https://corporate-discounts-worker.upstars-marbella.workers.dev${path}`
     }
     return path
   }
-  // Legacy @/assets path
+  // Устаревший путь @/assets
   if (path.startsWith('@/assets/')) {
     const cleanPath = path.replace('@/', '/')
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
@@ -296,7 +296,7 @@ $accent-color: rgb(115 103 240);
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: calc(100vh - to-rem(80)); // Subtract header height
+  max-height: calc(100vh - to-rem(80)); // Вычитаем высоту шапки
 
   &__controls {
     flex-shrink: 0;
@@ -422,7 +422,7 @@ $accent-color: rgb(115 103 240);
     background: #fff;
     border-radius: to-rem(12);
     border: 1px solid #e5e7eb;
-    overflow: auto; // Both scrolls
+    overflow: auto; // Оба скролла
     -webkit-overflow-scrolling: touch;
   }
 
@@ -430,7 +430,7 @@ $accent-color: rgb(115 103 240);
     width: 100%;
     border-collapse: collapse;
     table-layout: auto;
-    min-width: to-rem(800); // Minimum width to trigger scroll on mobile
+    min-width: to-rem(800); // Минимальная ширина для скролла на мобильных
 
     thead {
       position: sticky;

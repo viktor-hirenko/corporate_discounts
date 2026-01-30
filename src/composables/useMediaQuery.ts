@@ -13,7 +13,7 @@ export function useMediaQuery(query: string) {
    * @param e - MediaQueryList event or list
    */
   const update = (e: MediaQueryList | MediaQueryListEvent) => {
-    // Mirror current match state for both event and list
+    // Отражаем текущее состояние совпадения для события и списка
     matches.value = 'matches' in e ? e.matches : false
   }
 
@@ -22,7 +22,7 @@ export function useMediaQuery(query: string) {
     mql = window.matchMedia(query)
     matches.value = mql.matches
 
-    // Support both modern and legacy listener APIs
+    // Поддержка современного и устаревшего API слушателей
     const list = mql as MediaQueryList
     if ('addEventListener' in list) list.addEventListener('change', update)
     else

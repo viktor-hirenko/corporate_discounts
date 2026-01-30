@@ -44,7 +44,7 @@ const handleExport = () => {
   URL.revokeObjectURL(url)
 }
 
-// Form
+// Форма
 const formData = ref({
   id: '',
   label: { ua: '', en: '' },
@@ -157,7 +157,7 @@ const generateId = (name: string): string => {
     .trim()
 }
 
-// Watch for form open
+// Отслеживание открытия формы
 import { watch } from 'vue'
 watch(
   () => store.isFormOpen,

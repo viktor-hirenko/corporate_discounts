@@ -37,7 +37,7 @@ function initGlobalGoogleIdentityServices(): void {
         try {
           await authStore.loginWithGoogle(response.credential)
         } catch {
-          // Silent refresh failed - handled by auth store
+          // Тихое обновление не удалось - обрабатывается в auth store
         }
       },
       auto_select: true,
@@ -97,10 +97,10 @@ const discountsStore = useDiscountsStore(pinia)
 
 void discountsStore.loadPartners()
 
-// ✅ Запускаем автоматическое обновление данных каждые 5 минут
+// Запускаем автоматическое обновление данных каждые 5 минут
 discountsStore.startAutoRefresh()
 
-// ✅ Инициализируем Google Identity Services для Silent Token Refresh
+// Инициализируем Google Identity Services для Silent Token Refresh
 initGlobalGoogleIdentityServices()
 
 /**

@@ -22,7 +22,7 @@ const handleExport = () => {
   URL.revokeObjectURL(url)
 }
 
-// Edit mode
+// Режим редактирования
 const editingId = ref<string | null>(null)
 const editingPath = ref('')
 

@@ -4,7 +4,7 @@ import type { PartnerConfig, AppConfig } from '@/types/app-config'
 import { getApiUrl, fetchWithAuth } from '@/utils/api-config'
 
 export const useAdminPartnersStore = defineStore('adminPartners', () => {
-  // State
+  // Состояние
   const partners = ref<Record<string, PartnerConfig>>({})
   const isInitialized = ref(false)
   const searchQuery = ref('')
@@ -14,7 +14,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
   const isFormOpen = ref(false)
   const isSaving = ref(false)
 
-  // Getters
+  // Геттеры
   const partnersList = computed(() => {
     return Object.values(partners.value)
   })
@@ -22,7 +22,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
   const filteredPartners = computed(() => {
     let result = partnersList.value
 
-    // Search filter
+    // Фильтр по поиску
     if (searchQuery.value) {
       const query = searchQuery.value.toLowerCase()
       result = result.filter(
@@ -34,12 +34,12 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
       )
     }
 
-    // Category filter
+    // Фильтр по категории
     if (selectedCategory.value !== 'all') {
       result = result.filter((p) => p.category.ua === selectedCategory.value)
     }
 
-    // Location filter
+    // Фильтр по локации
     if (selectedLocation.value !== 'all') {
       result = result.filter((p) => p.location.ua.includes(selectedLocation.value))
     }
@@ -101,7 +101,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
   // Автоматическая инициализация
   init()
 
-  // Actions
+  // Действия
   function openCreateForm() {
     editingPartner.value = null
     isFormOpen.value = true
@@ -254,7 +254,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
   }
 
   return {
-    // State
+    // Состояние
     partners,
     searchQuery,
     selectedCategory,
@@ -263,13 +263,13 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     isFormOpen,
     isSaving,
     isInitialized,
-    // Getters
+    // Геттеры
     partnersList,
     filteredPartners,
     categories,
     locations,
     partnersCount,
-    // Actions
+    // Действия
     init,
     openCreateForm,
     openEditForm,

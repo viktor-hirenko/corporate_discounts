@@ -14,7 +14,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
   // Системные локации, которые нельзя удалять
   const systemLocations = ['all', 'online']
 
-  // State
+  // Состояние
   const locations = ref<Record<string, LocationItem>>({})
   const searchQuery = ref('')
   const editingLocation = ref<LocationItem | null>(null)
@@ -63,7 +63,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
   // Автоматическая инициализация
   init()
 
-  // Getters
+  // Геттеры
   const locationsList = computed(() => {
     return Object.values(locations.value).sort((a, b) => {
       // Системные локации первыми
@@ -87,7 +87,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
 
   const locationsCount = computed(() => locationsList.value.length)
 
-  // Actions
+  // Действия
   function openCreateForm() {
     editingLocation.value = null
     isFormOpen.value = true
@@ -103,7 +103,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     isFormOpen.value = false
   }
 
-  // Granular save - save single location via API
+  // Гранулярное сохранение - сохранение одной локации через API
   async function saveLocation(location: LocationItem) {
     isSaving.value = true
     try {
@@ -120,7 +120,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
         throw new Error(errorData.error || 'Failed to save location')
       }
 
-      // Update local state after successful API save
+      // Обновляем локальное состояние после успешного сохранения в API
       locations.value[location.id] = {
         ...location,
         isSystem: systemLocations.includes(location.id),
@@ -134,7 +134,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
     }
   }
 
-  // Granular delete - delete single location via API
+  // Гранулярное удаление - удаление одной локации через API
   async function deleteLocation(id: string) {
     if (systemLocations.includes(id)) return
 
@@ -149,7 +149,7 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
         throw new Error(errorData.error || 'Failed to delete location')
       }
 
-      // Update local state after successful API delete
+      // Обновляем локальное состояние после успешного удаления в API
     delete locations.value[id]
     } catch (error) {
       console.error('Failed to delete location:', error)
@@ -175,18 +175,18 @@ export const useAdminLocationsStore = defineStore('adminLocations', () => {
   }
 
   return {
-    // State
+    // Состояние
     locations,
     searchQuery,
     editingLocation,
     isFormOpen,
     isSaving,
     isInitialized,
-    // Getters
+    // Геттеры
     locationsList,
     filteredLocations,
     locationsCount,
-    // Actions
+    // Действия
     init,
     openCreateForm,
     openEditForm,
