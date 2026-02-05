@@ -42,6 +42,7 @@ const allMenuItems: MenuItem[] = [
   { id: 'faq', label: 'FAQ', icon: 'fas fa-question-circle', to: '/admin/faq' },
   { id: 'texts', label: 'Тексти сторінок', icon: 'fas fa-file-alt', to: '/admin/texts' },
   { id: 'images', label: 'Зображення', icon: 'fas fa-images', to: '/admin/images' },
+  { id: 'history', label: 'Історія змін', icon: 'fas fa-history', to: '/admin/history' },
   { id: 'settings', label: 'Налаштування', icon: 'fas fa-cog', to: '/admin/settings' },
   {
     id: 'users',

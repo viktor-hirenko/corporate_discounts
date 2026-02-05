@@ -306,6 +306,9 @@ async function createBackup(env: Env, config: AppConfig): Promise<void> {
         contentType: 'application/json',
       })
       console.log(`[BACKUP] Created backup: ${backupKey}`)
+
+      // Очищаем старые бекапы (оставляем последние MAX_BACKUPS)
+      await cleanupOldBackups(env)
     }
   } catch (error) {
     // Не прерываем основную операцию если бекап не удался
@@ -453,6 +456,124 @@ function incrementConfigVersion(config: AppConfig, userEmail: string): void {
   config.configVersion = (config.configVersion || 0) + 1
   config.lastModified = new Date().toISOString()
   config.lastModifiedBy = userEmail
+}
+
+// =============================================================================
+// AUDIT LOG FUNCTIONS
+// =============================================================================
+
+/** Максимальное количество записей в audit log */
+const MAX_AUDIT_LOG_ENTRIES = 500
+
+/** Структура записи в audit log */
+interface AuditLogEntry {
+  id: string
+  timestamp: string
+  user: string
+  action: 'create' | 'update' | 'delete'
+  entity: 'partner' | 'category' | 'location' | 'faq' | 'texts' | 'users' | 'config'
+  entityId: string
+  entityName: string
+  changes?: Record<string, { old: unknown; new: unknown }>
+}
+
+/**
+ * Добавляет запись в audit log.
+ * Загружает текущий лог, добавляет запись в начало, обрезает до MAX_AUDIT_LOG_ENTRIES.
+ */
+async function appendAuditLog(env: Env, entry: Omit<AuditLogEntry, 'id' | 'timestamp'>): Promise<void> {
+  try {
+    if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY || !env.EXTERNAL_R2_ENDPOINT) {
+      return
+    }
+
+    // Загружаем текущий audit log
+    let auditLog: AuditLogEntry[] = []
+    try {
+      const response = await s3Request(env, {
+        method: 'GET',
+        key: 'data/audit-log.json',
+      })
+      if (response.ok) {
+        auditLog = (await response.json()) as AuditLogEntry[]
+      }
+    } catch {
+      // Файл не существует — создадим новый
+    }
+
+    // Создаём новую запись
+    const newEntry: AuditLogEntry = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      timestamp: new Date().toISOString(),
+      ...entry,
+    }
+
+    // Добавляем в начало массива
+    auditLog.unshift(newEntry)
+
+    // Обрезаем до максимального размера
+    if (auditLog.length > MAX_AUDIT_LOG_ENTRIES) {
+      auditLog = auditLog.slice(0, MAX_AUDIT_LOG_ENTRIES)
+    }
+
+    // Сохраняем обратно
+    await s3Request(env, {
+      method: 'PUT',
+      key: 'data/audit-log.json',
+      body: JSON.stringify(auditLog, null, 2),
+      contentType: 'application/json',
+    })
+
+    console.log(`[AUDIT_LOG] Added entry: ${newEntry.action} ${newEntry.entity} ${newEntry.entityId}`)
+  } catch (error) {
+    // Не прерываем основную операцию если audit log не удался
+    console.error('[AUDIT_LOG_ERROR] Failed to append audit log:', error)
+  }
+}
+
+/**
+ * Получает записи из audit log с фильтрацией.
+ */
+async function getAuditLog(
+  env: Env,
+  options: { limit?: number; entity?: string; user?: string } = {},
+): Promise<AuditLogEntry[]> {
+  try {
+    if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY || !env.EXTERNAL_R2_ENDPOINT) {
+      return []
+    }
+
+    const response = await s3Request(env, {
+      method: 'GET',
+      key: 'data/audit-log.json',
+    })
+
+    if (!response.ok) {
+      return []
+    }
+
+    let auditLog = (await response.json()) as AuditLogEntry[]
+
+    // Фильтрация по entity
+    if (options.entity) {
+      auditLog = auditLog.filter((entry) => entry.entity === options.entity)
+    }
+
+    // Фильтрация по user
+    if (options.user) {
+      auditLog = auditLog.filter((entry) => entry.user === options.user)
+    }
+
+    // Лимит
+    if (options.limit && options.limit > 0) {
+      auditLog = auditLog.slice(0, options.limit)
+    }
+
+    return auditLog
+  } catch (error) {
+    console.error('[AUDIT_LOG_ERROR] Failed to get audit log:', error)
+    return []
+  }
 }
 
 // =============================================================================
@@ -668,6 +789,53 @@ export default {
         const backups = await listBackups(env)
         return corsResponse(
           new Response(JSON.stringify({ backups }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+          origin,
+        )
+      }
+
+      // API: GET /api/audit-log - get audit log entries (protected)
+      if (path === '/api/audit-log' && request.method === 'GET') {
+        // JWT Authentication check
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        // Parse query params
+        const limit = url.searchParams.get('limit')
+        const entity = url.searchParams.get('entity')
+        const user = url.searchParams.get('user')
+
+        const entries = await getAuditLog(env, {
+          limit: limit ? parseInt(limit, 10) : undefined,
+          entity: entity || undefined,
+          user: user || undefined,
+        })
+
+        return corsResponse(
+          new Response(JSON.stringify({ entries }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
           }),
@@ -1906,6 +2074,10 @@ async function savePartner(
     const configJson = JSON.stringify(config, null, 2)
 
     // Log the action with diff for updates, full data for creates
+    const changes = isNewPartner
+      ? undefined
+      : getObjectDiff(existingPartner as Record<string, unknown>, partner as Record<string, unknown>)
+
     if (isNewPartner) {
       // CREATE - log full partner data
       console.log(
@@ -1918,27 +2090,36 @@ async function savePartner(
           name: partner.name,
         }),
       )
-    } else {
+      // Audit log for create
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'create',
+        entity: 'partner',
+        entityId: partner.slug,
+        entityName: partner.name?.ua || partner.slug,
+      })
+    } else if (changes && Object.keys(changes).length > 0) {
       // UPDATE - log only the differences
-      const changes = getObjectDiff(
-        existingPartner as Record<string, unknown>,
-        partner as Record<string, unknown>,
+      console.log(
+        '[PARTNER_UPDATE]',
+        JSON.stringify({
+          user: userEmail,
+          action: 'update',
+          timestamp: new Date().toISOString(),
+          slug: partner.slug,
+          name: partner.name?.ua || partner.slug,
+          changes,
+        }),
       )
-      
-      // Only log if there are actual changes
-      if (Object.keys(changes).length > 0) {
-        console.log(
-          '[PARTNER_UPDATE]',
-          JSON.stringify({
-            user: userEmail,
-            action: 'update',
-            timestamp: new Date().toISOString(),
-            slug: partner.slug,
-            name: partner.name?.ua || partner.slug,
-            changes,
-          }),
-        )
-      }
+      // Audit log for update
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'update',
+        entity: 'partner',
+        entityId: partner.slug,
+        entityName: partner.name?.ua || partner.slug,
+        changes,
+      })
     }
 
     // Try external bucket first
@@ -2064,6 +2245,7 @@ async function deletePartner(
     const configJson = JSON.stringify(config, null, 2)
 
     // Log the action with deleted partner data for audit trail
+    const partnerName = (deletedPartner.name as Record<string, string>)?.ua || slug
     console.log(
       '[PARTNER_DELETE]',
       JSON.stringify({
@@ -2071,7 +2253,7 @@ async function deletePartner(
         timestamp: new Date().toISOString(),
         deleted: {
           slug: slug,
-          name: (deletedPartner.name as Record<string, string>)?.ua,
+          name: partnerName,
           category: (deletedPartner.category as Record<string, string>)?.ua,
           location: (deletedPartner.location as Record<string, string>)?.ua,
           promoCode: deletedPartner.promoCode,
@@ -2079,6 +2261,15 @@ async function deletePartner(
         },
       }),
     )
+
+    // Audit log for delete
+    await appendAuditLog(env, {
+      user: userEmail,
+      action: 'delete',
+      entity: 'partner',
+      entityId: slug,
+      entityName: partnerName,
+    })
 
     // Try external bucket first
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
@@ -2201,6 +2392,11 @@ async function saveCategory(
     config.filters.categories[data.key] = newCategoryData
 
     // Log the action with diff for updates, basic info for creates
+    const categoryName = data.label?.ua || data.key
+    const changes = isNewCategory
+      ? undefined
+      : getObjectDiff(existingCategory, newCategoryData as Record<string, unknown>)
+
     if (isNewCategory) {
       console.log(
         '[CATEGORY_CREATE]',
@@ -2212,20 +2408,32 @@ async function saveCategory(
           label: data.label,
         }),
       )
-    } else {
-      const changes = getObjectDiff(existingCategory, newCategoryData as Record<string, unknown>)
-      if (Object.keys(changes).length > 0) {
-        console.log(
-          '[CATEGORY_UPDATE]',
-          JSON.stringify({
-            user: userEmail,
-            action: 'update',
-            timestamp: new Date().toISOString(),
-            key: data.key,
-            changes,
-          }),
-        )
-      }
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'create',
+        entity: 'category',
+        entityId: data.key,
+        entityName: categoryName,
+      })
+    } else if (changes && Object.keys(changes).length > 0) {
+      console.log(
+        '[CATEGORY_UPDATE]',
+        JSON.stringify({
+          user: userEmail,
+          action: 'update',
+          timestamp: new Date().toISOString(),
+          key: data.key,
+          changes,
+        }),
+      )
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'update',
+        entity: 'category',
+        entityId: data.key,
+        entityName: categoryName,
+        changes,
+      })
     }
 
     const configJson = JSON.stringify(config, null, 2)
@@ -2299,6 +2507,7 @@ async function deleteCategory(
     delete config.filters.categories[key]
 
     // Log the action with deleted category data for audit trail
+    const categoryName = (deletedCategory.label as Record<string, string>)?.ua || key
     console.log(
       '[CATEGORY_DELETE]',
       JSON.stringify({
@@ -2311,6 +2520,14 @@ async function deleteCategory(
         },
       }),
     )
+
+    await appendAuditLog(env, {
+      user: userEmail,
+      action: 'delete',
+      entity: 'category',
+      entityId: key,
+      entityName: categoryName,
+    })
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
@@ -2393,6 +2610,11 @@ async function saveLocation(
     config.filters.locations[data.key] = newLocationData
 
     // Log the action with diff for updates, basic info for creates
+    const locationName = data.label?.ua || data.key
+    const changes = isNewLocation
+      ? undefined
+      : getObjectDiff(existingLocation, newLocationData as Record<string, unknown>)
+
     if (isNewLocation) {
       console.log(
         '[LOCATION_CREATE]',
@@ -2404,20 +2626,32 @@ async function saveLocation(
           label: data.label,
         }),
       )
-    } else {
-      const changes = getObjectDiff(existingLocation, newLocationData as Record<string, unknown>)
-      if (Object.keys(changes).length > 0) {
-        console.log(
-          '[LOCATION_UPDATE]',
-          JSON.stringify({
-            user: userEmail,
-            action: 'update',
-            timestamp: new Date().toISOString(),
-            key: data.key,
-            changes,
-          }),
-        )
-      }
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'create',
+        entity: 'location',
+        entityId: data.key,
+        entityName: locationName,
+      })
+    } else if (changes && Object.keys(changes).length > 0) {
+      console.log(
+        '[LOCATION_UPDATE]',
+        JSON.stringify({
+          user: userEmail,
+          action: 'update',
+          timestamp: new Date().toISOString(),
+          key: data.key,
+          changes,
+        }),
+      )
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'update',
+        entity: 'location',
+        entityId: data.key,
+        entityName: locationName,
+        changes,
+      })
     }
 
     const configJson = JSON.stringify(config, null, 2)
@@ -2491,6 +2725,7 @@ async function deleteLocation(
     delete config.filters.locations[key]
 
     // Log the action with deleted location data for audit trail
+    const locationName = (deletedLocation.label as Record<string, string>)?.ua || key
     console.log(
       '[LOCATION_DELETE]',
       JSON.stringify({
@@ -2502,6 +2737,14 @@ async function deleteLocation(
         },
       }),
     )
+
+    await appendAuditLog(env, {
+      user: userEmail,
+      action: 'delete',
+      entity: 'location',
+      entityId: key,
+      entityName: locationName,
+    })
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
@@ -2594,6 +2837,11 @@ async function saveFaqItem(
     }
 
     // Log the action with diff for updates, basic info for creates
+    const faqName = truncate(data.question.ua, 50) || data.id
+    const changes = isNewFaq
+      ? undefined
+      : getObjectDiff(existingFaq as unknown as Record<string, unknown>, faqItem as Record<string, unknown>)
+
     if (isNewFaq) {
       console.log(
         '[FAQ_CREATE]',
@@ -2605,23 +2853,32 @@ async function saveFaqItem(
           question: { ua: truncate(data.question.ua, 100), en: truncate(data.question.en, 100) },
         }),
       )
-    } else {
-      const changes = getObjectDiff(
-        existingFaq as Record<string, unknown>,
-        faqItem as Record<string, unknown>,
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'create',
+        entity: 'faq',
+        entityId: data.id,
+        entityName: faqName,
+      })
+    } else if (changes && Object.keys(changes).length > 0) {
+      console.log(
+        '[FAQ_UPDATE]',
+        JSON.stringify({
+          user: userEmail,
+          action: 'update',
+          timestamp: new Date().toISOString(),
+          id: data.id,
+          changes,
+        }),
       )
-      if (Object.keys(changes).length > 0) {
-        console.log(
-          '[FAQ_UPDATE]',
-          JSON.stringify({
-            user: userEmail,
-            action: 'update',
-            timestamp: new Date().toISOString(),
-            id: data.id,
-            changes,
-          }),
-        )
-      }
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'update',
+        entity: 'faq',
+        entityId: data.id,
+        entityName: faqName,
+        changes,
+      })
     }
 
     const configJson = JSON.stringify(config, null, 2)
@@ -2703,6 +2960,7 @@ async function deleteFaqItem(
     config.pages.faq.items.splice(index, 1)
 
     // Log the action with deleted FAQ data for audit trail
+    const faqName = truncate(deletedFaq.question?.ua, 50) || id
     console.log(
       '[FAQ_DELETE]',
       JSON.stringify({
@@ -2715,6 +2973,14 @@ async function deleteFaqItem(
         },
       }),
     )
+
+    await appendAuditLog(env, {
+      user: userEmail,
+      action: 'delete',
+      entity: 'faq',
+      entityId: id,
+      entityName: faqName,
+    })
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
@@ -2787,14 +3053,14 @@ async function saveTexts(
     // Создаём бекап перед изменениями и инкрементируем версию
     await createBackup(env, config)
     incrementConfigVersion(config, userEmail)
-    
+
     // Get existing page texts for diff comparison
     const existingTexts = config.pages[data.page] as Record<string, unknown> | undefined
     config.pages[data.page] = data.texts
 
     // Log the action with diff - only changed text fields
     const changes = getObjectDiff(existingTexts || {}, data.texts as Record<string, unknown>)
-    
+
     if (Object.keys(changes).length > 0) {
       console.log(
         '[TEXTS_UPDATE]',
@@ -2806,6 +3072,14 @@ async function saveTexts(
           changes,
         }),
       )
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'update',
+        entity: 'texts',
+        entityId: data.page,
+        entityName: `Тексти: ${data.page}`,
+        changes,
+      })
     }
 
     const configJson = JSON.stringify(config, null, 2)
@@ -2902,6 +3176,22 @@ async function saveUsers(
         },
       }),
     )
+
+    // Only log to audit if there are actual changes
+    if (addedUsers.length > 0 || removedUsers.length > 0) {
+      await appendAuditLog(env, {
+        user: userEmail,
+        action: 'update',
+        entity: 'users',
+        entityId: 'allowed-users',
+        entityName: `Користувачі (${data.users.length})`,
+        changes: {
+          added: { old: null, new: addedUsers },
+          removed: { old: removedUsers, new: null },
+          totalCount: { old: previousUsers.length, new: data.users.length },
+        },
+      })
+    }
 
     const configJson = JSON.stringify(config, null, 2)
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
