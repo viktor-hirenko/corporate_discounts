@@ -11,6 +11,7 @@ const authStore = useAuthStore()
 const isSidebarCollapsed = ref(false)
 const isMobileMenuOpen = ref(false)
 const isMobile = ref(false)
+const isLandscapeMobile = ref(false)
 
 // Модалка предупреждения о сессии
 const showSessionWarning = ref(false)
@@ -24,6 +25,11 @@ const checkMobile = () => {
   if (!isMobile.value) {
     isMobileMenuOpen.value = false
   }
+}
+
+const checkLandscapeMobile = () => {
+  // Горизонтальный мобильный: высота < 500px и ширина > высоты
+  isLandscapeMobile.value = window.innerHeight < 500 && window.innerWidth > window.innerHeight
 }
 
 const toggleSidebar = () => {
@@ -59,7 +65,10 @@ const handleLogout = () => {
 
 onMounted(() => {
   checkMobile()
+  checkLandscapeMobile()
   window.addEventListener('resize', checkMobile)
+  window.addEventListener('resize', checkLandscapeMobile)
+  window.addEventListener('orientationchange', checkLandscapeMobile)
 
   // Запускаем периодическую проверку токена каждые 5 минут
   tokenCheckTimer = setInterval(checkTokenValidity, TOKEN_CHECK_INTERVAL)
@@ -70,6 +79,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
+  window.removeEventListener('resize', checkLandscapeMobile)
+  window.removeEventListener('orientationchange', checkLandscapeMobile)
 
   // Очищаем таймер при размонтировании
   if (tokenCheckTimer) {
@@ -80,7 +91,19 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <!-- Заглушка для горизонтального мобильного -->
+  <div v-if="isLandscapeMobile" class="landscape-warning">
+    <div class="landscape-warning__content">
+      <div class="landscape-warning__icon">📱</div>
+      <h2 class="landscape-warning__title">Поверніть телефон</h2>
+      <p class="landscape-warning__text">
+        Для роботи з адмін-панеллю поверніть телефон вертикально
+      </p>
+    </div>
+  </div>
+
   <div
+    v-else
     class="admin-layout"
     :class="{
       'sidebar-collapsed': isSidebarCollapsed && !isMobile,
@@ -135,10 +158,10 @@ onUnmounted(() => {
   background-color: #f8fafc;
 
   @include mq(null, md) {
-    // height: calc(100dvh - 48px);
-    // min-height: calc(100dvh - 48px);
-    height: 100dvh;
-    min-height: 100dvh;
+    height: calc(100dvh - 48px);
+    min-height: calc(100dvh - 48px);
+    // height: 100dvh;
+    // min-height: 100dvh;
   }
 
   &__overlay {
@@ -247,6 +270,60 @@ onUnmounted(() => {
     &:hover {
       background: #4f46e5;
     }
+  }
+}
+
+// Заглушка для горизонтального мобильного
+.landscape-warning {
+  position: fixed;
+  inset: 0;
+  // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+
+  &__content {
+    text-align: center;
+    padding: to-rem(24);
+  }
+
+  &__icon {
+    font-size: to-rem(64);
+    margin-bottom: to-rem(16);
+    animation: rotate-phone 2s ease-in-out infinite;
+  }
+
+  &__title {
+    font-size: to-rem(24);
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 to-rem(12);
+    text-shadow: 0 2px 4px rgb(0 0 0 / 20%);
+  }
+
+  &__text {
+    font-size: to-rem(16);
+    font-weight: 500;
+    color: #fff;
+    margin: 0;
+    line-height: 1.5;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 15%);
+  }
+}
+
+@keyframes rotate-phone {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-15deg);
+  }
+
+  75% {
+    transform: rotate(15deg);
   }
 }
 </style>

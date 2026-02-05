@@ -50,6 +50,16 @@ body {
     padding: 0 !important;
   }
 
+  // // Удалить отступы когда показывается заглушка для горизонтального мобильного
+  // &:has(> .landscape-warning) {
+  //   padding: 0 !important;
+  // }
+
+  // // Удалить отступы когда показывается admin-layout
+  // &:has(> .admin-layout) {
+  //   padding: 0 !important;
+  // }
+
   @include mq(null, lg) {
     padding: to-rem(24);
   }
