@@ -33,6 +33,7 @@ const formData = reactive({
   slug: '',
   image: '',
   promoCode: '',
+  isHidden: false,
   contact: {
     website: '',
     email: '',
@@ -340,12 +341,13 @@ const isValid = computed(() => {
 const handleSave = () => {
   if (!isValid.value) return
 
-  // ✅ Санитизация всех полей
+  // Санитизация всех полей
   const partner: PartnerConfig = {
     id: formData.slug,
     slug: sanitizeString(formData.slug),
     image: sanitizeString(formData.image) || `/images/partners/${formData.slug}.webp`,
     promoCode: sanitizeString(formData.promoCode),
+    isHidden: formData.isHidden,
     contact: {
       website: sanitizeUrl(formData.contact.website),
       email: sanitizeEmail(formData.contact.email),
@@ -400,6 +402,19 @@ const handleCategoryChange = (lang: 'ua' | 'en', value: string) => {
     </div>
 
     <form class="partner-form__body" @submit.prevent="handleSave">
+      <!-- Visibility Toggle -->
+      <div v-if="isEditing" class="visibility-toggle">
+        <label class="visibility-toggle__label">
+          <input v-model="formData.isHidden" type="checkbox" class="visibility-toggle__checkbox" />
+          <span class="visibility-toggle__text">
+            <i :class="formData.isHidden ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            {{
+              formData.isHidden ? 'Партнер прихований з сайту' : 'Партнер відображається на сайті'
+            }}
+          </span>
+        </label>
+      </div>
+
       <!-- Basic Info -->
       <section class="form-section">
         <h3>Основна інформація</h3>
@@ -735,6 +750,52 @@ const handleCategoryChange = (lang: 'ua' | 'en', value: string) => {
 @use '@/styles/utils' as *;
 
 $accent-color: rgb(115 103 240);
+
+.visibility-toggle {
+  display: flex;
+  padding: to-rem(12) to-rem(16);
+  margin-bottom: to-rem(16);
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: to-rem(8);
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: to-rem(12);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  &__checkbox {
+    width: to-rem(18);
+    height: to-rem(18);
+    accent-color: #ef4444;
+    cursor: pointer;
+  }
+
+  &__text {
+    display: flex;
+    align-items: center;
+    gap: to-rem(8);
+    font-size: to-rem(14);
+    font-weight: 500;
+    color: #92400e;
+
+    i {
+      font-size: to-rem(16);
+    }
+  }
+
+  &:has(&__checkbox:checked) {
+    background: #fee2e2;
+    border-color: #fca5a5;
+
+    .visibility-toggle__text {
+      color: #b91c1c;
+    }
+  }
+}
 
 .partner-form {
   &__header {

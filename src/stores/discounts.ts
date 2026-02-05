@@ -183,8 +183,10 @@ export const useDiscountsStore = defineStore('discounts', {
         // Сохраняем filters из API для динамического использования в фильтрах
         this.filtersConfig = config.filters
 
-        // Преобразуем конфигурацию партнеров в массив Partner
-        const partners: Partner[] = Object.values(partnersConfig).map((partnerConfig) => {
+        // Преобразуем конфигурацию партнеров в массив Partner (фильтруем скрытых)
+        const partners: Partner[] = Object.values(partnersConfig)
+          .filter((partnerConfig) => !partnerConfig.isHidden)
+          .map((partnerConfig) => {
           const imagePath = partnerConfig.image
 
           // Находим категорию по украинскому тексту в filters.categories

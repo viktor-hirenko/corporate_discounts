@@ -237,6 +237,30 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     }
   }
 
+  // Переключение видимости партнера (скрыть/показать)
+  async function togglePartnerVisibility(slug: string) {
+    const partner = partners.value[slug]
+    if (!partner) return
+
+    isSaving.value = true
+    try {
+      const updatedPartner: PartnerConfig = {
+        ...partner,
+        isHidden: !partner.isHidden,
+      }
+
+      const success = await savePartnerToServer(updatedPartner)
+
+      if (success) {
+        partners.value[slug] = updatedPartner
+      } else {
+        alert('Помилка зміни видимості. Спробуйте ще раз.')
+      }
+    } finally {
+      isSaving.value = false
+    }
+  }
+
   function exportToJSON() {
     return JSON.stringify({ partners: partners.value }, null, 2)
   }
@@ -277,6 +301,7 @@ export const useAdminPartnersStore = defineStore('adminPartners', () => {
     savePartner,
     deletePartner,
     duplicatePartner,
+    togglePartnerVisibility,
     exportToJSON,
     setSearchQuery,
     setCategory,

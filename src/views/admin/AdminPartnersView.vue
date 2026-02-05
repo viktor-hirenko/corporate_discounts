@@ -94,6 +94,10 @@ const copyPartnerJSON = (partner: PartnerConfig) => {
 const openPartnerPage = (slug: string) => {
   window.open(`/#/discounts/${slug}`, '_blank')
 }
+
+const handleToggleVisibility = (partner: PartnerConfig) => {
+  store.togglePartnerVisibility(partner.slug)
+}
 </script>
 
 <template>
@@ -170,7 +174,11 @@ const openPartnerPage = (slug: string) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="partner in store.filteredPartners" :key="partner.slug">
+          <tr
+            v-for="partner in store.filteredPartners"
+            :key="partner.slug"
+            :class="{ 'row--hidden': partner.isHidden }"
+          >
             <td class="col-image">
               <div class="partner-image">
                 <img
@@ -200,6 +208,14 @@ const openPartnerPage = (slug: string) => {
             <td class="col-discount">{{ partner.discount.label.ua }}</td>
             <td class="col-actions">
               <div class="actions-group">
+                <button
+                  class="btn-icon"
+                  :class="{ 'btn-icon--hidden': partner.isHidden }"
+                  :title="partner.isHidden ? 'Показати на сайті' : 'Приховати з сайту'"
+                  @click="handleToggleVisibility(partner)"
+                >
+                  <i :class="partner.isHidden ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                </button>
                 <button
                   class="btn-icon"
                   title="Відкрити на сайті"
@@ -470,6 +486,14 @@ $accent-color: rgb(115 103 240);
     tr:hover {
       background: #f9fafb;
     }
+
+    tr.row--hidden {
+      background: #fef2f2;
+
+      &:hover {
+        background: #fee2e2;
+      }
+    }
   }
 
   &__empty {
@@ -558,6 +582,12 @@ $accent-color: rgb(115 103 240);
   border-radius: to-rem(20);
   font-size: to-rem(12);
   font-weight: 500;
+
+  &--hidden {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    margin-left: to-rem(8);
+  }
 }
 
 code {
@@ -594,6 +624,15 @@ code {
   &--danger:hover {
     background: #fee2e2;
     color: #dc2626;
+  }
+
+  &--hidden {
+    color: #ef4444;
+
+    &:hover {
+      background: #dcfce7;
+      color: #16a34a;
+    }
   }
 }
 

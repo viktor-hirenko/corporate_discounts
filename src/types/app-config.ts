@@ -180,6 +180,7 @@ export interface PartnerConfig {
   slug: string
   image: string
   promoCode: string
+  isHidden?: boolean
   contact: {
     website?: string
     email?: string
