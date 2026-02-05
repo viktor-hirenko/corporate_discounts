@@ -24,6 +24,12 @@ interface FaqItem {
 }
 
 interface AppConfig {
+  /** Версия конфига — инкрементируется при каждом сохранении */
+  configVersion?: number
+  /** Дата последнего изменения в ISO формате */
+  lastModified?: string
+  /** Email пользователя, который последним изменил конфиг */
+  lastModifiedBy?: string
   partners?: Record<string, Partner>
   filters?: {
     categories?: Record<string, unknown>
@@ -277,6 +283,179 @@ async function s3Request(env: Env, options: S3RequestOptions): Promise<Response>
 }
 
 // =============================================================================
+// BACKUP FUNCTIONS
+// =============================================================================
+
+/** Максимальное количество бекапов для хранения */
+const MAX_BACKUPS = 50
+
+/**
+ * Создаёт бекап текущего конфига перед сохранением изменений.
+ * Бекапы хранятся в data/backups/ с timestamp в имени файла.
+ */
+async function createBackup(env: Env, config: AppConfig): Promise<void> {
+  try {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    const backupKey = `data/backups/app-config-${timestamp}.json`
+
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      await s3Request(env, {
+        method: 'PUT',
+        key: backupKey,
+        body: JSON.stringify(config, null, 2),
+        contentType: 'application/json',
+      })
+      console.log(`[BACKUP] Created backup: ${backupKey}`)
+    }
+  } catch (error) {
+    // Не прерываем основную операцию если бекап не удался
+    console.error('[BACKUP_ERROR] Failed to create backup:', error)
+  }
+}
+
+/**
+ * Получает список всех бекапов из R2.
+ * Возвращает массив объектов с ключом и датой.
+ */
+async function listBackups(
+  env: Env,
+): Promise<Array<{ key: string; lastModified: string; size: number }>> {
+  try {
+    if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY || !env.EXTERNAL_R2_ENDPOINT) {
+      return []
+    }
+
+    // Используем S3 ListObjectsV2 API
+    const endpoint = env.EXTERNAL_R2_ENDPOINT
+    const bucketName = env.EXTERNAL_BUCKET_NAME
+    const region = 'auto'
+    const service = 's3'
+
+    const endpointUrl = new URL(endpoint)
+    const host = `${bucketName}.${endpointUrl.host}`
+    const url = `https://${host}/?list-type=2&prefix=data/backups/`
+
+    const now = new Date()
+    const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '')
+    const dateStamp = amzDate.slice(0, 8)
+
+    const payloadHash = await sha256('')
+
+    const headers: Record<string, string> = {
+      host: host,
+      'x-amz-date': amzDate,
+      'x-amz-content-sha256': payloadHash,
+    }
+
+    const signedHeaders = Object.keys(headers).sort().join(';')
+    const canonicalHeaders = Object.keys(headers)
+      .sort()
+      .map((k) => `${k}:${headers[k]}\n`)
+      .join('')
+
+    const canonicalRequest = [
+      'GET',
+      '/',
+      'list-type=2&prefix=data%2Fbackups%2F',
+      canonicalHeaders,
+      signedHeaders,
+      payloadHash,
+    ].join('\n')
+
+    const canonicalRequestHash = await sha256(canonicalRequest)
+    const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`
+    const stringToSign = ['AWS4-HMAC-SHA256', amzDate, credentialScope, canonicalRequestHash].join(
+      '\n',
+    )
+
+    const signingKey = await getSignatureKey(env.AWS_SECRET_ACCESS_KEY, dateStamp, region, service)
+    const signature = toHex(await hmacSha256(signingKey, stringToSign))
+
+    const authorization = `AWS4-HMAC-SHA256 Credential=${env.AWS_ACCESS_KEY_ID}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: authorization,
+        'x-amz-date': amzDate,
+        'x-amz-content-sha256': payloadHash,
+      },
+    })
+
+    if (!response.ok) {
+      console.error('[BACKUP_LIST_ERROR] Failed to list backups:', response.status)
+      return []
+    }
+
+    const xml = await response.text()
+
+    // Простой парсинг XML для получения списка файлов
+    const backups: Array<{ key: string; lastModified: string; size: number }> = []
+    const keyMatches = xml.matchAll(/<Key>([^<]+)<\/Key>/g)
+    const dateMatches = xml.matchAll(/<LastModified>([^<]+)<\/LastModified>/g)
+    const sizeMatches = xml.matchAll(/<Size>([^<]+)<\/Size>/g)
+
+    const keys = Array.from(keyMatches).map((m) => m[1])
+    const dates = Array.from(dateMatches).map((m) => m[1])
+    const sizes = Array.from(sizeMatches).map((m) => parseInt(m[1], 10))
+
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i].startsWith('data/backups/')) {
+        backups.push({
+          key: keys[i],
+          lastModified: dates[i] || '',
+          size: sizes[i] || 0,
+        })
+      }
+    }
+
+    // Сортируем по дате (новые первые)
+    backups.sort((a, b) => b.lastModified.localeCompare(a.lastModified))
+
+    return backups
+  } catch (error) {
+    console.error('[BACKUP_LIST_ERROR]', error)
+    return []
+  }
+}
+
+/**
+ * Удаляет старые бекапы, оставляя только последние MAX_BACKUPS.
+ */
+async function cleanupOldBackups(env: Env): Promise<void> {
+  try {
+    const backups = await listBackups(env)
+
+    if (backups.length <= MAX_BACKUPS) {
+      return
+    }
+
+    // Удаляем самые старые бекапы
+    const toDelete = backups.slice(MAX_BACKUPS)
+
+    for (const backup of toDelete) {
+      await s3Request(env, {
+        method: 'DELETE',
+        key: backup.key,
+      })
+      console.log(`[BACKUP_CLEANUP] Deleted old backup: ${backup.key}`)
+    }
+  } catch (error) {
+    console.error('[BACKUP_CLEANUP_ERROR]', error)
+  }
+}
+
+/**
+ * Инкрементирует версию конфига и обновляет метаданные.
+ * Вызывается перед каждым сохранением.
+ */
+function incrementConfigVersion(config: AppConfig, userEmail: string): void {
+  config.configVersion = (config.configVersion || 0) + 1
+  config.lastModified = new Date().toISOString()
+  config.lastModifiedBy = userEmail
+}
+
+// =============================================================================
 // ALLOWED ORIGINS (CORS)
 // =============================================================================
 const ALLOWED_ORIGINS = [
@@ -434,6 +613,66 @@ export default {
       // API: GET /api/load-config - load app-config.json (public, read-only)
       if (path === '/api/load-config' && request.method === 'GET') {
         return corsResponse(await loadConfig(env), origin)
+      }
+
+      // API: GET /api/version - get config version (public, lightweight)
+      // Используется для умного polling — проверяем версию перед загрузкой полного конфига
+      if (path === '/api/version' && request.method === 'GET') {
+        const configResponse = await loadConfig(env)
+        if (!configResponse.ok) {
+          return corsResponse(configResponse, origin)
+        }
+        const config = (await configResponse.json()) as AppConfig
+        return corsResponse(
+          new Response(
+            JSON.stringify({
+              version: config.configVersion || 0,
+              lastModified: config.lastModified || null,
+            }),
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          ),
+          origin,
+        )
+      }
+
+      // API: GET /api/backups - list all backups (protected)
+      if (path === '/api/backups' && request.method === 'GET') {
+        // JWT Authentication check
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const backups = await listBackups(env)
+        return corsResponse(
+          new Response(JSON.stringify({ backups }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+          origin,
+        )
       }
 
       // API: POST /api/upload-image - upload partner image (protected)
@@ -1260,6 +1499,26 @@ async function saveConfig(
       }),
     )
 
+    // Загружаем текущий конфиг для бекапа перед полным сохранением
+    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+      try {
+        const currentConfigResponse = await s3Request(env, {
+          method: 'GET',
+          key: 'data/app-config.json',
+        })
+        if (currentConfigResponse.ok) {
+          const currentConfig = (await currentConfigResponse.json()) as AppConfig
+          await createBackup(env, currentConfig)
+        }
+      } catch {
+        // Если не удалось загрузить — продолжаем без бекапа
+        console.warn('[SAVE] Could not create backup - current config not found')
+      }
+    }
+
+    // Инкрементируем версию конфига
+    incrementConfigVersion(config, userEmail)
+
     const configJson = JSON.stringify(config, null, 2)
 
     // Try external bucket first (via S3 API)
@@ -1628,6 +1887,10 @@ async function savePartner(
       config.partners = {}
     }
 
+    // Создаём бекап перед изменениями и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
+
     // Check if this is a new partner or update
     const existingPartner = config.partners[partner.slug]
     const isNewPartner = !existingPartner
@@ -1787,6 +2050,10 @@ async function deletePartner(
       })
     }
 
+    // Создаём бекап перед удалением и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
+
     // Get partner data before deletion for logging
     const deletedPartner = config.partners[slug] as Record<string, unknown>
 
@@ -1922,6 +2189,10 @@ async function saveCategory(
     if (!config.filters) config.filters = { categories: {}, locations: {} }
     if (!config.filters.categories) config.filters.categories = {}
 
+    // Создаём бекап перед изменениями и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
+
     // Check if this is a new category or update
     const existingCategory = config.filters.categories[data.key] as Record<string, unknown> | undefined
     const isNewCategory = !existingCategory
@@ -2018,6 +2289,10 @@ async function deleteCategory(
       })
     }
 
+    // Создаём бекап перед удалением и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
+
     // Get category data before deletion for logging
     const deletedCategory = config.filters.categories[key] as Record<string, unknown>
 
@@ -2105,6 +2380,10 @@ async function saveLocation(
 
     if (!config.filters) config.filters = { categories: {}, locations: {} }
     if (!config.filters.locations) config.filters.locations = {}
+
+    // Создаём бекап перед изменениями и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
 
     // Check if this is a new location or update
     const existingLocation = config.filters.locations[data.key] as Record<string, unknown> | undefined
@@ -2202,6 +2481,10 @@ async function deleteLocation(
       })
     }
 
+    // Создаём бекап перед удалением и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
+
     // Get location data before deletion for logging
     const deletedLocation = config.filters.locations[key] as Record<string, unknown>
 
@@ -2294,6 +2577,10 @@ async function saveFaqItem(
     if (!config.pages) config.pages = {}
     if (!config.pages.faq) config.pages.faq = { items: [] }
     if (!config.pages.faq.items) config.pages.faq.items = []
+
+    // Создаём бекап перед изменениями и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
 
     const existingIndex = config.pages.faq.items.findIndex((item) => item.id === data.id)
     const existingFaq = existingIndex >= 0 ? config.pages.faq.items[existingIndex] : undefined
@@ -2406,6 +2693,10 @@ async function deleteFaqItem(
       })
     }
 
+    // Создаём бекап перед удалением и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
+
     // Get FAQ data before deletion for logging
     const deletedFaq = config.pages.faq.items[index]
 
@@ -2492,6 +2783,10 @@ async function saveTexts(
     }
 
     if (!config.pages) config.pages = {}
+
+    // Создаём бекап перед изменениями и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
     
     // Get existing page texts for diff comparison
     const existingTexts = config.pages[data.page] as Record<string, unknown> | undefined
@@ -2578,6 +2873,10 @@ async function saveUsers(
       const object = await env.R2_BUCKET.get('data/app-config.json')
       if (object) config = (await object.json()) as AppConfig
     }
+
+    // Создаём бекап перед изменениями и инкрементируем версию
+    await createBackup(env, config)
+    incrementConfigVersion(config, userEmail)
 
     // Get previous users for comparison
     const previousUsers = config.allowedUsers || []

@@ -16,11 +16,14 @@ type LoadingStatus = 'idle' | 'loading' | 'success' | 'error'
 const DEFAULT_PAGE_SIZE = 9
 const ALL_OPTION = 'all'
 
-/** Интервал автоматического обновления данных (5 минут) */
-const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000
+/** Интервал проверки версии конфига (1 минута) */
+const VERSION_CHECK_INTERVAL_MS = 1 * 60 * 1000
 
 /** ID таймера для автоматического обновления */
 let autoRefreshTimerId: ReturnType<typeof setInterval> | null = null
+
+/** Текущая известная версия конфига */
+let currentConfigVersion: number | null = null
 
 const DEFAULT_FILTERS: DiscountFilters = {
   search: '',
@@ -180,6 +183,12 @@ export const useDiscountsStore = defineStore('discounts', {
 
         const partnersConfig = config.partners
 
+        // Сохраняем версию конфига для умного polling
+        const configWithVersion = config as unknown as { configVersion?: number }
+        if (typeof configWithVersion.configVersion === 'number') {
+          currentConfigVersion = configWithVersion.configVersion
+        }
+
         // Сохраняем filters из API для динамического использования в фильтрах
         this.filtersConfig = config.filters
 
@@ -295,16 +304,44 @@ export const useDiscountsStore = defineStore('discounts', {
     },
 
     /**
-     * Запускает автоматическое обновление данных каждые 5 минут
-     * Это гарантирует, что пользователи видят актуальные данные даже если страница открыта длительное время
+     * Запускает умный polling — проверяет версию конфига каждую минуту.
+     * Загружает данные только если версия изменилась.
+     * Это экономит трафик и не создаёт лишней нагрузки.
      */
     startAutoRefresh(): void {
       // Останавливаем предыдущий таймер если есть
       this.stopAutoRefresh()
 
-      autoRefreshTimerId = setInterval(() => {
-        this.loadPartners()
-      }, AUTO_REFRESH_INTERVAL_MS)
+      autoRefreshTimerId = setInterval(async () => {
+        try {
+          // Проверяем только версию (легкий запрос ~100 байт)
+          const versionUrl = `${getApiUrl('/api/version')}?t=${Date.now()}`
+          const response = await fetch(versionUrl, {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' },
+          })
+
+          if (!response.ok) {
+            console.warn('[discounts] Version check failed:', response.status)
+            return
+          }
+
+          const { version } = (await response.json()) as { version: number }
+
+          // Загружаем данные только если версия изменилась
+          if (currentConfigVersion !== null && version !== currentConfigVersion) {
+            console.log(
+              `[discounts] Config version changed: ${currentConfigVersion} → ${version}, reloading...`,
+            )
+            await this.loadPartners()
+          }
+
+          // Запоминаем текущую версию
+          currentConfigVersion = version
+        } catch (error) {
+          console.warn('[discounts] Version check error:', error)
+        }
+      }, VERSION_CHECK_INTERVAL_MS)
     },
 
     /**
@@ -321,8 +358,26 @@ export const useDiscountsStore = defineStore('discounts', {
      * Перезагружает данные если они устарели (например, при возвращении на вкладку)
      */
     async refreshIfNeeded(): Promise<void> {
-      // Всегда перезагружаем при возвращении на вкладку для гарантии актуальности
-      await this.loadPartners()
+      // Проверяем версию и перезагружаем если изменилась
+      try {
+        const versionUrl = `${getApiUrl('/api/version')}?t=${Date.now()}`
+        const response = await fetch(versionUrl, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache' },
+        })
+
+        if (response.ok) {
+          const { version } = (await response.json()) as { version: number }
+
+          if (currentConfigVersion === null || version !== currentConfigVersion) {
+            await this.loadPartners()
+            currentConfigVersion = version
+          }
+        }
+      } catch {
+        // При ошибке просто перезагружаем данные
+        await this.loadPartners()
+      }
     },
   },
 })

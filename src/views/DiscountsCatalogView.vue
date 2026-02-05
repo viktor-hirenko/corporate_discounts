@@ -57,7 +57,11 @@ async function loadPageTexts(): Promise<void> {
   }
 }
 
-const isLoading = computed(() => store.status === 'loading' || !textsLoaded.value)
+// Показываем спиннер только при первой загрузке (когда карточек ещё нет)
+// При фоновом обновлении — не показываем, чтобы не было мигания
+const isLoading = computed(
+  () => (store.status === 'loading' && store.items.length === 0) || !textsLoaded.value,
+)
 const isError = computed(() => store.status === 'error')
 const errorMessage = computed(() => store.error)
 
