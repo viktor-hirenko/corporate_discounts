@@ -406,7 +406,8 @@ $danger-color: #ea5455;
     background: #fff;
     border-radius: to-rem(12);
     border: 1px solid #e5e7eb;
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   &__table {
