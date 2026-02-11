@@ -3014,6 +3014,33 @@ async function deleteFaqItem(
 }
 
 // =============================================================================
+// HELPER: Deep merge for texts (preserves items and other non-text fields)
+// =============================================================================
+/**
+ * Deep merges source into target, preserving arrays and non-text fields.
+ * @param target - Target object to merge into
+ * @param source - Source object with new values
+ */
+function deepMergeTexts(target: Record<string, unknown>, source: Record<string, unknown>): void {
+  for (const key of Object.keys(source)) {
+    const sourceVal = source[key]
+    const targetVal = target[key]
+    if (
+      sourceVal &&
+      typeof sourceVal === 'object' &&
+      !Array.isArray(sourceVal) &&
+      targetVal &&
+      typeof targetVal === 'object' &&
+      !Array.isArray(targetVal)
+    ) {
+      deepMergeTexts(targetVal as Record<string, unknown>, sourceVal as Record<string, unknown>)
+    } else {
+      target[key] = sourceVal
+    }
+  }
+}
+
+// =============================================================================
 // SAVE TEXTS (granular save for page texts)
 // =============================================================================
 async function saveTexts(
@@ -3050,13 +3077,33 @@ async function saveTexts(
 
     if (!config.pages) config.pages = {}
 
-    // Создаём бекап перед изменениями и инкрементируем версию
+    // Создаём бекап перед изменениями и инкрементируем версію
     await createBackup(env, config)
     incrementConfigVersion(config, userEmail)
 
-    // Get existing page texts for diff comparison
-    const existingTexts = config.pages[data.page] as Record<string, unknown> | undefined
-    config.pages[data.page] = data.texts
+    // Навігуємо по dot-path до потрібного об'єкта в конфігу
+    // Наприклад: "pages.faq" -> config.pages.faq, "auth" -> config.auth
+    const parts = data.page.split('.')
+    let target: Record<string, unknown> = config as unknown as Record<string, unknown>
+    for (const part of parts.slice(0, -1)) {
+      if (target[part] && typeof target[part] === 'object') {
+        target = target[part] as Record<string, unknown>
+      } else {
+        target[part] = {}
+        target = target[part] as Record<string, unknown>
+      }
+    }
+    const lastKey = parts[parts.length - 1]
+
+    // Отримуємо існуючий об'єкт для diff
+    const existingTexts = target[lastKey] as Record<string, unknown> | undefined
+
+    // Deep merge замість заміни — зберігає items та інші нетекстові поля
+    if (existingTexts && typeof existingTexts === 'object') {
+      deepMergeTexts(existingTexts, data.texts as Record<string, unknown>)
+    } else {
+      target[lastKey] = data.texts
+    }
 
     // Log the action with diff - only changed text fields
     const changes = getObjectDiff(existingTexts || {}, data.texts as Record<string, unknown>)

@@ -23,15 +23,15 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
   const editingText = ref<TextItem | null>(null)
   const isFormOpen = ref(false)
 
-  // Категории текстов
+  // Категорії текстів
   const textCategories = [
-    { id: 'pages.discounts', label: 'Страница каталога' },
-    { id: 'pages.discountDetails', label: 'Страница деталей' },
-    { id: 'pages.faq', label: 'Страница FAQ' },
-    { id: 'auth', label: 'Авторизация' },
-    { id: 'navigation', label: 'Навигация' },
-    { id: 'filters', label: 'Фильтры' },
-    { id: 'pagination', label: 'Пагинация' },
+    { id: 'pages.discounts', label: 'Сторінка каталогу' },
+    { id: 'pages.discountDetails', label: 'Сторінка деталей' },
+    { id: 'pages.faq', label: 'Сторінка FAQ' },
+    { id: 'auth', label: 'Авторизація' },
+    { id: 'navigation', label: 'Навігація' },
+    { id: 'filters', label: 'Фільтри' },
+    { id: 'pagination', label: 'Пагінація' },
   ]
 
   // Функция для получения вложенного значения по пути
