@@ -43,6 +43,7 @@ function handleClick() {
       {{ t(navigation.home) }}
     </router-link>
 
+    <!-- TODO: Временно скрыто ссылку на FAQ
     <router-link
       to="/faq"
       class="link navigation-links__link"
@@ -51,6 +52,7 @@ function handleClick() {
     >
       {{ t(navigation.faq) }}
     </router-link>
+    -->
   </nav>
 </template>
 
