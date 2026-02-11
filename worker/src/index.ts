@@ -481,7 +481,10 @@ interface AuditLogEntry {
  * Добавляет запись в audit log.
  * Загружает текущий лог, добавляет запись в начало, обрезает до MAX_AUDIT_LOG_ENTRIES.
  */
-async function appendAuditLog(env: Env, entry: Omit<AuditLogEntry, 'id' | 'timestamp'>): Promise<void> {
+async function appendAuditLog(
+  env: Env,
+  entry: Omit<AuditLogEntry, 'id' | 'timestamp'>,
+): Promise<void> {
   try {
     if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY || !env.EXTERNAL_R2_ENDPOINT) {
       return
@@ -524,7 +527,9 @@ async function appendAuditLog(env: Env, entry: Omit<AuditLogEntry, 'id' | 'times
       contentType: 'application/json',
     })
 
-    console.log(`[AUDIT_LOG] Added entry: ${newEntry.action} ${newEntry.entity} ${newEntry.entityId}`)
+    console.log(
+      `[AUDIT_LOG] Added entry: ${newEntry.action} ${newEntry.entity} ${newEntry.entityId}`,
+    )
   } catch (error) {
     // Не прерываем основную операцию если audit log не удался
     console.error('[AUDIT_LOG_ERROR] Failed to append audit log:', error)
@@ -2076,7 +2081,10 @@ async function savePartner(
     // Log the action with diff for updates, full data for creates
     const changes = isNewPartner
       ? undefined
-      : getObjectDiff(existingPartner as Record<string, unknown>, partner as Record<string, unknown>)
+      : getObjectDiff(
+          existingPartner as Record<string, unknown>,
+          partner as Record<string, unknown>,
+        )
 
     if (isNewPartner) {
       // CREATE - log full partner data
@@ -2257,7 +2265,9 @@ async function deletePartner(
           category: (deletedPartner.category as Record<string, string>)?.ua,
           location: (deletedPartner.location as Record<string, string>)?.ua,
           promoCode: deletedPartner.promoCode,
-          discount: ((deletedPartner.discount as Record<string, unknown>)?.label as Record<string, string>)?.ua,
+          discount: (
+            (deletedPartner.discount as Record<string, unknown>)?.label as Record<string, string>
+          )?.ua,
         },
       }),
     )
@@ -2385,7 +2395,9 @@ async function saveCategory(
     incrementConfigVersion(config, userEmail)
 
     // Check if this is a new category or update
-    const existingCategory = config.filters.categories[data.key] as Record<string, unknown> | undefined
+    const existingCategory = config.filters.categories[data.key] as
+      | Record<string, unknown>
+      | undefined
     const isNewCategory = !existingCategory
 
     const newCategoryData = { label: data.label, description: data.description }
@@ -2603,7 +2615,9 @@ async function saveLocation(
     incrementConfigVersion(config, userEmail)
 
     // Check if this is a new location or update
-    const existingLocation = config.filters.locations[data.key] as Record<string, unknown> | undefined
+    const existingLocation = config.filters.locations[data.key] as
+      | Record<string, unknown>
+      | undefined
     const isNewLocation = !existingLocation
 
     const newLocationData = { label: data.label }
@@ -2840,7 +2854,10 @@ async function saveFaqItem(
     const faqName = truncate(data.question.ua, 50) || data.id
     const changes = isNewFaq
       ? undefined
-      : getObjectDiff(existingFaq as unknown as Record<string, unknown>, faqItem as Record<string, unknown>)
+      : getObjectDiff(
+          existingFaq as unknown as Record<string, unknown>,
+          faqItem as Record<string, unknown>,
+        )
 
     if (isNewFaq) {
       console.log(

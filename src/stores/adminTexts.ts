@@ -23,7 +23,7 @@ export const useAdminTextsStore = defineStore('adminTexts', () => {
   const editingText = ref<TextItem | null>(null)
   const isFormOpen = ref(false)
 
-  // Категорії текстів
+  // Категории текстов
   const textCategories = [
     { id: 'pages.discounts', label: 'Сторінка каталогу' },
     { id: 'pages.discountDetails', label: 'Сторінка деталей' },
