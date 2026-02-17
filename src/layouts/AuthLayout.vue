@@ -18,7 +18,8 @@ const backgroundImageUrl = computed(() => getImage(images.loginBackground))
 .auth-layout {
   display: flex;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100vh; // fallback для браузерів без підтримки dvh
+  min-height: 100dvh;
   padding: to-rem(32);
   justify-content: center;
   align-items: center;
