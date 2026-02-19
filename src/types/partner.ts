@@ -67,6 +67,7 @@ export interface Partner {
   socials: PartnerSocialLink[]
   terms: string[]
   tags?: string[]
+  isRecommended?: boolean
 }
 
 export interface DiscountFilters {

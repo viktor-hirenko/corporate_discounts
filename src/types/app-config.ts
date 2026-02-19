@@ -181,6 +181,7 @@ export interface PartnerConfig {
   image: string
   promoCode: string
   isHidden?: boolean
+  isRecommended?: boolean
   contact: {
     website?: string
     email?: string

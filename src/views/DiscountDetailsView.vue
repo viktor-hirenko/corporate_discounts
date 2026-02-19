@@ -199,8 +199,7 @@ onUnmounted(() => {
 
     <!-- Main discount card -->
     <div class="discount-details__main-card">
-      <!-- TODO: підключити логіку show для рекомендованих партнерів -->
-      <TeammatesBadge :show="true" class="discount-details__recommendation-badge" />
+      <TeammatesBadge :show="partner?.isRecommended" class="discount-details__recommendation-badge" />
 
       <div class="discount-details__logo-wrapper">
         <img

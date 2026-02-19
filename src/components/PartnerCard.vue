@@ -71,8 +71,7 @@ function handleClick() {
 
 <template>
   <article class="partner-card" @click="handleClick">
-    <!-- TODO: підключити логіку show для рекомендованих партнерів -->
-    <TeammatesBadge :show="true" class="partner-card__recommendation-badge" />
+    <TeammatesBadge :show="partner.isRecommended" class="partner-card__recommendation-badge" />
 
     <div v-if="hasDiscount" class="partner-card__badge">
       {{ discountLabel }}

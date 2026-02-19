@@ -252,6 +252,7 @@ export const useDiscountsStore = defineStore('discounts', {
               en: string[]
             } as unknown as string[],
             tags: partnerConfig.tags as unknown as string[] | undefined,
+            isRecommended: partnerConfig.isRecommended ?? false,
           }
         })
 

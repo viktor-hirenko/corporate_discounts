@@ -34,6 +34,7 @@ const formData = reactive({
   image: '',
   promoCode: '',
   isHidden: false,
+  isRecommended: false,
   contact: {
     website: '',
     email: '',
@@ -348,6 +349,7 @@ const handleSave = () => {
     image: sanitizeString(formData.image) || `/images/partners/${formData.slug}.webp`,
     promoCode: sanitizeString(formData.promoCode),
     isHidden: formData.isHidden,
+    isRecommended: formData.isRecommended,
     contact: {
       website: sanitizeUrl(formData.contact.website),
       email: sanitizeEmail(formData.contact.email),
@@ -410,6 +412,21 @@ const handleCategoryChange = (lang: 'ua' | 'en', value: string) => {
             <i :class="formData.isHidden ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
             {{
               formData.isHidden ? 'Партнер прихований з сайту' : 'Партнер відображається на сайті'
+            }}
+          </span>
+        </label>
+      </div>
+
+      <!-- Recommendation Toggle -->
+      <div class="recommendation-toggle">
+        <label class="recommendation-toggle__label">
+          <input v-model="formData.isRecommended" type="checkbox" class="recommendation-toggle__checkbox" />
+          <span class="recommendation-toggle__text">
+            <i :class="formData.isRecommended ? 'fas fa-star' : 'far fa-star'"></i>
+            {{
+              formData.isRecommended
+                ? 'Рекомендація тіммейтів увімкнена'
+                : 'Рекомендація тіммейтів вимкнена'
             }}
           </span>
         </label>
@@ -793,6 +810,52 @@ $accent-color: rgb(115 103 240);
 
     .visibility-toggle__text {
       color: #b91c1c;
+    }
+  }
+}
+
+.recommendation-toggle {
+  display: flex;
+  padding: to-rem(12) to-rem(16);
+  margin-bottom: to-rem(16);
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: to-rem(8);
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: to-rem(12);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  &__checkbox {
+    width: to-rem(18);
+    height: to-rem(18);
+    accent-color: $accent-color;
+    cursor: pointer;
+  }
+
+  &__text {
+    display: flex;
+    align-items: center;
+    gap: to-rem(8);
+    font-size: to-rem(14);
+    font-weight: 500;
+    color: #6b7280;
+
+    i {
+      font-size: to-rem(16);
+    }
+  }
+
+  &:has(&__checkbox:checked) {
+    background: #ede9fe;
+    border-color: #c4b5fd;
+
+    .recommendation-toggle__text {
+      color: #6d28d9;
     }
   }
 }
