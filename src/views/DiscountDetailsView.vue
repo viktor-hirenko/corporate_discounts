@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import ChevronLeftIcon from '@/components/icons/ChevronLeftIcon.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import SecondaryButton from '@/components/SecondaryButton.vue'
+import TeammatesBadge from '@/components/TeammatesBadge.vue'
 import { useDiscountsStore } from '@/stores/discounts'
 import { useUiStore } from '@/stores/ui'
 import { useAppConfig } from '@/composables/useAppConfig'
@@ -198,6 +199,9 @@ onUnmounted(() => {
 
     <!-- Main discount card -->
     <div class="discount-details__main-card">
+      <!-- TODO: підключити логіку show для рекомендованих партнерів -->
+      <TeammatesBadge :show="true" class="discount-details__recommendation-badge" />
+
       <div class="discount-details__logo-wrapper">
         <img
           v-if="hasPartnerImage"
@@ -375,6 +379,7 @@ $container-max-width: calc(1312px);
   }
 
   &__main-card {
+    position: relative;
     display: flex;
     width: 100%;
     padding: max(to-cqw(32, $container-max-width), to-rem(24));
@@ -387,6 +392,14 @@ $container-max-width: calc(1312px);
       flex-direction: column;
       gap: to-cqw(16);
     }
+  }
+
+  &__recommendation-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: to-rem(125);
   }
 
   &__logo-wrapper {

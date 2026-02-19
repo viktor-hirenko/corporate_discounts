@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppConfig } from '@/composables/useAppConfig'
+import TeammatesBadge from '@/components/TeammatesBadge.vue'
 import type { Partner } from '@/types/partner'
 
 interface Props {
@@ -70,6 +71,9 @@ function handleClick() {
 
 <template>
   <article class="partner-card" @click="handleClick">
+    <!-- TODO: підключити логіку show для рекомендованих партнерів -->
+    <TeammatesBadge :show="true" class="partner-card__recommendation-badge" />
+
     <div v-if="hasDiscount" class="partner-card__badge">
       {{ discountLabel }}
     </div>
@@ -118,9 +122,22 @@ function handleClick() {
   background: var(--color-secondary-150, #f0efff);
   transition: box-shadow 0.2s ease;
   cursor: pointer;
+  container-type: inline-size;
 
   &:hover {
     box-shadow: 0 to-rem(4) to-rem(12) rgb(0 0 0 / 15%);
+  }
+
+  &__recommendation-badge {
+    position: absolute;
+    top: 0;
+    left: to-rem(22);
+    z-index: 2;
+    width: to-cqw(125, 384); // 384 = ширина карточки без паддингов (416 - 16*2)
+
+    @include mq(null, md) {
+      width: to-rem(125);
+    }
   }
 
   &__content {

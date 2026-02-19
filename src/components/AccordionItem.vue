@@ -57,6 +57,7 @@ function toggle() {
     gap: to-rem(16);
     border: none;
     background: none;
+    color: inherit;
     text-align: left;
     cursor: pointer;
     user-select: none;
