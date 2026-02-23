@@ -15,8 +15,8 @@ const uiStore = useUiStore()
 // Вибираємо SVG в залежності від поточної локалі
 const badgeSrc = computed(() => {
   return uiStore.locale === 'en'
-    ? '/images/badge-recommendation-en.svg'
-    : '/images/badge-recommendation-ua.svg'
+    ? '/images/badge-recommendation-en.svg?v=2'
+    : '/images/badge-recommendation-ua.svg?v=2'
 })
 
 // Локалізований alt-текст для бейджа
