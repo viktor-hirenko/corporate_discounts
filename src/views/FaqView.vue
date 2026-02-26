@@ -70,7 +70,7 @@ const faqItems = computed(() =>
 )
 
 function handleStartChat() {
-  window.open('https://go-upstars.slack.com/archives/D0A2MUNC9S9', '_blank', 'noopener,noreferrer')
+  window.open('https://go-upstars.slack.com/app_redirect?app=A09LKK0V7GR&tab=home', '_blank', 'noopener,noreferrer')
 }
 </script>
 
