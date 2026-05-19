@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppConfig } from '@/composables/useAppConfig'
+import { useAnalytics } from '@/composables/useAnalytics'
 import TeammatesBadge from '@/components/TeammatesBadge.vue'
 import type { Partner } from '@/types/partner'
 
@@ -12,6 +13,7 @@ interface Props {
 const props = defineProps<Props>()
 const router = useRouter()
 const { t, filters } = useAppConfig()
+const { trackCardClick } = useAnalytics()
 
 const imageLoadError = ref(false)
 
@@ -62,6 +64,7 @@ const summaryText = computed(() =>
 )
 
 function handleClick() {
+  trackCardClick(props.partner.slug)
   router.push({
     name: 'discount-details',
     params: { slug: props.partner.slug },

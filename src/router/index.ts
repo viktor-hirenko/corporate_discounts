@@ -106,6 +106,11 @@ const router = createRouter({
           component: () => import('../views/admin/AdminImagesView.vue'),
         },
         {
+          path: 'analytics',
+          name: 'admin-analytics',
+          component: () => import('../views/admin/AdminAnalyticsView.vue'),
+        },
+        {
           path: 'history',
           name: 'admin-history',
           component: () => import('../views/admin/AdminAuditLogView.vue'),

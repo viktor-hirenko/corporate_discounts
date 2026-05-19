@@ -8,6 +8,7 @@ import TeammatesBadge from '@/components/TeammatesBadge.vue'
 import { useDiscountsStore } from '@/stores/discounts'
 import { useUiStore } from '@/stores/ui'
 import { useAppConfig } from '@/composables/useAppConfig'
+import { useAnalytics } from '@/composables/useAnalytics'
 
 interface Props {
   slug: string
@@ -18,6 +19,7 @@ const router = useRouter()
 const store = useDiscountsStore()
 const uiStore = useUiStore()
 const { t, pages, filters } = useAppConfig()
+const { trackPromoCopy } = useAnalytics()
 
 const isCopied = ref(false)
 const imageLoadError = ref(false)
@@ -147,6 +149,7 @@ async function handleCopyPromoCode() {
 
   try {
     await navigator.clipboard.writeText(partner.value.discount.promoCode)
+    trackPromoCopy(partner.value.slug)
     isCopied.value = true
 
     // Очищаем предыдущий таймер, если он есть

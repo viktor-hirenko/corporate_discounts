@@ -582,6 +582,188 @@ async function getAuditLog(
 }
 
 // =============================================================================
+// ANALYTICS FUNCTIONS
+// =============================================================================
+
+/** Максимальное количество записей в analytics log */
+const MAX_ANALYTICS_ENTRIES = 50000
+
+/** Структура события аналитики */
+interface TrackEvent {
+  id: string
+  timestamp: string
+  event: 'card_click' | 'promo_copy'
+  slug: string
+}
+
+/** Сводка аналитики по партнёру */
+interface AnalyticsSummary {
+  slug: string
+  cardClicks: number
+  promoCopies: number
+}
+
+/**
+ * Добавляет событие в analytics log.
+ * Загружает текущий лог, добавляет запись в начало, обрезает до MAX_ANALYTICS_ENTRIES.
+ */
+async function appendAnalyticsEvent(
+  env: Env,
+  event: 'card_click' | 'promo_copy',
+  slug: string,
+): Promise<void> {
+  try {
+    if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY || !env.EXTERNAL_R2_ENDPOINT) {
+      return
+    }
+
+    // Загружаем текущий analytics log
+    let analyticsLog: TrackEvent[] = []
+    try {
+      const response = await s3Request(env, {
+        method: 'GET',
+        key: 'data/analytics.json',
+      })
+      if (response.ok) {
+        analyticsLog = (await response.json()) as TrackEvent[]
+      }
+    } catch {
+      // Файл не существует — создадим новый
+    }
+
+    // Создаём новую запись
+    const newEntry: TrackEvent = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      timestamp: new Date().toISOString(),
+      event,
+      slug,
+    }
+
+    // Добавляем в начало массива
+    analyticsLog.unshift(newEntry)
+
+    // Обрезаем до максимального размера
+    if (analyticsLog.length > MAX_ANALYTICS_ENTRIES) {
+      analyticsLog = analyticsLog.slice(0, MAX_ANALYTICS_ENTRIES)
+    }
+
+    // Сохраняем обратно
+    await s3Request(env, {
+      method: 'PUT',
+      key: 'data/analytics.json',
+      body: JSON.stringify(analyticsLog),
+      contentType: 'application/json',
+    })
+
+    console.log(`[ANALYTICS] Added event: ${event} for ${slug}`)
+  } catch (error) {
+    // Не прерываем основную операцию если analytics не удался
+    console.error('[ANALYTICS_ERROR] Failed to append analytics event:', error)
+  }
+}
+
+type AnalyticsPeriod = 'today' | 'week' | 'month' | 'quarter' | 'year' | 'all'
+
+function getFromDate(period: AnalyticsPeriod): Date | null {
+  const now = new Date()
+  switch (period) {
+    case 'today': {
+      const d = new Date(now)
+      d.setHours(0, 0, 0, 0)
+      return d
+    }
+    case 'week': {
+      const d = new Date(now)
+      d.setDate(d.getDate() - 7)
+      return d
+    }
+    case 'month': {
+      const d = new Date(now)
+      d.setMonth(d.getMonth() - 1)
+      return d
+    }
+    case 'quarter': {
+      const d = new Date(now)
+      d.setMonth(d.getMonth() - 3)
+      return d
+    }
+    case 'year': {
+      const d = new Date(now)
+      d.setFullYear(d.getFullYear() - 1)
+      return d
+    }
+    default:
+      return null
+  }
+}
+
+/**
+ * Получает сводку аналитики с агрегацией по slug.
+ * Принимает опциональный fromDate для фильтрации по периоду.
+ */
+async function getAnalyticsSummary(
+  env: Env,
+  fromDate: Date | null = null,
+): Promise<{
+  events: TrackEvent[]
+  summary: AnalyticsSummary[]
+  totals: { cardClicks: number; promoCopies: number }
+}> {
+  try {
+    if (!env.AWS_ACCESS_KEY_ID || !env.AWS_SECRET_ACCESS_KEY || !env.EXTERNAL_R2_ENDPOINT) {
+      return { events: [], summary: [], totals: { cardClicks: 0, promoCopies: 0 } }
+    }
+
+    const response = await s3Request(env, {
+      method: 'GET',
+      key: 'data/analytics.json',
+    })
+
+    if (!response.ok) {
+      return { events: [], summary: [], totals: { cardClicks: 0, promoCopies: 0 } }
+    }
+
+    const allEvents = (await response.json()) as TrackEvent[]
+
+    // Фильтрация по периоду если задан
+    const events = fromDate
+      ? allEvents.filter((e) => new Date(e.timestamp) >= fromDate)
+      : allEvents
+
+    // Агрегация по slug
+    const statsMap = new Map<string, { cardClicks: number; promoCopies: number }>()
+    let totalCardClicks = 0
+    let totalPromoCopies = 0
+
+    for (const event of events) {
+      const stats = statsMap.get(event.slug) || { cardClicks: 0, promoCopies: 0 }
+      if (event.event === 'card_click') {
+        stats.cardClicks++
+        totalCardClicks++
+      } else if (event.event === 'promo_copy') {
+        stats.promoCopies++
+        totalPromoCopies++
+      }
+      statsMap.set(event.slug, stats)
+    }
+
+    // Преобразуем в массив и сортируем по общему количеству событий
+    const summary: AnalyticsSummary[] = Array.from(statsMap.entries())
+      .map(([slug, stats]) => ({ slug, ...stats }))
+      .sort((a, b) => b.cardClicks + b.promoCopies - (a.cardClicks + a.promoCopies))
+
+    return {
+      events: events.slice(0, 100),
+      summary,
+      totals: { cardClicks: totalCardClicks, promoCopies: totalPromoCopies },
+    }
+  } catch (error) {
+    console.error('[ANALYTICS_ERROR] Failed to get analytics summary:', error)
+    return { events: [], summary: [], totals: { cardClicks: 0, promoCopies: 0 } }
+  }
+}
+
+// =============================================================================
 // ALLOWED ORIGINS (CORS)
 // =============================================================================
 const ALLOWED_ORIGINS = [
@@ -605,6 +787,8 @@ interface RateLimitEntry {
 
 const authAttempts = new Map<string, RateLimitEntry>()
 const saveAttempts = new Map<string, RateLimitEntry>()
+const analyticsAttempts = new Map<string, RateLimitEntry>()
+const MAX_ANALYTICS_ATTEMPTS = 60 // 60 events per minute per IP
 
 function isRateLimited(
   ip: string,
@@ -722,8 +906,7 @@ function corsResponse(response: Response, origin: string | null): Response {
 // MAIN HANDLER
 // =============================================================================
 export default {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const origin = request.headers.get('Origin')
 
     // Handle preflight requests
@@ -1539,6 +1722,158 @@ export default {
           }),
           origin,
         )
+      }
+
+      // API: POST /api/track - track analytics event (CORS + rate limiting protected)
+      if (path === '/api/track' && request.method === 'POST') {
+        // Rate limiting for analytics endpoint
+        if (isRateLimited(clientIP, analyticsAttempts, MAX_ANALYTICS_ATTEMPTS)) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        try {
+          const body = (await request.json()) as { event?: string; slug?: string }
+
+          if (!body.event || !body.slug) {
+            return corsResponse(
+              new Response(JSON.stringify({ error: 'Missing event or slug' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' },
+              }),
+              origin,
+            )
+          }
+
+          if (body.event !== 'card_click' && body.event !== 'promo_copy') {
+            return corsResponse(
+              new Response(JSON.stringify({ error: 'Invalid event type' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' },
+              }),
+              origin,
+            )
+          }
+
+          // Use waitUntil to ensure the write completes after response is sent
+          ctx.waitUntil(appendAnalyticsEvent(env, body.event, body.slug))
+
+          return corsResponse(
+            new Response(JSON.stringify({ success: true }), {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        } catch {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Invalid request body' }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+      }
+
+      // API: GET /api/analytics - get analytics summary (protected, admin only)
+      if (path === '/api/analytics' && request.method === 'GET') {
+        // JWT Authentication check
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const periodParam = (url.searchParams.get('period') as AnalyticsPeriod) || 'all'
+        const fromDate = getFromDate(periodParam)
+        const analytics = await getAnalyticsSummary(env, fromDate)
+
+        return corsResponse(
+          new Response(JSON.stringify(analytics), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+          origin,
+        )
+      }
+
+      // API: DELETE /api/analytics - clear all analytics data (protected, admin only)
+      if (path === '/api/analytics' && request.method === 'DELETE') {
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader?.startsWith('Bearer ')) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        const token = authHeader.substring(7)
+        const isValidToken = await verifyJWT(token)
+
+        if (!isValidToken) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        try {
+          await s3Request(env, {
+            method: 'PUT',
+            key: 'data/analytics.json',
+            body: JSON.stringify([]),
+            contentType: 'application/json',
+          })
+
+          console.log('[ANALYTICS] Data cleared by admin')
+
+          return corsResponse(
+            new Response(JSON.stringify({ success: true }), {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        } catch (err) {
+          console.error('[ANALYTICS] Failed to clear data:', err)
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Failed to clear analytics data' }), {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
       }
 
       // Serve static files from R2
