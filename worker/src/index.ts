@@ -1,5 +1,15 @@
 /// <reference types="@cloudflare/workers-types" />
 
+import { verifyGoogleIdToken } from './auth'
+import {
+  getUserRole,
+  invalidateAllowlist,
+  loadAllowlist,
+  saveAllowlist,
+  type AllowedUser,
+  type Role,
+} from './authz'
+
 // =============================================================================
 // TYPES
 // =============================================================================
@@ -51,8 +61,8 @@ export interface Env {
   // External R2 bucket (discounts.upstars.com)
   EXTERNAL_BUCKET_NAME: string
   EXTERNAL_R2_ENDPOINT: string
-  // Google OAuth credentials (optional, auth handled client-side)
-  GOOGLE_CLIENT_ID?: string
+  // Google OAuth Client ID — required for ID Token signature & aud verification
+  GOOGLE_CLIENT_ID: string
   GOOGLE_CLIENT_SECRET?: string
   // AWS credentials for external R2 bucket (S3 API)
   AWS_ACCESS_KEY_ID?: string
@@ -816,52 +826,110 @@ function getClientIP(request: Request): string {
 }
 
 // =============================================================================
-// JWT VERIFICATION (Google ID Token)
-// Проверяем структуру и срок действия токена
-// Google ID Token подписан ключами Google, поэтому мы проверяем только:
-// 1. Правильная структура (3 части)
-// 2. Токен не истек
-// 3. Есть email в payload
+// AUTHORIZATION (Google ID Token signature + server-side role check)
 // =============================================================================
-async function verifyJWT(token: string): Promise<boolean> {
-  try {
-    const parts = token.split('.')
-    if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) {
-      return false
-    }
 
-    // Decode payload
-    const payloadB64 = parts[1]
-    const payload = JSON.parse(atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/')))
+interface AuthSuccess {
+  ok: true
+  email: string
+  role: Role
+}
 
-    // Check expiration
-    if (payload.exp && payload.exp < Date.now() / 1000) {
-      return false // Token expired
-    }
-
-    // Check that email exists (Google ID Token always has email)
-    if (!payload.email) {
-      return false
-    }
-
-    return true
-  } catch {
-    return false
-  }
+interface AuthFailure {
+  ok: false
+  response: Response
 }
 
 /**
- * Извлекает email из JWT токена для логирования
+ * Verifies the Google ID Token signature and claims, then checks that the
+ * authenticated user is present in the admin allowlist with an allowed role.
+ *
+ * @param request - Incoming request (Authorization: Bearer ... is read)
+ * @param env - Worker environment bindings
+ * @param allowedRoles - Roles permitted for the endpoint (e.g. ['admin', 'editor'])
+ * @param action - Short action name for audit/log purposes
+ * @param clientIP - Client IP for logging
  */
-function extractEmailFromJWT(token: string): string {
-  try {
-    const parts = token.split('.')
-    if (parts.length !== 3 || !parts[1]) return 'unknown'
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
-    return payload.email || 'unknown'
-  } catch {
-    return 'unknown'
+async function authorize(
+  request: Request,
+  env: Env,
+  allowedRoles: Role[],
+  action: string,
+  clientIP: string,
+): Promise<AuthSuccess | AuthFailure> {
+  const authHeader = request.headers.get('Authorization')
+  if (!authHeader?.startsWith('Bearer ')) {
+    return {
+      ok: false,
+      response: new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }
   }
+
+  if (!env.GOOGLE_CLIENT_ID) {
+    console.error('[AUTHZ_ERROR] GOOGLE_CLIENT_ID is not configured')
+    return {
+      ok: false,
+      response: new Response(JSON.stringify({ error: 'Server misconfigured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }
+  }
+
+  const token = authHeader.substring(7)
+
+  let user
+  try {
+    user = await verifyGoogleIdToken(token, env.GOOGLE_CLIENT_ID)
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : 'unknown'
+    console.log(
+      '[AUTH_FAIL]',
+      JSON.stringify({
+        action,
+        reason,
+        ip: clientIP,
+        timestamp: new Date().toISOString(),
+      }),
+    )
+    return {
+      ok: false,
+      response: new Response(JSON.stringify({ error: 'Unauthorized - Invalid token' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    }
+  }
+
+  const role = await getUserRole(user.email, env)
+  if (!role || !allowedRoles.includes(role)) {
+    console.log(
+      '[AUTHZ_FAIL]',
+      JSON.stringify({
+        action,
+        user: user.email,
+        role,
+        required: allowedRoles,
+        ip: clientIP,
+        timestamp: new Date().toISOString(),
+      }),
+    )
+    return {
+      ok: false,
+      response: new Response(
+        JSON.stringify({ error: 'Forbidden - Insufficient permissions' }),
+        {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ),
+    }
+  }
+
+  return { ok: true, email: user.email, role }
 }
 
 // =============================================================================
@@ -949,30 +1017,8 @@ export default {
 
       // API: GET /api/backups - list all backups (protected)
       if (path === '/api/backups' && request.method === 'GET') {
-        // JWT Authentication check
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'list_backups', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
         const backups = await listBackups(env)
         return corsResponse(
@@ -986,30 +1032,8 @@ export default {
 
       // API: GET /api/audit-log - get audit log entries (protected)
       if (path === '/api/audit-log' && request.method === 'GET') {
-        // JWT Authentication check
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'audit_log', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
         // Parse query params
         const limit = url.searchParams.get('limit')
@@ -1044,44 +1068,10 @@ export default {
           )
         }
 
-        // JWT Authentication check
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'upload_image', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'upload_image',
-              user: attemptedEmail,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await uploadImage(request, env, userEmail), origin)
+        return corsResponse(await uploadImage(request, env, auth.email), origin)
       }
 
       // API: POST /api/save-config - save app-config.json (protected)
@@ -1097,44 +1087,10 @@ export default {
           )
         }
 
-        // JWT Authentication check
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'save_config', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'save_config',
-              user: attemptedEmail,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await saveConfig(request, env, userEmail), origin)
+        return corsResponse(await saveConfig(request, env, auth.email), origin)
       }
 
       // API: POST /api/partner/save - save single partner (protected)
@@ -1150,44 +1106,10 @@ export default {
           )
         }
 
-        // JWT Authentication check
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'save_partner', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'save_partner',
-              user: attemptedEmail,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await savePartner(request, env, userEmail), origin)
+        return corsResponse(await savePartner(request, env, auth.email), origin)
       }
 
       // API: DELETE /api/partner/:slug - delete single partner (protected)
@@ -1214,45 +1136,10 @@ export default {
           )
         }
 
-        // JWT Authentication check
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'delete_partner', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'delete_partner',
-              user: attemptedEmail,
-              slug: slug,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await deletePartner(slug, env, userEmail), origin)
+        return corsResponse(await deletePartner(slug, env, auth.email), origin)
       }
 
       // API: POST /api/category/save - save single category (protected)
@@ -1267,43 +1154,10 @@ export default {
           )
         }
 
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'save_category', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'save_category',
-              user: attemptedEmail,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await saveCategory(request, env, userEmail), origin)
+        return corsResponse(await saveCategory(request, env, auth.email), origin)
       }
 
       // API: DELETE /api/category/:key - delete single category (protected)
@@ -1329,44 +1183,10 @@ export default {
           )
         }
 
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'delete_category', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'delete_category',
-              user: attemptedEmail,
-              key: key,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await deleteCategory(key, env, userEmail), origin)
+        return corsResponse(await deleteCategory(key, env, auth.email), origin)
       }
 
       // API: POST /api/location/save - save single location (protected)
@@ -1381,43 +1201,10 @@ export default {
           )
         }
 
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'save_location', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'save_location',
-              user: attemptedEmail,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await saveLocation(request, env, userEmail), origin)
+        return corsResponse(await saveLocation(request, env, auth.email), origin)
       }
 
       // API: DELETE /api/location/:key - delete single location (protected)
@@ -1443,44 +1230,10 @@ export default {
           )
         }
 
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'delete_location', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'delete_location',
-              user: attemptedEmail,
-              key: key,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await deleteLocation(key, env, userEmail), origin)
+        return corsResponse(await deleteLocation(key, env, auth.email), origin)
       }
 
       // API: POST /api/faq/save - save single FAQ item (protected)
@@ -1495,43 +1248,10 @@ export default {
           )
         }
 
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'save_faq', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'save_faq',
-              user: attemptedEmail,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await saveFaqItem(request, env, userEmail), origin)
+        return corsResponse(await saveFaqItem(request, env, auth.email), origin)
       }
 
       // API: DELETE /api/faq/:id - delete single FAQ item (protected)
@@ -1557,44 +1277,10 @@ export default {
           )
         }
 
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'delete_faq', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'delete_faq',
-              user: attemptedEmail,
-              id: id,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await deleteFaqItem(id, env, userEmail), origin)
+        return corsResponse(await deleteFaqItem(id, env, auth.email), origin)
       }
 
       // API: POST /api/texts/save - save page texts (protected)
@@ -1609,43 +1295,10 @@ export default {
           )
         }
 
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'save_texts', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
-          console.log(
-            '[AUTH_FAIL]',
-            JSON.stringify({
-              action: 'save_texts',
-              user: attemptedEmail,
-              reason: 'invalid_or_expired_token',
-              ip: clientIP,
-              timestamp: new Date().toISOString(),
-            }),
-          )
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await saveTexts(request, env, userEmail), origin)
+        return corsResponse(await saveTexts(request, env, auth.email), origin)
       }
 
       // API: POST /api/users/save - save allowed users list (protected)
@@ -1660,6 +1313,19 @@ export default {
           )
         }
 
+        const auth = await authorize(request, env, ['admin'], 'save_users', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
+
+        return corsResponse(await saveUsers(request, env, auth.email), origin)
+      }
+
+      // API: POST /api/admin/migrate-allowlist - one-time migration
+      // Переносить allowedUsers з app-config.json в окремий data/admin-allowlist.json.
+      // Bootstrap: коли admin-allowlist.json порожній, перевіряємо роль в legacy
+      // app-config.allowedUsers — інакше неможливо здійснити перший виклик.
+      // Ідемпотентно: якщо admin-allowlist.json вже існує і непорожній, нічого не перезаписує.
+      if (path === '/api/admin/migrate-allowlist' && request.method === 'POST') {
+        // Bootstrap-friendly auth — verify token + claim admin role from legacy config.
         const authHeader = request.headers.get('Authorization')
         if (!authHeader?.startsWith('Bearer ')) {
           return corsResponse(
@@ -1670,24 +1336,35 @@ export default {
             origin,
           )
         }
+        if (!env.GOOGLE_CLIENT_ID) {
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Server misconfigured' }), {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
 
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          const attemptedEmail = extractEmailFromJWT(token)
+        let bootstrapEmail: string
+        try {
+          const verified = await verifyGoogleIdToken(
+            authHeader.substring(7),
+            env.GOOGLE_CLIENT_ID,
+          )
+          bootstrapEmail = verified.email
+        } catch (error) {
           console.log(
             '[AUTH_FAIL]',
             JSON.stringify({
-              action: 'save_users',
-              user: attemptedEmail,
-              reason: 'invalid_or_expired_token',
+              action: 'migrate_allowlist',
+              reason: error instanceof Error ? error.message : 'unknown',
               ip: clientIP,
               timestamp: new Date().toISOString(),
             }),
           )
           return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
+            new Response(JSON.stringify({ error: 'Unauthorized - Invalid token' }), {
               status: 401,
               headers: { 'Content-Type': 'application/json' },
             }),
@@ -1695,8 +1372,162 @@ export default {
           )
         }
 
-        const userEmail = extractEmailFromJWT(token)
-        return corsResponse(await saveUsers(request, env, userEmail), origin)
+        // Перевіряємо роль admin: спочатку в новому allowlist, потім в legacy.
+        const currentRole = await getUserRole(bootstrapEmail, env)
+        let isAdminViaLegacy = false
+        if (!currentRole) {
+          const config = await fetchConfigJson(env)
+          const legacy = (config as (AppConfig & { allowedUsers?: unknown }) | null)?.allowedUsers
+          if (Array.isArray(legacy)) {
+            isAdminViaLegacy = legacy.some(
+              (u) =>
+                u &&
+                typeof u === 'object' &&
+                typeof (u as { email?: unknown }).email === 'string' &&
+                (u as { email: string }).email.toLowerCase() === bootstrapEmail &&
+                (u as { role?: unknown }).role === 'admin',
+            )
+          }
+        }
+        if (currentRole !== 'admin' && !isAdminViaLegacy) {
+          console.log(
+            '[AUTHZ_FAIL]',
+            JSON.stringify({
+              action: 'migrate_allowlist',
+              user: bootstrapEmail,
+              ip: clientIP,
+            }),
+          )
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Forbidden' }), {
+              status: 403,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+
+        try {
+          const existing = await loadAllowlist(env)
+          if (existing.length > 0) {
+            return corsResponse(
+              new Response(
+                JSON.stringify({
+                  success: false,
+                  reason: 'allowlist_already_exists',
+                  count: existing.length,
+                }),
+                { status: 409, headers: { 'Content-Type': 'application/json' } },
+              ),
+              origin,
+            )
+          }
+
+          const config = await fetchConfigJson(env)
+          if (!config) {
+            return corsResponse(
+              new Response(JSON.stringify({ error: 'Config not found' }), {
+                status: 404,
+                headers: { 'Content-Type': 'application/json' },
+              }),
+              origin,
+            )
+          }
+
+          const legacy = (config as AppConfig & { allowedUsers?: unknown }).allowedUsers
+          if (!Array.isArray(legacy) || legacy.length === 0) {
+            return corsResponse(
+              new Response(
+                JSON.stringify({ success: false, reason: 'no_legacy_users', count: 0 }),
+                { status: 200, headers: { 'Content-Type': 'application/json' } },
+              ),
+              origin,
+            )
+          }
+
+          const normalized = legacy
+            .map((raw) => normalizeIncomingUser(raw, bootstrapEmail))
+            .filter((u): u is AllowedUser => u !== null)
+
+          const allowlistJson = JSON.stringify(normalized, null, 2)
+          let writeOk = false
+          if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+            const s3Response = await s3Request(env, {
+              method: 'PUT',
+              key: 'data/admin-allowlist.json',
+              body: allowlistJson,
+              contentType: 'application/json',
+            })
+            writeOk = s3Response.ok
+          }
+          if (!writeOk) {
+            await saveAllowlist(env, normalized)
+          } else {
+            invalidateAllowlist()
+          }
+
+          // Чистимо allowedUsers з app-config щоб більше не світилось в /api/load-config.
+          const cleanedConfig = { ...config }
+          delete (cleanedConfig as AppConfig & { allowedUsers?: unknown }).allowedUsers
+          const cleanedJson = JSON.stringify(cleanedConfig, null, 2)
+          let configWriteOk = false
+          if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+            const s3Response = await s3Request(env, {
+              method: 'PUT',
+              key: 'data/app-config.json',
+              body: cleanedJson,
+              contentType: 'application/json',
+            })
+            configWriteOk = s3Response.ok
+          }
+          if (!configWriteOk) {
+            await env.R2_BUCKET.put('data/app-config.json', cleanedJson, {
+              httpMetadata: { contentType: 'application/json' },
+            })
+          }
+
+          console.log(
+            '[MIGRATE_ALLOWLIST]',
+            JSON.stringify({
+              user: bootstrapEmail,
+              migrated: normalized.length,
+              timestamp: new Date().toISOString(),
+            }),
+          )
+
+          return corsResponse(
+            new Response(
+              JSON.stringify({ success: true, migrated: normalized.length }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } },
+            ),
+            origin,
+          )
+        } catch (error) {
+          console.error('[MIGRATE_ALLOWLIST_ERROR]', error)
+          return corsResponse(
+            new Response(JSON.stringify({ error: 'Migration failed' }), {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' },
+            }),
+            origin,
+          )
+        }
+      }
+
+      // API: GET /api/admin/users - return admin allowlist (admin/editor)
+      // Editor може дивитися список, але писати йому не дозволено (perevirka в /api/users/save)
+      if (path === '/api/admin/users' && request.method === 'GET') {
+        const auth = await authorize(request, env, ['admin', 'editor'], 'list_users', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
+
+        const users = await loadAllowlist(env)
+        return corsResponse(
+          new Response(JSON.stringify({ users }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+          origin,
+        )
       }
 
       // API: POST /auth/login or /auth/google - rate limited
@@ -1781,32 +1612,10 @@ export default {
         }
       }
 
-      // API: GET /api/analytics - get analytics summary (protected, admin only)
+      // API: GET /api/analytics - get analytics summary (protected, admin/editor)
       if (path === '/api/analytics' && request.method === 'GET') {
-        // JWT Authentication check
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin', 'editor'], 'analytics_read', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
         const periodParam = (url.searchParams.get('period') as AnalyticsPeriod) || 'all'
         const fromDate = getFromDate(periodParam)
@@ -1821,31 +1630,10 @@ export default {
         )
       }
 
-      // API: DELETE /api/analytics - clear all analytics data (protected, admin only)
+      // API: DELETE /api/analytics - clear all analytics data (admin only)
       if (path === '/api/analytics' && request.method === 'DELETE') {
-        const authHeader = request.headers.get('Authorization')
-        if (!authHeader?.startsWith('Bearer ')) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - No token provided' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
-
-        const token = authHeader.substring(7)
-        const isValidToken = await verifyJWT(token)
-
-        if (!isValidToken) {
-          return corsResponse(
-            new Response(JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            }),
-            origin,
-          )
-        }
+        const auth = await authorize(request, env, ['admin'], 'analytics_clear', clientIP)
+        if (!auth.ok) return corsResponse(auth.response, origin)
 
         try {
           await s3Request(env, {
@@ -1895,47 +1683,58 @@ export default {
 // LOAD CONFIG (public endpoint)
 // Uses S3 API to read from external bucket (discounts.upstars.com)
 // =============================================================================
-async function loadConfig(env: Env): Promise<Response> {
-  try {
-    // Try external bucket first (via S3 API)
-    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      try {
-        const s3Response = await s3Request(env, {
-          method: 'GET',
-          key: 'data/app-config.json',
-        })
+/**
+ * Removes sensitive fields from the public config before returning it.
+ * Strips the legacy in-app allowlist and any partners flagged isHidden.
+ */
+function sanitizePublicConfig(config: AppConfig): AppConfig {
+  const sanitized: AppConfig = { ...config }
+  delete sanitized.allowedUsers
 
-        if (s3Response.ok) {
-          const config = await s3Response.text()
-          return new Response(config, {
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-              Pragma: 'no-cache',
-              Expires: '0',
-            },
-          })
-        }
-        console.error('S3 request failed:', s3Response.status, await s3Response.text())
-      } catch (s3Error) {
-        console.error('S3 request error:', s3Error)
+  if (sanitized.partners && typeof sanitized.partners === 'object') {
+    const visiblePartners: Record<string, Partner> = {}
+    for (const [slug, partner] of Object.entries(sanitized.partners)) {
+      if (partner && !(partner as Partner & { isHidden?: boolean }).isHidden) {
+        visiblePartners[slug] = partner as Partner
       }
     }
+    sanitized.partners = visiblePartners
+  }
 
-    // Fallback to local R2 bucket
-    const object = await env.R2_BUCKET.get('data/app-config.json')
+  return sanitized
+}
 
-    if (!object) {
+async function fetchConfigJson(env: Env): Promise<AppConfig | null> {
+  if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
+    try {
+      const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
+      if (s3Response.ok) {
+        return (await s3Response.json()) as AppConfig
+      }
+      console.error('S3 request failed:', s3Response.status, await s3Response.text())
+    } catch (s3Error) {
+      console.error('S3 request error:', s3Error)
+    }
+  }
+
+  const object = await env.R2_BUCKET.get('data/app-config.json')
+  if (!object) return null
+  return (await object.json()) as AppConfig
+}
+
+async function loadConfig(env: Env): Promise<Response> {
+  try {
+    const config = await fetchConfigJson(env)
+    if (!config) {
       return new Response(JSON.stringify({ error: 'Config not found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
       })
     }
 
-    const config = await object.text()
+    const sanitized = sanitizePublicConfig(config)
 
-    return new Response(config, {
+    return new Response(JSON.stringify(sanitized), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
@@ -3515,13 +3314,38 @@ async function saveTexts(
 // =============================================================================
 // SAVE USERS (granular save for allowed users list)
 // =============================================================================
+/**
+ * Validates incoming user objects from the admin form. Tolerates missing
+ * optional fields by filling sensible defaults — keeps backward compatibility
+ * with the previous flat structure stored in app-config.json.
+ */
+function normalizeIncomingUser(raw: unknown, userEmail: string): AllowedUser | null {
+  if (!raw || typeof raw !== 'object') return null
+  const v = raw as Record<string, unknown>
+  const email = typeof v.email === 'string' ? v.email.trim().toLowerCase() : ''
+  const name = typeof v.name === 'string' ? v.name.trim() : ''
+  const role = v.role === 'admin' || v.role === 'editor' ? (v.role as Role) : null
+  if (!email || !name || !role) return null
+  return {
+    id: typeof v.id === 'string' && v.id ? v.id : `user-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    email,
+    name,
+    role,
+    addedAt:
+      typeof v.addedAt === 'string' && v.addedAt
+        ? v.addedAt
+        : (new Date().toISOString().split('T')[0] ?? new Date().toISOString()),
+    addedBy: typeof v.addedBy === 'string' && v.addedBy ? v.addedBy : userEmail,
+  }
+}
+
 async function saveUsers(
   request: Request,
   env: Env,
   userEmail: string = 'unknown',
 ): Promise<Response> {
   try {
-    const data = (await request.json()) as { users: string[] }
+    const data = (await request.json()) as { users?: unknown }
 
     if (!data || !Array.isArray(data.users)) {
       return new Response(
@@ -3533,84 +3357,84 @@ async function saveUsers(
       )
     }
 
-    let config: AppConfig = {}
+    const incoming = data.users
+      .map((raw) => normalizeIncomingUser(raw, userEmail))
+      .filter((u): u is AllowedUser => u !== null)
+
+    // Прибираємо дублікати за email (захист від випадкових повторів у формі).
+    const seen = new Set<string>()
+    const newUsers: AllowedUser[] = []
+    for (const user of incoming) {
+      const key = user.email.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      newUsers.push(user)
+    }
+
+    // Захист від випадкового видалення всіх адмінів (locking yourself out).
+    const hasAdmin = newUsers.some((u) => u.role === 'admin')
+    if (!hasAdmin) {
+      return new Response(
+        JSON.stringify({ error: 'At least one admin must remain in the allowlist' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+    }
+
+    const previousUsers = await loadAllowlist(env)
+    const previousEmails = new Set(previousUsers.map((u) => u.email.toLowerCase()))
+    const newEmails = new Set(newUsers.map((u) => u.email.toLowerCase()))
+
+    const addedEmails = [...newEmails].filter((e) => !previousEmails.has(e))
+    const removedEmails = [...previousEmails].filter((e) => !newEmails.has(e))
+
+    const allowlistJson = JSON.stringify(newUsers, null, 2)
+
+    let writeOk = false
     if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      try {
-        const s3Response = await s3Request(env, { method: 'GET', key: 'data/app-config.json' })
-        if (s3Response.ok) config = (await s3Response.json()) as AppConfig
-      } catch {
-        /* fallback */
-      }
+      const s3Response = await s3Request(env, {
+        method: 'PUT',
+        key: 'data/admin-allowlist.json',
+        body: allowlistJson,
+        contentType: 'application/json',
+      })
+      writeOk = s3Response.ok
     }
-    if (Object.keys(config).length === 0) {
-      const object = await env.R2_BUCKET.get('data/app-config.json')
-      if (object) config = (await object.json()) as AppConfig
+    if (!writeOk) {
+      await saveAllowlist(env, newUsers)
+    } else {
+      invalidateAllowlist()
     }
 
-    // Создаём бекап перед изменениями и инкрементируем версию
-    await createBackup(env, config)
-    incrementConfigVersion(config, userEmail)
-
-    // Get previous users for comparison
-    const previousUsers = config.allowedUsers || []
-    const newUsers = data.users
-
-    // Find added and removed users
-    const addedUsers = newUsers.filter((u: string) => !previousUsers.includes(u))
-    const removedUsers = previousUsers.filter((u: string) => !newUsers.includes(u))
-
-    config.allowedUsers = data.users
-
-    // Log the action with FULL users data for audit trail
     console.log(
       '[USERS_SAVE]',
       JSON.stringify({
         user: userEmail,
         timestamp: new Date().toISOString(),
-        data: {
-          totalCount: data.users.length,
-          added: addedUsers,
-          removed: removedUsers,
-          allUsers: data.users,
-        },
+        totalCount: newUsers.length,
+        added: addedEmails,
+        removed: removedEmails,
       }),
     )
 
-    // Only log to audit if there are actual changes
-    if (addedUsers.length > 0 || removedUsers.length > 0) {
+    if (addedEmails.length > 0 || removedEmails.length > 0) {
       await appendAuditLog(env, {
         user: userEmail,
         action: 'update',
         entity: 'users',
-        entityId: 'allowed-users',
-        entityName: `Користувачі (${data.users.length})`,
+        entityId: 'admin-allowlist',
+        entityName: `Користувачі (${newUsers.length})`,
         changes: {
-          added: { old: null, new: addedUsers },
-          removed: { old: removedUsers, new: null },
-          totalCount: { old: previousUsers.length, new: data.users.length },
+          added: { old: null, new: addedEmails },
+          removed: { old: removedEmails, new: null },
+          totalCount: { old: previousUsers.length, new: newUsers.length },
         },
       })
     }
 
-    const configJson = JSON.stringify(config, null, 2)
-    if (env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.EXTERNAL_R2_ENDPOINT) {
-      const s3Response = await s3Request(env, {
-        method: 'PUT',
-        key: 'data/app-config.json',
-        body: configJson,
-        contentType: 'application/json',
-      })
-      if (s3Response.ok) {
-        return new Response(JSON.stringify({ success: true, count: data.users.length }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        })
-      }
-    }
-    await env.R2_BUCKET.put('data/app-config.json', configJson, {
-      httpMetadata: { contentType: 'application/json' },
-    })
-    return new Response(JSON.stringify({ success: true, count: data.users.length }), {
+    return new Response(JSON.stringify({ success: true, count: newUsers.length }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     })

@@ -12,6 +12,10 @@ export interface AdminUser {
   addedBy: string
 }
 
+interface AdminUsersResponse {
+  users?: AdminUser[]
+}
+
 export const useAdminUsersStore = defineStore('adminUsers', () => {
   // Состояние
   const users = ref<AdminUser[]>([])
@@ -38,45 +42,30 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
 
   const usersCount = computed(() => users.value.length)
 
-  // Инициализация - динамическая загрузка из конфига
+  /**
+   * Завантажує allowlist із захищеного endpoint /api/admin/users.
+   * Викликається ROUTER guard перед входом в /admin — токен на цей момент уже є.
+   * Виклик до логіну/без admin-ролі поверне 401/403 і store залишиться порожнім.
+   */
   async function init() {
     if (isInitialized.value) return
 
     try {
-      // Загружаем конфиг через API с cache-busting
-      const { fetchConfig } = await import('@/utils/api-config')
-      const response = await fetchConfig()
+      const response = await fetchWithAuth(getApiUrl('/api/admin/users'))
       if (response.ok) {
-        const config = await response.json()
-        if (config.allowedUsers?.length) {
-          users.value = config.allowedUsers
+        const payload = (await response.json()) as AdminUsersResponse
+        if (Array.isArray(payload.users)) {
+          users.value = payload.users
         }
-      } else {
-        // Fallback: загрузка через статический импорт для production
-        const configModule = await import('@/data/app-config.json')
-        const configData = configModule.default as { allowedUsers?: AdminUser[] }
-        if (configData.allowedUsers?.length) {
-          users.value = configData.allowedUsers
-        }
+      } else if (response.status !== 401 && response.status !== 403) {
+        console.error('Failed to load admin users:', response.status)
       }
-    } catch {
-      // Fallback: динамический импорт
-      try {
-        const configModule = await import('@/data/app-config.json')
-        const configData = configModule.default as { allowedUsers?: AdminUser[] }
-        if (configData.allowedUsers?.length) {
-          users.value = configData.allowedUsers
-        }
-      } catch (e) {
-        console.error('Failed to load users config:', e)
-      }
+    } catch (e) {
+      console.error('Failed to load admin users:', e)
     }
 
     isInitialized.value = true
   }
-
-  // Автоматическая инициализация
-  init()
 
   // Действия
   function openCreateForm() {
@@ -174,13 +163,11 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isLoading.value = true
 
     try {
-      // Перезагружаем конфиг из файла с cache-busting
-      const { fetchConfig } = await import('@/utils/api-config')
-      const response = await fetchConfig()
+      const response = await fetchWithAuth(getApiUrl('/api/admin/users'))
       if (response.ok) {
-        const config = await response.json()
-        if (config.allowedUsers?.length) {
-          users.value = config.allowedUsers
+        const payload = (await response.json()) as AdminUsersResponse
+        if (Array.isArray(payload.users)) {
+          users.value = payload.users
         }
       }
 
