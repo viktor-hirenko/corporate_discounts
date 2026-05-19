@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useAdminPartnersStore } from '@/stores/adminPartners'
 import { useAuthStore } from '@/stores/auth'
 import AdminPartnerForm from '@/components/admin/AdminPartnerForm.vue'
+import { getApiBaseUrl } from '@/utils/api-config'
 import type { PartnerConfig } from '@/types/app-config'
 
 const store = useAdminPartnersStore()
@@ -18,18 +19,14 @@ const getImageUrl = (path: string): string => {
     return path
   // R2 путь типа /assets/images/partners/...
   if (path.startsWith('/assets/')) {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return `https://corporate-discounts-worker.upstars-marbella.workers.dev${path}`
-    }
-    return path
+    const base = getApiBaseUrl()
+    return base ? `${base}${path}` : path
   }
   // Устаревший путь @/assets
   if (path.startsWith('@/assets/')) {
     const cleanPath = path.replace('@/', '/')
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return `https://corporate-discounts-worker.upstars-marbella.workers.dev${cleanPath}`
-    }
-    return cleanPath
+    const base = getApiBaseUrl()
+    return base ? `${base}${cleanPath}` : cleanPath
   }
   return path
 }

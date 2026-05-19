@@ -5,7 +5,7 @@
 
 import { useAuthStore } from '@/stores/auth'
 
-const WORKER_URL = 'https://corporate-discounts-worker.upstars-marbella.workers.dev'
+const WORKER_URL = 'https://corporate-discounts-worker.upstars-landings.workers.dev'
 
 /** Флаг для предотвращения рекурсивного refresh */
 let isRefreshing = false

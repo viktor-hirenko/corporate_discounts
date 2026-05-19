@@ -90,5 +90,5 @@ echo -e "${GREEN}✅ JSON файлы загружены (app-config.json про�
 # 5. Готово
 echo -e "${GREEN}🎉 Деплой завершен успешно!${NC}\n"
 echo -e "${BLUE}Сайт доступен по адресу:${NC}"
-echo -e "${GREEN}https://corporate-discounts-worker.upstars-marbella.workers.dev${NC}\n"
+echo -e "${GREEN}https://corporate-discounts-worker.upstars-landings.workers.dev${NC}\n"
 

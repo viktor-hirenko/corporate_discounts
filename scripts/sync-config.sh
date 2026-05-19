@@ -7,7 +7,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-PRODUCTION_URL="https://corporate-discounts-worker.upstars-marbella.workers.dev"
+PRODUCTION_URL="https://corporate-discounts-worker.upstars-landings.workers.dev"
 CONFIG_PATH="src/data/app-config.json"
 
 echo -e "${BLUE}📥 Синхронізація app-config.json з production...${NC}\n"

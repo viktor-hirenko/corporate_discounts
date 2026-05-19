@@ -3,7 +3,7 @@ import { ref, reactive, computed, watch } from 'vue'
 import type { PartnerConfig } from '@/types/app-config'
 import { useAdminCategoriesStore } from '@/stores/adminCategories'
 import { sanitizeString, sanitizeEmail, sanitizeUrl } from '@/utils/sanitize'
-import { uploadPartnerImage } from '@/utils/api-config'
+import { uploadPartnerImage, getApiBaseUrl } from '@/utils/api-config'
 
 // ✅ Санитизация локализованного текста
 function sanitizeLocalized(obj: { ua: string; en: string }): { ua: string; en: string } {
@@ -144,20 +144,14 @@ const getImageUrl = (path: string): string => {
   if (path.startsWith('http://') || path.startsWith('https://')) return path
   // R2 путь типа /assets/images/partners/...
   if (path.startsWith('/assets/')) {
-    // На продакшене этот путь работает напрямую
-    // На localhost нужно использовать продакшен URL
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return `https://corporate-discounts-worker.upstars-marbella.workers.dev${path}`
-    }
-    return path
+    const base = getApiBaseUrl()
+    return base ? `${base}${path}` : path
   }
-  // Устаревший путь @/assets - конвертируем в продакшен URL
+  // Устаревший путь @/assets - конвертируем через worker URL
   if (path.startsWith('@/assets/')) {
     const cleanPath = path.replace('@/', '/')
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return `https://corporate-discounts-worker.upstars-marbella.workers.dev${cleanPath}`
-    }
-    return cleanPath
+    const base = getApiBaseUrl()
+    return base ? `${base}${cleanPath}` : cleanPath
   }
   return path
 }
