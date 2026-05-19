@@ -152,7 +152,8 @@ router.beforeEach(async (to, from, next) => {
 
   // Если пользователь авторизован и пытается попасть на страницу логина
   if (authStore.isLoggedIn && to.path === '/login') {
-    next({ name: 'discounts' })
+    await authStore.ensureAdminAccessReady()
+    next({ name: authStore.hasAdminAccess ? 'admin-dashboard' : 'discounts' })
     return
   }
 
@@ -170,10 +171,7 @@ router.beforeEach(async (to, from, next) => {
       }
     }
 
-    // Убедимся что adminUsers store инициализирован
-    const { useAdminUsersStore } = await import('@/stores/adminUsers')
-    const usersStore = useAdminUsersStore()
-    await usersStore.init()
+    await authStore.ensureAdminAccessReady()
 
     if (!authStore.hasAdminAccess) {
       // Нет доступа к админке — редирект на главную

@@ -67,6 +67,12 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     isInitialized.value = true
   }
 
+  /** Сброс кэша и повторная загрузка (после bootstrap allowlist). */
+  async function reload() {
+    isInitialized.value = false
+    await init()
+  }
+
   // Действия
   function openCreateForm() {
     editingUser.value = null
@@ -206,6 +212,7 @@ export const useAdminUsersStore = defineStore('adminUsers', () => {
     usersCount,
     // Действия
     init,
+    reload,
     openCreateForm,
     openEditForm,
     closeForm,

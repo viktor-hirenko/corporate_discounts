@@ -1374,22 +1374,27 @@ export default {
 
         // Перевіряємо роль admin: спочатку в новому allowlist, потім в legacy.
         const currentRole = await getUserRole(bootstrapEmail, env)
-        let isAdminViaLegacy = false
+        let isStaffViaLegacy = false
         if (!currentRole) {
           const config = await fetchConfigJson(env)
           const legacy = (config as (AppConfig & { allowedUsers?: unknown }) | null)?.allowedUsers
           if (Array.isArray(legacy)) {
-            isAdminViaLegacy = legacy.some(
+            isStaffViaLegacy = legacy.some(
               (u) =>
                 u &&
                 typeof u === 'object' &&
                 typeof (u as { email?: unknown }).email === 'string' &&
                 (u as { email: string }).email.toLowerCase() === bootstrapEmail &&
-                (u as { role?: unknown }).role === 'admin',
+                ((u as { role?: unknown }).role === 'admin' ||
+                  (u as { role?: unknown }).role === 'editor'),
             )
           }
         }
-        if (currentRole !== 'admin' && !isAdminViaLegacy) {
+        if (
+          currentRole !== 'admin' &&
+          currentRole !== 'editor' &&
+          !isStaffViaLegacy
+        ) {
           console.log(
             '[AUTHZ_FAIL]',
             JSON.stringify({

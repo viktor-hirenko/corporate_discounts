@@ -243,11 +243,12 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Fire-and-forget bootstrap call to /api/admin/migrate-allowlist.
-     * Server-side it is no-op when the new allowlist already exists or
-     * when the caller is not in the legacy admin list.
+     * Одноразовая миграция allowlist из legacy app-config в R2.
+     * Идемпотентно: 409 если allowlist уже есть — это нормально.
      */
     async bootstrapAllowlistIfNeeded(): Promise<void> {
+      if (!this.token) return
+
       try {
         const { getApiUrl } = await import('@/utils/api-config')
         await fetch(getApiUrl('/api/admin/migrate-allowlist'), {
@@ -258,8 +259,21 @@ export const useAuthStore = defineStore('auth', {
           },
         })
       } catch {
-        // Ignore — це опціональний bootstrap, не блокує логін.
+        // Не блокируем логин — guard повторит при заходе в /admin.
       }
+    },
+
+    /**
+     * Дождаться bootstrap и перезагрузить список админов перед проверкой hasAdminAccess.
+     */
+    async ensureAdminAccessReady(): Promise<void> {
+      if (!this.isLoggedIn || !this.token) return
+
+      await this.bootstrapAllowlistIfNeeded()
+
+      const { useAdminUsersStore } = await import('@/stores/adminUsers')
+      const usersStore = useAdminUsersStore()
+      await usersStore.reload()
     },
 
     async loginWithEmail(email: string, name: string): Promise<void> {

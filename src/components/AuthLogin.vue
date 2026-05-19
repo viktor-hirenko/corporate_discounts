@@ -6,6 +6,7 @@ import UiButton from '@/components/UiButton.vue'
 import UserInfo from '@/components/UserInfo.vue'
 import { useAppConfig } from '@/composables/useAppConfig'
 import { useAuthStore } from '@/stores/auth'
+import { resolvePostLoginRedirect } from '@/utils/post-login-redirect'
 
 const router = useRouter()
 const route = useRoute()
@@ -70,7 +71,11 @@ async function handleContinue(): Promise<void> {
       await authStore.loginWithEmail(lastUser.value.email, lastUser.value.name)
     }
 
-    const redirect = (route.query.redirect as string) || '/discounts'
+    await authStore.ensureAdminAccessReady()
+    const redirect = resolvePostLoginRedirect(
+      route.query.redirect as string | undefined,
+      authStore.hasAdminAccess,
+    )
     await router.replace(redirect)
   } catch (error) {
     console.error('[auth] Continue failed', error)
@@ -95,7 +100,11 @@ async function handleGoogleSignIn(response: { credential: string }): Promise<voi
     // Сбрасываем сообщение об окончании сессии
     showSessionExpiredMessage.value = false
 
-    const redirect = (route.query.redirect as string) || '/discounts'
+    await authStore.ensureAdminAccessReady()
+    const redirect = resolvePostLoginRedirect(
+      route.query.redirect as string | undefined,
+      authStore.hasAdminAccess,
+    )
     await router.replace(redirect)
   } catch (error) {
     console.error('[auth] Google sign in failed', error)
