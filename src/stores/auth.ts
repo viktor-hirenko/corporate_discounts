@@ -229,12 +229,36 @@ export const useAuthStore = defineStore('auth', {
 
         // ✅ Запускаем таймер для проактивного обновления токена
         this.startTokenRefreshTimer()
+
+        // Bootstrap: викликаємо одноразову міграцію allowlist із legacy app-config.
+        // Endpoint ідемпотентний: 200 success при першому виклику, 409/403 далі — ігноруємо.
+        void this.bootstrapAllowlistIfNeeded()
       } catch (error) {
         console.error('[auth-store] failed to login with Google', error)
         if (error instanceof Error && error.message.includes('Доступ')) {
           throw error
         }
         throw new Error('Не удалось войти через Google')
+      }
+    },
+
+    /**
+     * Fire-and-forget bootstrap call to /api/admin/migrate-allowlist.
+     * Server-side it is no-op when the new allowlist already exists or
+     * when the caller is not in the legacy admin list.
+     */
+    async bootstrapAllowlistIfNeeded(): Promise<void> {
+      try {
+        const { getApiUrl } = await import('@/utils/api-config')
+        await fetch(getApiUrl('/api/admin/migrate-allowlist'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.token}`,
+          },
+        })
+      } catch {
+        // Ignore — це опціональний bootstrap, не блокує логін.
       }
     },
 
